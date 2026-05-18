@@ -1,0 +1,596 @@
+
+.admin-login-container {
+  min-height: 100vh;
+  background: linear-gradient(135deg, #1e3a5f 0%, #2F4157 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.admin-login-card {
+  background: white;
+  border-radius: 16px;
+  padding: 40px;
+  width: 380px;
+  box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.admin-login-logo {
+  height: 50px;
+  margin: 0 auto 8px;
+  display: block;
+}
+
+.admin-login-card h2 {
+  text-align: center;
+  color: #2F4157;
+  font-size: 22px;
+  font-weight: 700;
+  margin: 0;
+}
+
+.admin-login-subtitle {
+  text-align: center;
+  color: #888;
+  font-size: 13px;
+  margin: -4px 0 8px;
+}
+
+.admin-login-card label {
+  font-size: 13px;
+  font-weight: 600;
+  color: #555;
+}
+
+.admin-login-card input {
+  padding: 10px 14px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.admin-login-card input:focus {
+  border-color: #2F4157;
+}
+
+.admin-login-error {
+  color: #c0392b;
+  font-size: 13px;
+  text-align: center;
+  margin: 0;
+}
+
+.admin-login-btn {
+  background: #2F4157;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  padding: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 8px;
+  transition: background 0.2s;
+}
+
+.admin-login-btn:hover {
+  background: #1e3a5f;
+}
+
+.admin-login-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+
+  /* ADMIN DASHBOARD  */
+
+.ad-dashboard {
+  display: flex;
+  min-height: 100vh;
+  background: #f5f6fa;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+/*  SIDEBAR  */
+.ad-sidebar {
+  width: 220px;
+  min-width: 220px;
+  background: #1e3a5f;
+  display: flex;
+  flex-direction: column;
+  padding: 0;
+  position: sticky;
+  top: 0;
+  height: 100vh;
+}
+
+.ad-sidebar-logo {
+  display: flex;
+  align-items: center;
+  padding: 15px 20px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  color: white;
+  font-weight: 700;
+}
+
+.ad-nav {
+  display: flex;
+  flex-direction: column;
+  padding: 16px 0;
+  flex: 1;
+  gap: 2px;
+}
+
+.ad-nav button {
+  background: none;
+  border: none;
+  color: #a8c0d6;
+  padding: 12px 24px;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+  transition: background 0.2s, color 0.2s;
+  border-radius: 0;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.ad-nav button:hover {
+  background: rgba(255, 255, 255, 0.08);
+  color: #fff;
+}
+
+.ad-nav button.active {
+  background: rgba(255, 255, 255, 0.15);
+  color: #fff;
+  font-weight: 600;
+ ;
+}
+
+.ad-logout-btn {
+  background: none;
+  border: none;
+  color: #a8c0d6;
+  padding: 16px 24px;
+  text-align: left;
+  font-size: 14px;
+  cursor: pointer;
+  border-top: 1px solid rgba(255, 255, 255, 0.1);
+  transition: color 0.2s;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.ad-logout-btn:hover {
+  color: #fff;
+}
+
+/* MAIN  */
+.ad-main {
+  flex: 1;
+  padding: 28px;
+  overflow-y: auto;
+}
+
+/*  TOPBAR  */
+.ad-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24px;
+}
+
+.ad-topbar h1 {
+  font-size: 22px;
+  font-weight: 700;
+  color: #2F4157;
+  margin: 0;
+  padding: 0;
+}
+
+/*  STAT CARDS  */
+.ad-cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 16px;
+  margin-bottom: 16px;
+}
+
+.ad-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 22px 20px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  border: 2px solid transparent;
+}
+
+.ad-card-highlight {
+  border-color: #2F4157;
+  background: linear-gradient(135deg, #ffffff, #f0f4f8);
+}
+
+.ad-card-label {
+  font-size: 12px;
+  color: #888;
+  font-weight: 700;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.ad-card-value {
+  font-size: 22px;
+  font-weight: 800;
+  margin: 0;
+  color: #2F4157;
+}
+
+.ad-card-value.green { color: #2e7d32; }
+.ad-card-value.yellow { color: #e6a817; }
+.ad-card-value.red { color: #c0392b; }
+
+.ad-card-sub {
+  font-size: 11px;
+  color: #aaa;
+  margin-top: 2px;
+}
+
+/*  CHARTS ROW  */
+.ad-charts-row {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 16px;
+  margin-bottom: 0;
+}
+
+.ad-chart-card {
+  background: #fff;
+  border-radius: 14px;
+  padding: 20px 24px;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.07);
+}
+
+.ad-chart-card h3 {
+  font-size: 15px;
+  font-weight: 700;
+  color: #2F4157;
+  margin: 0 0 16px;
+  padding: 0;
+}
+
+/*  STAT ROWS (financials)  */
+.ad-stat-rows {
+  display: flex;
+  flex-direction: column;
+  gap: 0;
+}
+
+.ad-stat-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 0;
+  border-bottom: 1px solid #f0f0f0;
+  font-size: 14px;
+  color: #2F4157;
+}
+
+.ad-stat-divider {
+  height: 1px;
+  background: #e0e7ef;
+  margin: 4px 0;
+}
+
+.green-val  { color: #2e7d32; font-weight: 700; }
+.yellow-val { color: #e6a817; font-weight: 700; }
+.red-val    { color: #c0392b; font-weight: 700; }
+
+/*  PLAN & STATUS PILLS  */
+.ad-plan-badge {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.ad-status-pill {
+  display: inline-block;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+/*  MANAGE BUTTON  */
+.ad-manage-btn {
+  background: #2F4157;
+  color: white;
+  border: none;
+  padding: 6px 16px;
+  border-radius: 8px;
+  font-size: 12px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.ad-manage-btn:hover {
+  background: #1e3a5f;
+}
+
+/*  MODAL  */
+.ad-modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.45);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.ad-modal {
+  background: white;
+  border-radius: 20px;
+  padding: 32px;
+  width: 480px;
+  max-width: 95vw;
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.2);
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.ad-modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+}
+
+.ad-modal-header h2 {
+  color: #2F4157;
+  font-size: 20px;
+  font-weight: 800;
+  margin: 0 0 4px;
+  padding: 0;
+}
+
+.ad-modal-sub {
+  color: #888;
+  font-size: 13px;
+  margin: 0;
+  padding: 0;
+}
+
+.ad-modal-close {
+  background: #f0f4f8;
+  border: none;
+  border-radius: 8px;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 14px;
+  color: #2F4157;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.ad-modal-close:hover {
+  background: #e0e7ef;
+}
+
+.ad-modal-section {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.ad-modal-label {
+  font-size: 12px;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/*  TOGGLE ROW (modal options)  */
+.ad-toggle-row {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.ad-toggle-option {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 2px solid #e0e7ef;
+  background: white;
+  color: #2F4157;
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.ad-toggle-option:hover {
+  border-color: #2F4157;
+}
+
+.ad-toggle-option.active-green {
+  background: #e8f5e9;
+  border-color: #2e7d32;
+  color: #2e7d32;
+}
+
+.ad-toggle-option.active-red {
+  background: #fde8e8;
+  border-color: #c0392b;
+  color: #c0392b;
+}
+
+.ad-toggle-option.active-blue {
+  background: #2F4157;
+  border-color: #2F4157;
+  color: white;
+}
+
+/*  MODAL ACTIONS  */
+.ad-modal-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+  margin-top: 4px;
+}
+
+.ad-cancel-btn {
+  padding: 10px 22px;
+  border: 1px solid #ddd;
+  border-radius: 10px;
+  background: white;
+  cursor: pointer;
+  font-size: 14px;
+  color: #555;
+  transition: background 0.2s;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.ad-cancel-btn:hover {
+  background: #f5f5f5;
+}
+
+.ad-save-btn {
+  padding: 10px 26px;
+  background: #2F4157;
+  color: white;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.2s;
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.ad-save-btn:hover {
+  background: #1e3a5f;
+}
+
+/*  RESPONSIVE  */
+@media (max-width: 1100px) {
+  .ad-cards {
+    grid-template-columns: repeat(2, 1fr);
+  }
+  .ad-charts-row {
+    grid-template-columns: 1fr;
+  }
+}
+
+@media (max-width: 768px) {
+  .ad-sidebar {
+    display: none;
+  }
+  .ad-main {
+    padding: 16px;
+  }
+}
+
+/*  Payment Modal Styles  */
+
+.payment-summary {
+  background: #f8f9fa;
+  border-radius: 10px;
+  padding: 16px;
+  margin-bottom: 4px;
+}
+
+.payment-summary-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  font-size: 14px;
+  color: #555;
+  border-bottom: 1px solid #eee;
+}
+
+.payment-summary-row:last-child {
+  border-bottom: none;
+}
+
+.payment-summary-row.highlight {
+  margin-top: 4px;
+  padding-top: 12px;
+  font-size: 15px;
+}
+
+.payment-summary-row.highlight span {
+  font-weight: 600;
+  color: #333;
+}
+
+.paid-val {
+  color: #2e7d32 !important;
+}
+
+.remaining-val {
+  color: #c0392b !important;
+  font-size: 16px;
+}
+
+.payment-input {
+  width: 100%;
+  padding: 12px 16px;
+  border-radius: 8px;
+  border: 1.5px solid #ddd;
+  font-size: 15px;
+  margin-top: 8px;
+  box-sizing: border-box;
+  outline: none;
+  transition: border-color 0.2s;
+}
+
+.payment-input:focus {
+  border-color: #2F4157;
+}
+
+.payment-autofill-btn {
+  margin-top: 10px;
+  background: #f0f4f8;
+  border: 1px solid #d0d8e0;
+  border-radius: 8px;
+  padding: 8px 14px;
+  font-size: 13px;
+  color: #2F4157;
+  cursor: pointer;
+  width: 100%;
+  text-align: left;
+  font-weight: 500;
+  transition: background 0.2s;
+}
+
+.payment-autofill-btn:hover {
+  background: #e2eaf2;
+}
+
+.payment-btn {
+  background: #e8f5e9 !important;
+  color: #2e7d32 !important;
+  border: 1px solid #c8e6c9 !important;
+  white-space: nowrap;
+}
+
+.payment-btn:hover {
+  background: #c8e6c9 !important;
+}

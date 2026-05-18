@@ -1,0 +1,271 @@
+
+/* EXPENSES TABLE  */
+.Expenses-table-wrapper {
+  background: #fff;
+  border-radius: 14px;
+  overflow: hidden;
+  box-shadow: 0 2px 10px rgba(0,0,0,0.07);
+}
+
+.Expenses-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+}
+
+.Expenses-table thead tr {
+  background: #f5f6fa;
+  border-bottom: 2px solid #e8edf2;
+}
+
+.Expenses-table th {
+  padding: 14px 18px;
+  text-align: left;
+  font-size: 12px;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.Expenses-table td {
+  padding: 14px 18px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #2F4157;
+}
+
+.Expenses-row {
+  cursor: pointer;
+  transition: background 0.15s;
+}
+
+.Expenses-row:hover {
+  background: #f8fafc;
+}
+
+.invoice-num {
+  font-family: monospace;
+  font-size: 13px;
+  color: #888;
+}
+
+.Expenses-amount {
+  font-weight: 700;
+  color: #e6a817 !important;
+}
+
+.Expenses-profit {
+  font-weight: 700;
+  color: #2e7d32 !important;
+}
+
+/* EXPENSE ITEM ROW IN MODAL*/
+.Expenses-item-row {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 12px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.Expenses-item-grid {
+  display: grid;
+  grid-template-columns: 2.5fr 1.2fr 0.8fr 1.2fr;
+  gap: 8px;
+  flex: 1;
+}
+
+
+.Expenses-item-grid input,
+.Expenses-item-grid select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+  background: #fff;
+}
+
+.Expenses-item-grid input:focus,
+.Expenses-item-grid select:focus {
+  border-color: #2F4157;
+}
+
+
+.Expenses-item-subtotal {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 6px;
+  min-width: 90px;
+  padding-top: 6px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #2F4157;
+}
+
+/*  TOTAL PREVIEW */
+.Expenses-total-preview {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 12px 16px;
+  background: #f5f6fa;
+  border-radius: 8px;
+  font-weight: 700;
+  color: #2F4157;
+  font-size: 15px;
+  margin-top: 4px;
+}
+
+.Expenses-total-preview span:last-child {
+  color: #e6a817;
+  font-size: 16px;
+}
+
+/*  EXPENSE ITEMS TABLE IN VIEW MODAL  */
+.Expenses-items-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 13px;
+  margin-top: 8px;
+}
+
+.Expenses-items-table th {
+  text-align: left;
+  padding: 8px 10px;
+  background: #f5f6fa;
+  font-size: 11px;
+  font-weight: 700;
+  color: #888;
+  text-transform: uppercase;
+}
+
+.Expenses-items-table td {
+  padding: 8px 10px;
+  border-bottom: 1px solid #f0f0f0;
+  color: #2F4157;
+}
+
+
+.Expenses-select {
+  width: 100%;
+  padding: 8px 10px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  font-size: 13px;
+  outline: none;
+  box-sizing: border-box;
+  background: #fff;
+  color: #2F4157;
+  cursor: pointer;
+  appearance: auto;
+}
+
+.Expenses-select:focus {
+  border-color: #2F4157;
+}
+
+.Expenses-select:disabled {
+  background: #f5f5f5;
+  color: #aaa;
+  cursor: not-allowed;
+}
+
+
+.payment-badge {
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.payment-badge.cash {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.payment-badge.benefit {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+
+
+.Expenses-category-badge {
+  display: inline-block;
+  padding: 4px 12px;
+  border-radius: 20px;
+  font-size: 12px;
+  font-weight: 600;
+  background: #e8edf2;
+  color: #2F4157;
+}
+
+.import-btn {
+  background: #1e3a5f;
+  color: white;
+  border: none;
+  padding: 10px 22px;
+  border-radius: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background 0.2s;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+
+.import-btn:hover {
+  background: #162d4a;
+}
+
+.import-modal {
+  width: 680px;
+  max-width: 95vw;
+}
+
+.import-table-wrapper {
+  max-height: 300px;
+  overflow-y: auto;
+  border-radius: 8px;
+  border: 1px solid #e8edf2;
+}
+
+.import-row-error td {
+  background: #fff5f5;
+  color: #c0392b;
+}
+
+.import-row-ok td {
+  background: #f0fff4;
+}
+
+.import-error-badge {
+  color: #c0392b;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.import-ok-badge {
+  color: #2e7d32;
+  font-size: 12px;
+  font-weight: 600;
+}
+
+.Expenses-description {
+  color: #555;
+  font-size: 13px;
+  max-width: 300px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+
+
