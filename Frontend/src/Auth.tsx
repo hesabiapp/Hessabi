@@ -2,7 +2,8 @@ import React, { useState, useEffect } from "react";
 import "./Style/Auth.css";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSubscription } from "./context/SubscriptionContext";
-const API = "https://hessabi.onrender.com";
+const API = import.meta.env.VITE_API_URL;
+
 
 const Auth = () => {
   const [isActive, setIsActive] = useState(false);
