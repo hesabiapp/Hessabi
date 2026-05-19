@@ -508,7 +508,7 @@ const AdminDashboard = () => {
                         <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                         <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#888" }} />
                         <YAxis tick={{ fontSize: 12, fill: "#888" }} />
-                        <Tooltip formatter={(v: number) => [`BHD ${v.toFixed(3)}`, "Revenue"]} />
+                        <Tooltip formatter={(v: any) => [`BHD ${Number(v).toFixed(3)}`, "Revenue"]} />
                         <Line type="monotone" dataKey="revenue" stroke="#2F4157" strokeWidth={2.5} dot={{ fill: "#2F4157", r: 4 }} />
                       </LineChart>
                     </ResponsiveContainer>
@@ -659,7 +659,7 @@ const AdminDashboard = () => {
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                       <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#888" }} />
                       <YAxis tick={{ fontSize: 12, fill: "#888" }} />
-                      <Tooltip formatter={(v: number) => [`BHD ${v.toFixed(3)}`, "Revenue"]} />
+                     <Tooltip formatter={(v: any) => [`BHD ${Number(v).toFixed(3)}`, "Revenue"]} />
                       <Bar dataKey="revenue" fill="#2F4157" radius={[6, 6, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
