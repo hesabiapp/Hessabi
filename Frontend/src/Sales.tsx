@@ -9,7 +9,7 @@ import { FiArrowDown } from "react-icons/fi";
 
 
 
-const API = "http://localhost:3000";
+const API = "${API}";
 
 type SaleItem = {
   productId: string;

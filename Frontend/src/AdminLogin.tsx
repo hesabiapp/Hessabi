@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "./Style/Admin.css";
 
-const API = "http://localhost:3000";
+const API = "${API}";
 
 const AdminLogin = () => {
   const [username, setUsername] = useState("");

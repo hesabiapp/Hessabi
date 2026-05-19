@@ -1,7 +1,7 @@
 
 import { useNavigate } from "react-router-dom";
 
-const API = "http://localhost:3000";
+const API = "${API}";
 
 export const Logout = () => {
     const navigate = useNavigate();

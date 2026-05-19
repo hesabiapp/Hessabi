@@ -7,7 +7,7 @@ import { useUserRole } from "./hooks/useUserRole";
 
 
 
-const API = "http://localhost:3000";
+const API = "${API}";
 
 type SizeEntry = { size: string; stock: number };
 

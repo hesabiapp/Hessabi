@@ -7,7 +7,7 @@ import Sidebar from "./components/Sidebar";
 import { useUserRole } from "./hooks/useUserRole";
 import { FiArrowDown } from "react-icons/fi";
 
-const API = "http://localhost:3000";
+const API = "${API}";
 
 type Expense = {
   _id: string;

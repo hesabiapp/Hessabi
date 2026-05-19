@@ -4,7 +4,7 @@ import Sidebar from "./components/Sidebar";
 import "./Style/Dashboard.css";
 import "./Style/System.css";
 
-const API = "http://localhost:3000";
+const API = "${API}";
 const LOW_STOCK_THRESHOLD = 5;
 
 type Summary = {

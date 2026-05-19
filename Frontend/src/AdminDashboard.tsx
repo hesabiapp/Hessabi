@@ -6,7 +6,7 @@ import {
 } from "recharts";
 import "./Style/Admin.css";
 
-const API = "http://localhost:3000";
+const API = "${API}";
 
 type Stats = {
   totalUsers:    number;

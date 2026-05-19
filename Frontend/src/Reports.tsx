@@ -7,7 +7,7 @@ import { Scale, TrendingUp, Trophy, Wallet, Calendar, CreditCard, Package } from
 import * as XLSX from "xlsx";
 import { FiArrowDown } from "react-icons/fi";
 
-const API = "http://localhost:3000";
+const API = "${API}";
 
 type ReportTemplate = {
   id: string;

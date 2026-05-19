@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
-const API = "http://localhost:3000";
+const API = "${API}";
 
 export type SubscriptionInfo = {
   planType:   "trial" | "subscription" | "full";

@@ -69,7 +69,7 @@ const PricingPage = () => {
 
   // ── Check if user is logged in ──────────────────────────
   useEffect(() => {
-    fetch("http://localhost:3000/auth/viewUser", { credentials: "include" })
+    fetch("${API}/auth/viewUser", { credentials: "include" })
       .then(res => { if (res.ok) setIsLoggedIn(true); })
       .catch(() => setIsLoggedIn(false));
   }, []);
@@ -96,7 +96,7 @@ const PricingPage = () => {
 
   try {
   
-    const res = await fetch("http://localhost:3000/subscriptions/demo-activate", {
+    const res = await fetch("${API}/subscriptions/demo-activate", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
       credentials: "include",
@@ -151,7 +151,7 @@ const PricingPage = () => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:3000/subscriptions/charge", {
+      const res = await fetch("${API}/subscriptions/charge", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         credentials: "include",

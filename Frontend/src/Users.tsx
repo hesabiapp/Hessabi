@@ -8,7 +8,7 @@ import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import { useUserRole } from "./hooks/useUserRole";
 
-const API = "http://localhost:3000";
+const API = "${API}";
 
 type User = {
   userId: string;

@@ -4,7 +4,7 @@ import "./Style/System.css";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 
-const API = "http://localhost:3000";
+const API = "${API}";
 
 type Profile = {
     userId: string;

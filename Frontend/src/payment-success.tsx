@@ -17,7 +17,7 @@ const PaymentSuccess = () => {
       }
 
       try {
-        const res = await fetch("http://localhost:3000/subscription/verify", {
+        const res = await fetch("${API}/subscription/verify", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           credentials: "include",

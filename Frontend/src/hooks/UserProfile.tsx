@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API = "http://localhost:3000";
+const API = "${API}";
 
 type Profile = {
     username: string;
