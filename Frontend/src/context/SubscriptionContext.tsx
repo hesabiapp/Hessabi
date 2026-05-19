@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useState, useEffect, useCallback } from "react";
 
-const API = "${API}";
+const API = import.meta.env.VITE_API_URL;
 
 export type SubscriptionInfo = {
   planType:   "trial" | "subscription" | "full";

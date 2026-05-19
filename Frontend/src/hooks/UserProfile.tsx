@@ -1,6 +1,6 @@
 import { useState } from "react";
 
-const API = "${API}";
+const API = import.meta.env.VITE_API_URL;
 
 type Profile = {
     username: string;
