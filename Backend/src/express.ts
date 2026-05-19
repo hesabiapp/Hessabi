@@ -17,13 +17,24 @@ const session = new ExpressTSSession({
     secret: process.env.SESSION_SECRET || "as.jkdjaskljjo32jedkl23nmedkl32nolejh23oiejno23enoi23kenml32ned",
     saveUnchangedSession: false,
     saveInitialSession: false,
-    cookie: { httpOnly: true, path: '/' },
+    cookie: {
+    httpOnly: true,
+    secure: true,
+    sameSite: "none",
+    path: "/"
+},
 })
 
 const app = express()
 
 app.use(session.init);
-app.use(cors({ origin: "http://localhost:5173", credentials: true })) 
+app.use(cors({
+  origin: [
+    "http://localhost:5173",
+    "https://hessabi.vercel.app"
+  ],
+  credentials: true
+}))
 app.use(express.json())                                               
 app.use("/productsImages", express.static(path.resolve("src/productsImages")));
 app.use("/subscriptions", subscriptionRouter);
