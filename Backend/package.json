@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc && cp -r src/assets dist/assets",
+    "build": "tsc",
     "start": "node dist/server.js",
     "dev": "tsx watch src/server.ts"
   },
@@ -14,7 +14,6 @@
   "type": "module",
   "license": "ISC",
   "dependencies": {
-    "@sparticuz/chromium": "^130.0.0",
     "@types/cors": "^2.8.19",
     "bcryptjs": "^3.0.3",
     "cors": "^2.8.6",
@@ -22,16 +21,17 @@
     "dotenv": "^17.2.4",
     "express": "^5.2.1",
     "express-ts-session": "^0.0.1-beta.5",
+    "html-pdf-node": "^1.0.8",
     "mongoose": "^9.2.1",
     "multer": "^2.1.1",
     "nodemailer": "^8.0.1",
     "pdfkit": "^0.17.2",
-    "puppeteer-core": "^22.0.0",
     "zod": "^4.3.6"
   },
   "devDependencies": {
     "@types/bcryptjs": "^2.4.6",
     "@types/express": "^5.0.6",
+    "@types/html-pdf-node": "^1.0.2",
     "@types/multer": "^2.1.0",
     "ts-node": "^10.9.2",
     "tsx": "^4.21.0",
