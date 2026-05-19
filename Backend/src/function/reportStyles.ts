@@ -1,4 +1,5 @@
-import puppeteer from 'puppeteer'
+import puppeteer from 'puppeteer-core'
+import chromium from '@sparticuz/chromium'
 import fs from 'fs'
 import path from 'path'
 import { fileURLToPath } from 'url'
@@ -130,9 +131,13 @@ export const htmlWrapper = (title: string, subtitle: string, body: string) => `
 
 //  HTML → PDF via Puppeteer 
 export const htmlToPdf = async (html: string): Promise<Buffer> => {
-  const browser = await puppeteer.launch({ args: ['--no-sandbox', '--disable-setuid-sandbox'] })
-  const page    = await browser.newPage()
-  await page.setContent(html, { waitUntil: 'networkidle0' })
+  const browser = await puppeteer.launch({
+    args: chromium.args,
+    executablePath: await chromium.executablePath(),
+    headless: true,
+  })
+  const page = await browser.newPage()
+ await page.setContent(html, { waitUntil: 'load' })
   const pdf = await page.pdf({
     format: 'A4',
     printBackground: true,
