@@ -8,7 +8,7 @@ import Sidebar from "./components/Sidebar";
 import Header from "./components/Header";
 import { useUserRole } from "./hooks/useUserRole";
 
-const API = "${API}";
+const API = import.meta.env.VITE_API_URL;
 
 type User = {
   userId: string;

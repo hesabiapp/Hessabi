@@ -7,7 +7,7 @@ import { Scale, TrendingUp, Trophy, Wallet, Calendar, CreditCard, Package } from
 import * as XLSX from "xlsx";
 import { FiArrowDown } from "react-icons/fi";
 
-const API = "${API}";
+const API = import.meta.env.VITE_API_URL;
 
 type ReportTemplate = {
   id: string;

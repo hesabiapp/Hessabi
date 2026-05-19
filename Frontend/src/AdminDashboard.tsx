@@ -6,7 +6,7 @@ import {
 } from "recharts";
 import "./Style/Admin.css";
 
-const API = "${API}";
+const API = import.meta.env.VITE_API_URL;
 
 type Stats = {
   totalUsers:    number;

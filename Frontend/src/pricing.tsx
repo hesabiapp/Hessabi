@@ -4,7 +4,7 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaCheck, FaTimes, FaArrowRight, FaCrown, FaRocket, FaStar, FaInfinity } from "react-icons/fa";
 import "./Style/Pricing.css";
 import "./Style/System.css";
-
+const API = import.meta.env.VITE_API_URL;
 const installmentPrices: Record<number, { total: number; monthly: number; savings: number }> = {
   3:  { total: 50, monthly: 16.667, savings: 25 },
   6:  { total: 50, monthly: 8.333,  savings: 25 },

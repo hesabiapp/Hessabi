@@ -4,7 +4,8 @@ import Sidebar from "./components/Sidebar";
 import "./Style/Dashboard.css";
 import "./Style/System.css";
 
-const API = "${API}";
+
+const API = import.meta.env.VITE_API_URL;
 const LOW_STOCK_THRESHOLD = 5;
 
 type Summary = {

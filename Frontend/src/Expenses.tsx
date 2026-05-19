@@ -7,7 +7,7 @@ import Sidebar from "./components/Sidebar";
 import { useUserRole } from "./hooks/useUserRole";
 import { FiArrowDown } from "react-icons/fi";
 
-const API = "${API}";
+const API = import.meta.env.VITE_API_URL;
 
 type Expense = {
   _id: string;

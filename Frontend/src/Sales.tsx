@@ -9,7 +9,7 @@ import { FiArrowDown } from "react-icons/fi";
 
 
 
-const API = "${API}";
+const API = import.meta.env.VITE_API_URL;
 
 type SaleItem = {
   productId: string;

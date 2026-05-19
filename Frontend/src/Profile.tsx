@@ -4,7 +4,7 @@ import "./Style/System.css";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
 
-const API = "${API}";
+const API = import.meta.env.VITE_API_URL;
 
 type Profile = {
     userId: string;
