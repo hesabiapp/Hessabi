@@ -107,10 +107,14 @@ export const htmlWrapper = (title: string, subtitle: string, body: string) => `
 </div>
 </body>
 </html>`
-
 export const htmlToPdf = async (html: string): Promise<Buffer> => {
   const file = { content: html }
   const options = { format: 'A4', printBackground: true, margin: { top: '0', bottom: '0', left: '0', right: '0' } }
-  const pdfBuffer = await HtmlPdf.generatePdf(file as any, options as any)
-  return pdfBuffer
+  
+  return new Promise((resolve, reject) => {
+    HtmlPdf.generatePdf(file as any, options as any, (err: Error, buffer: Buffer) => {
+      if (err) reject(err)
+      else resolve(buffer)
+    })
+  })
 }
