@@ -106,7 +106,7 @@ const Auth = () => {
       setLoginError("Something went wrong. Try again.");
     }
   };
-
+console.log("API URL:", import.meta.env.VITE_API_URL);
   return (
     <div className="auth-page">
     <div className={`auth-container${isActive ? " active" : ""}${loaded ? " loaded" : ""}`}>
