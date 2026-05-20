@@ -59,8 +59,6 @@ app.use('/admin',    adminRoutes);
 app.use('/ai',       aiRoutes);
 app.use('/reports',  reportRoutes);
 app.use('/instagram', instagramRoutes);
-
-
 app.get('/', (req, res) => { return res.send('api is working...') });
 
 export default app;
