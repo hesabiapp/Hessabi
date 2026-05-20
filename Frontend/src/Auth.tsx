@@ -57,7 +57,8 @@ const Auth = () => {
       });
       if (!loginRes.ok) { setSignupError("Signup succeeded but login failed."); return; }
 
-      const userRes = await fetch(`${API}/auth/viewUser`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+      const userRes = await fetch(`${API}/auth/viewUser`, {
+      headers: { Authorization: `Bearer ${data.token}` } });
       const userData = await userRes.json();
       sessionStorage.setItem("user", JSON.stringify({
         firstName: userData.Fname,
@@ -86,7 +87,7 @@ const Auth = () => {
 
       const data = await res.json();
       if (!res.ok) { setLoginError(data.message); return; }
-
+      localStorage.setItem("token", data.token); 
       const userRes = await fetch(`${API}/auth/viewUser`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
       const userData = await userRes.json();
       sessionStorage.setItem("user", JSON.stringify({
