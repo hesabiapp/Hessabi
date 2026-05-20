@@ -74,8 +74,7 @@ export const userProfile = () => {
         try {
             const res = await fetch(`${API}/auth/editUsers`, {
                 method: "PUT",
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-                headers: { "Content-Type": "application/json" },
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
                 body: JSON.stringify({
                     userId,
                     username: form.username,
