@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
+import InstagramTab from "./components/InstagramTab";
 import "./Style/Dashboard.css";
 import "./Style/System.css";
 
@@ -79,7 +80,7 @@ const Dashboard = () => {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput]       = useState("");
   const [chatLoading, setChatLoading]   = useState(false);
-  const [activeTab, setActiveTab]       = useState<"overview" | "chat">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "chat" | "instagram">("overview");
   const chatEndRef = useRef<HTMLDivElement>(null);
   const datePickerRef = useRef<HTMLDivElement>(null);
 
@@ -96,6 +97,14 @@ const Dashboard = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+
+  useEffect(() => {
+  const params = new URLSearchParams(window.location.search);
+  if (params.get("ig") === "connected") {
+    setActiveTab("instagram");
+    window.history.replaceState({}, "", window.location.pathname);
+  }
+}, []);
 
   const fetchAll = async () => {
     setLoading(true);
@@ -340,6 +349,7 @@ Currency: BHD`.trim();
             <div className="dash-tabs">
               <button className={`dash-tab ${activeTab === "overview" ? "active" : ""}`} onClick={() => setActiveTab("overview")}>📊 Overview</button>
               <button className={`dash-tab ${activeTab === "chat"     ? "active" : ""}`} onClick={() => setActiveTab("chat")}>🤖 Ask AI</button>
+              <button className={`dash-tab ${activeTab === "instagram"  ? "active" : ""}`} onClick={() => setActiveTab("instagram")}>📸 Instagram</button>
             </div>
 
             <div className="dash-range-filters">
@@ -401,6 +411,7 @@ Currency: BHD`.trim();
             <div className="dash-loading"><div className="dash-spinner" /><p>Loading dashboard...</p></div>
           ) : activeTab === "overview" ? (
             <>
+            
               {/* Low stock */}
               {lowStockProducts.length > 0 && (
                 <div className="dash-low-stock">
@@ -682,7 +693,7 @@ Currency: BHD`.trim();
                 </div>
               </div>
             </>
-          ) : (
+          ) : activeTab === "chat" ? (
             <div className="dash-chat-container">
               <div className="dash-chat-intro">
                 <div className="dash-chat-icon">🤖</div>
@@ -709,6 +720,8 @@ Currency: BHD`.trim();
               </div>
               <p className="dash-chat-hint">Press Enter to send · Shift+Enter for new line</p>
             </div>
+          ) : (
+            <InstagramTab />
           )}
            </div>
         </div>
