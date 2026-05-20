@@ -9,7 +9,7 @@ export const Logout = () => {
     const handleLogout = async () => {
         await fetch(`${API}/auth/logout`, {
             method: "POST",
-            credentials: "include",
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         });
         navigate("/");
     };

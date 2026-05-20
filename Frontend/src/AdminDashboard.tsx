@@ -290,10 +290,10 @@ const AdminDashboard = () => {
   const fetchAll = async () => {
     try {
       const [statsRes, bizRes, usersRes, subsRes] = await Promise.all([
-        fetch(`${API}/admin/stats`,         { credentials: "include" }),
-        fetch(`${API}/admin/businesses`,    { credentials: "include" }),
-        fetch(`${API}/admin/users`,         { credentials: "include" }),
-        fetch(`${API}/admin/subscriptions`, { credentials: "include" }),
+        fetch(`${API}/admin/stats`,         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
+        fetch(`${API}/admin/businesses`,    { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
+        fetch(`${API}/admin/users`,         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
+        fetch(`${API}/admin/subscriptions`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
       ]);
 
       if (statsRes.status === 401) { navigate("/admin-login"); return; }
@@ -328,7 +328,7 @@ const AdminDashboard = () => {
   };
 
   const handleLogout = async () => {
-    await fetch(`${API}/admin/logout`, { method: "POST", credentials: "include" });
+    await fetch(`${API}/admin/logout`, { method: "POST", headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
     navigate("/admin-login");
   };
 
@@ -339,17 +339,17 @@ const AdminDashboard = () => {
   try {
     // 1. Toggle user status
     await fetch(`${API}/admin/toggleUser`, {
-      method: "PUT", credentials: "include",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ userId: businessId, userStatus: updates.userStatus }),
-    });
+  method: "PUT",
+  headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
+  body: JSON.stringify({ userId: businessId, userStatus: updates.userStatus }),
+});
+
 
    
     const currentBiz = businesses.find(b => b.businessId === businessId);
     if (currentBiz?.planType !== updates.planType) {
       await fetch(`${API}/subscriptions/`, {
-        method: "POST", credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ businessId, planType: updates.planType }),
       });
     }
@@ -357,8 +357,7 @@ const AdminDashboard = () => {
     //  Extend only if months selected
     if (updates.extendMonths > 0) {
       await fetch(`${API}/subscriptions/extend`, {
-        method: "PUT", credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        method: "PUT", headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ businessId, months: updates.extendMonths }),
       });
     }
@@ -373,8 +372,7 @@ const AdminDashboard = () => {
     try {
       const res = await fetch(`${API}/subscriptions/pay`, {
         method: "PUT",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ businessId, amount }),
       });
       if (res.ok) {

@@ -45,7 +45,7 @@ const Profile = () => {
     const fetchProfile = async () => {
         setLoading(true);
         try {
-            const res = await fetch(`${API}/auth/viewUser`, { credentials: "include" });
+            const res = await fetch(`${API}/auth/viewUser`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
             const data = await res.json();
             if (res.ok) {
                 setProfile(data);
@@ -108,7 +108,7 @@ const Profile = () => {
             try {
                 const res = await fetch(`${API}/auth/uploadPhoto`, {
                     method: "POST",
-                    credentials: "include",
+                    headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                     body: formData,
                 });
                 const data = await res.json();
@@ -121,8 +121,9 @@ const Profile = () => {
         try {
             const res = await fetch(`${API}/auth/editUsers`, {
                 method: "PUT",
-                credentials: "include",
-                headers: { "Content-Type": "application/json" },
+                
+                headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
+
                 body: JSON.stringify({
                     userId: profile?.userId,
                     username: form.username,

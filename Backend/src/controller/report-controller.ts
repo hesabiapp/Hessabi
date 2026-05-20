@@ -8,7 +8,7 @@ import { bhd, fmtDate, filterByDate, htmlWrapper, htmlToPdf } from '../function/
 // Sales Summary 
 export const salesSummaryReport = async (req: Request, res: Response) => {
   try {
-    const user: any = req.session.user
+    const user: any = req.user
     const { startDate, endDate } = req.body
     const allSales = await Sales.find({ businessID: user.businessId }).sort({ date: -1 })
     const sales    = filterByDate(allSales, startDate, endDate)
@@ -58,7 +58,7 @@ export const salesSummaryReport = async (req: Request, res: Response) => {
 //  Profit & Loss 
 export const profitLossReport = async (req: Request, res: Response) => {
   try {
-    const user: any = req.session.user
+    const user: any = req.user
     const { startDate, endDate } = req.body
     const [allSales, allExpenses] = await Promise.all([
       Sales.find({ businessID: user.businessId }),
@@ -126,7 +126,7 @@ export const profitLossReport = async (req: Request, res: Response) => {
 //  Top Products 
 export const topProductsReport = async (req: Request, res: Response) => {
   try {
-    const user: any = req.session.user
+    const user: any = req.user
     const { startDate, endDate } = req.body
     const sales = filterByDate(await Sales.find({ businessID: user.businessId }), startDate, endDate)
 
@@ -187,7 +187,7 @@ export const topProductsReport = async (req: Request, res: Response) => {
 //  Expenses 
 export const expensesBreakdownReport = async (req: Request, res: Response) => {
   try {
-    const user: any = req.session.user
+    const user: any = req.user
     const { startDate, endDate } = req.body
     const expenses = filterByDate(
       await Expenses.find({ businessID: user.businessId }).sort({ date: -1 }),
@@ -250,7 +250,7 @@ export const expensesBreakdownReport = async (req: Request, res: Response) => {
 //  VAT Report 
 export const vatReport = async (req: Request, res: Response) => {
   try {
-    const user: any = req.session.user
+    const user: any = req.user
     const { startDate, endDate } = req.body
     const sales = filterByDate(
       await Sales.find({ businessID: user.businessId }).sort({ date: -1 }),
@@ -311,7 +311,7 @@ export const vatReport = async (req: Request, res: Response) => {
 //  Inventory Report 
 export const inventoryReport = async (req: Request, res: Response) => {
   try {
-    const user: any  = req.session.user
+    const user: any  = req.user
     const products   = await Product.find({ businessID: user.businessId, active: true })
     const LOW        = 5
     let totalStock   = 0
@@ -365,7 +365,7 @@ export const inventoryReport = async (req: Request, res: Response) => {
 //  Payment Methods Report 
 export const paymentMethodsReport = async (req: Request, res: Response) => {
   try {
-    const user: any = req.session.user
+    const user: any = req.user
     const { startDate, endDate } = req.body
     const sales = filterByDate(
       await Sales.find({ businessID: user.businessId }).sort({ date: -1 }),
@@ -415,7 +415,7 @@ export const paymentMethodsReport = async (req: Request, res: Response) => {
 //  AI Custom Report 
 export const aiCustomReport = async (req: Request, res: Response) => {
   try {
-    const user: any = req.session.user
+    const user: any = req.user
     const { prompt } = req.body
     if (!prompt) return res.status(400).json({ message: 'Prompt is required.' })
 

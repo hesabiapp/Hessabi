@@ -6,6 +6,8 @@ import Expenses from "../collections/expenses-collection.js";
 import Product from "../collections/product-collection.js";
 import Subscription from "../collections/subscription-collection.js";
 import { compare, hash } from "bcryptjs";
+import jwt from "jsonwebtoken";
+
 
 export const adminLogin = async (req: Request, res: Response) => {
     if (!req.body) {
@@ -27,18 +29,22 @@ export const adminLogin = async (req: Request, res: Response) => {
         return res.status(400).json({ message: "Invalid credentials." });
     }
 
-    req.session.user = {
-        id: admin._id.toString(),
-        role: "SuperAdmin",
-        username: admin.username,
-        businessId: null
-    };
+    const JWT_SECRET = process.env.JWT_SECRET || "hessabi_jwt_secret_key_2024";
+    const token = jwt.sign(
+        {
+            id:         admin._id.toString(),
+            role:       "SuperAdmin",
+            username:   admin.username,
+            businessId: null,
+        },
+        JWT_SECRET,
+        { expiresIn: "7d" }
+    );
 
-    return res.status(200).json({ message: "Admin logged in." });
+    return res.status(200).json({ message: "Admin logged in.", token });
 };
 
 export const adminLogout = async (req: Request, res: Response) => {
-    req.session.destroy();
     return res.status(200).json({ message: "Logged out." });
 };
 

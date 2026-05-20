@@ -101,10 +101,10 @@ const Dashboard = () => {
     setLoading(true);
     try {
       const [summaryRes, salesRes, expensesRes, productsRes] = await Promise.all([
-        fetch(`${API}/summary/getSummary`,    { credentials: "include" }),
-        fetch(`${API}/sales/viewSales`,       { credentials: "include" }),
-        fetch(`${API}/expenses/viewExpenses`, { credentials: "include" }),
-        fetch(`${API}/product/viewProducts`,  { credentials: "include" }),
+        fetch(`${API}/summary/getSummary`,    { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
+        fetch(`${API}/sales/viewSales`,       { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
+        fetch(`${API}/expenses/viewExpenses`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
+        fetch(`${API}/product/viewProducts`,  { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
       ]);
       const summaryData  = await summaryRes.json();
       const salesData    = await salesRes.json();
@@ -296,7 +296,7 @@ Currency: BHD`.trim();
     if (s.length === 0 && e.length === 0) return;
     setAiLoading(true);
     try {
-      const res  = await fetch(`${API}/ai/insight`, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ context: buildContext(s, e) }) });
+     const res = await fetch(`${API}/ai/insight`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` }, body: JSON.stringify({ context: buildContext(s, e) }) });
       const data = await res.json();
       setAutoInsight(data.reply ?? "");
     } catch (err) { console.error(err); } finally { setAiLoading(false); }
@@ -308,7 +308,7 @@ Currency: BHD`.trim();
     const newMessages: ChatMessage[] = [...chatMessages, { role: "user", content: msg }];
     setChatMessages(newMessages); setChatInput(""); setChatLoading(true);
     try {
-      const res  = await fetch(`${API}/ai/chat`, { method: "POST", credentials: "include", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ context: buildContext(sales, expenses), messages: newMessages }) });
+      const res = await fetch(`${API}/ai/chat`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` }, body: JSON.stringify({ context: buildContext(sales, expenses), messages: newMessages }) });
       const data = await res.json();
       setChatMessages(prev => [...prev, { role: "assistant", content: data.reply ?? "Sorry, I couldn't generate a response." }]);
     } catch { setChatMessages(prev => [...prev, { role: "assistant", content: "Something went wrong." }]); }

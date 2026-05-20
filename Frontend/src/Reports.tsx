@@ -140,8 +140,7 @@ const Reports = () => {
       }
       const res = await fetch(`${API}${template.endpoint}`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify(body),
       });
       if (!res.ok) throw new Error("Failed to generate report");
@@ -161,9 +160,9 @@ const Reports = () => {
 
   const fetchAllData = async () => {
     const [productsRes, salesRes, expensesRes] = await Promise.all([
-      fetch(`${API}/product/viewProducts`, { credentials: "include" }),
-      fetch(`${API}/sales/viewSales`,      { credentials: "include" }),
-      fetch(`${API}/expenses/viewExpenses`, { credentials: "include" }),
+      fetch(`${API}/product/viewProducts`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
+      fetch(`${API}/sales/viewSales`,      { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
+      fetch(`${API}/expenses/viewExpenses`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
     ]);
 
     if (!productsRes.ok) throw new Error("Failed to fetch products");
@@ -269,8 +268,7 @@ const Reports = () => {
     try {
       const res = await fetch(`${API}/reports/ai-custom`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ prompt: aiPrompt }),
       });
       if (!res.ok) {

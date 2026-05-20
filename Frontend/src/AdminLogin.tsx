@@ -19,14 +19,14 @@ const AdminLogin = () => {
     setLoading(true);
     setError("");
     try {
-      const res = await fetch(`${API}/admin/login`, {
-        method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ username, password }),
-      });
+   const res = await fetch(`${API}/admin/login`, {
+  method: "POST",
+  headers: { "Content-Type": "application/json" },
+  body: JSON.stringify({ username, password }),
+});
       const data = await res.json();
       if (res.ok) {
+        localStorage.setItem("token", data.token);
         navigate("/admin-dashboard");
       } else {
         setError(data.message ?? "Login failed.");

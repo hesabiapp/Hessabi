@@ -96,7 +96,7 @@ const Products = () => {
   const fetchProducts = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/product/viewProducts`, { credentials: "include" });
+      const res = await fetch(`${API}/product/viewProducts`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
       const data = await res.json();
       if (res.ok) setProducts(data.products ?? []);
     } catch (err) {
@@ -169,7 +169,7 @@ const Products = () => {
     try {
       const res = await fetch(`${API}/product/addProduct`, {
         method: "POST",
-        credentials: "include",
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: buildFormData(),
       });
       const data = await res.json();
@@ -214,7 +214,7 @@ const Products = () => {
       fd.append("productId", editingProduct.productId);
       const res = await fetch(`${API}/product/editProduct`, {
         method: "PUT",
-        credentials: "include",
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: fd,
       });
       const data = await res.json();
@@ -236,8 +236,7 @@ const Products = () => {
     try {
       const res = await fetch(`${API}/product/deleteProduct`, {
         method: "DELETE",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ productId }),
       });
       if (res.ok) setProducts(prev => prev.filter(p => p.productId !== productId));

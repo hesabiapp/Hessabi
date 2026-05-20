@@ -4,7 +4,9 @@ import { validateSignUp, validateLogin } from "../function/zodValidators.js";
 import { compare, hash } from "bcryptjs";
 import { createTrialSubscription } from "./subscription-controller.js";
 import Subscription from "../collections/subscription-collection.js";
+import jwt from "jsonwebtoken";
 
+const JWT_SECRET = process.env.JWT_SECRET || "hessabi_jwt_secret_key_2024";
 
 /* sign up */
 export const signup = async (req: Request, res: Response) => {
@@ -38,7 +40,6 @@ export const signup = async (req: Request, res: Response) => {
         return res.status(400).json({ message: 'User could not be created.' })
     }
 
-    // For simplicity, the businessID was set to the same userID for the first user.
     await User.findByIdAndUpdate(signupResult._id, { businessID: signupResult._id });
     await createTrialSubscription(signupResult._id.toString());
     return res.status(200).json({ message: 'User is created' })
@@ -73,26 +74,26 @@ export const login = async (req: Request, res: Response) => {
 
     const businessId = user.businessID?.toString() ?? user._id.toString();
 
-    req.session.user = {
-        id:         user._id.toString(),
-        role:       user.role,
-        username:   user.username,
-        businessId: businessId,
-    };
+    const token = jwt.sign(
+        {
+            id:         user._id.toString(),
+            role:       user.role,
+            username:   user.username,
+            businessId: businessId,
+        },
+        JWT_SECRET,
+        { expiresIn: "7d" }
+    );
 
-    // subscription 
     const sub = await Subscription.findOne({ businessId });
-
     let subscriptionInfo = null;
 
     if (sub) {
-        
         if (sub.endDate && new Date() > sub.endDate && sub.planStatus === "active") {
             sub.planStatus = sub.planType === "subscription" ? "overdue" : "expired";
             await sub.save();
         }
 
-        // Calculate days remaining
         let daysLeft: number | null = null;
         if (sub.endDate) {
             const diff = new Date(sub.endDate).getTime() - new Date().getTime();
@@ -109,13 +110,13 @@ export const login = async (req: Request, res: Response) => {
 
     return res.status(200).json({
         message:      'User is logged in',
+        token,
         subscription: subscriptionInfo,
     })
 }
 
-//Users 
 export const viewUser = async (req: Request, res: Response) => {
-    const user: any = req.session.user;
+    const user: any = req.user;
 
     const viewUser = await User.findOne({ _id: user.id })
     if (!viewUser) {
@@ -135,9 +136,8 @@ export const viewUser = async (req: Request, res: Response) => {
     })
 }
 
-
 export const viewUsers = async (req: Request, res: Response) => {
-    const adminUser: any = req.session.user;
+    const adminUser: any = req.user;
     const viewUsers = await User.find({ businessID: adminUser.businessId })
     if (!viewUsers) {
         return res.status(404).json({ message: 'No users were found.' })
@@ -164,7 +164,7 @@ export const createUsers = async (req: Request, res: Response) => {
     }
 
     const { username, Fname, Lname, email, password, role } = req.body
-    const adminUser: any = req.session.user;
+    const adminUser: any = req.user;
 
     const userVal = validateSignUp.safeParse({ username, Fname, Lname, email, password })
     if (!userVal.success) {
@@ -207,7 +207,6 @@ export const editUsers = async (req: Request, res: Response) => {
 
     const { userId, username, Fname, Lname, email, password, role, userStatus, mobile } = req.body
 
-    //change password
     if (password) {
         const user = await User.findById(userId);
         if (!user) {
@@ -269,7 +268,6 @@ export const editUsers = async (req: Request, res: Response) => {
 }
 
 export const logout = async (req: Request, res: Response) => {
-    req.session.destroy()
     return res.status(200).json({ message: 'Logged out successfully.' });
 };
 
@@ -287,7 +285,3 @@ export const deleteUsers = async (req: Request, res: Response) => {
 
     return res.status(200).json({ message: 'User deleted successfully.' });
 };
-
-
-
-

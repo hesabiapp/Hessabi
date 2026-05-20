@@ -15,7 +15,7 @@ export const addProduct = async (req: Request, res: Response) => {
             return res.status(404).json({ message: 'input is required.' })
         }
 
-        const user: any = req.session.user;
+        const user: any = req.user;
         const { itemName, category, color, costPrice, sellingPrice, vatRate, description, stock } = req.body;
         const sizes = req.body.sizes ? JSON.parse(req.body.sizes) : undefined;
         const photo = req.file ? `productsImages/${req.file.filename}` : (req.body.photo ?? null);
@@ -117,7 +117,7 @@ export const editProduct = async (req: Request, res: Response) => {
 
 export const viewProducts = async (req: Request, res: Response) => {
     try {
-        const user: any = req.session.user;
+        const user: any = req.user;
         const products = await Product.find({ businessID: new mongoose.Types.ObjectId(user.businessId) });
 
         const viewedProductsR = products.map((product) => ({

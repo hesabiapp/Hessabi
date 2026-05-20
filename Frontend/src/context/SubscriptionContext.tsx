@@ -26,36 +26,41 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
   const [loading, setLoading]           = useState(true);
 
   const fetchSubscription = useCallback(async () => {
-    setLoading(true);
-    try {
-      const res  = await fetch(`${API}/subscriptions/me`, { credentials: "include" });
-      const data = await res.json();
+  setLoading(true);
+  try {
+    const token = localStorage.getItem("token");
+    if (!token) { setSubscription(null); setLoading(false); return; }
 
-      if (res.ok && data.subscription) {
-        const sub = data.subscription;
+    const res  = await fetch(`${API}/subscriptions/me`, {
+      headers: { Authorization: `Bearer ${token}` },
+    });
+    const data = await res.json();
 
-        let daysLeft: number | null = null;
-        if (sub.endDate) {
-          const diff = new Date(sub.endDate).getTime() - new Date().getTime();
-          daysLeft = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
-        }
+    if (res.ok && data.subscription) {
+      const sub = data.subscription;
 
-        setSubscription({
-          planType:   sub.planType,
-          planStatus: sub.planStatus,
-          daysLeft,
-          endDate:    sub.endDate,
-        });
-      } else {
-        setSubscription(null);
+      let daysLeft: number | null = null;
+      if (sub.endDate) {
+        const diff = new Date(sub.endDate).getTime() - new Date().getTime();
+        daysLeft = Math.max(0, Math.ceil(diff / (1000 * 60 * 60 * 24)));
       }
-    } catch (err) {
-      console.error("Failed to fetch subscription:", err);
+
+      setSubscription({
+        planType:   sub.planType,
+        planStatus: sub.planStatus,
+        daysLeft,
+        endDate:    sub.endDate,
+      });
+    } else {
       setSubscription(null);
-    } finally {
-      setLoading(false);
     }
-  }, []);
+  } catch (err) {
+    console.error("Failed to fetch subscription:", err);
+    setSubscription(null);
+  } finally {
+    setLoading(false);
+  }
+}, []);
 
   useEffect(() => {
     fetchSubscription();

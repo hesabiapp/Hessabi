@@ -74,7 +74,7 @@ const Expenses = () => {
   const fetchExpenses = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/expenses/viewExpenses`, { credentials: "include" });
+      const res = await fetch(`${API}/expenses/viewExpenses`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
       const data = await res.json();
       if (res.ok) setExpenses(data.expenses ?? []);
       else setExpenses([]);
@@ -106,8 +106,7 @@ const Expenses = () => {
     try {
       const res = await fetch(`${API}/expenses/addExpenses`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({
           date: form.date,
           category: form.category,
@@ -138,8 +137,7 @@ const Expenses = () => {
     try {
       const res = await fetch(`${API}/expenses/deleteExpense`, {
         method: "DELETE",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ expenseId }),
       });
       if (res.ok) {
@@ -178,8 +176,7 @@ const Expenses = () => {
         try {
           const aiRes = await fetch(`${API}/expenses/mapHeaders`, {
             method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
             body: JSON.stringify({ headers: excelHeaders, type: "expenses" }),
           });
           const aiData = await aiRes.json();
@@ -243,8 +240,7 @@ const Expenses = () => {
     try {
       const res = await fetch(`${API}/expenses/importExpenses`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ rows: validRows }),
       });
       const data = await res.json();

@@ -11,7 +11,7 @@ export const addSales = async (req: Request, res: Response) => {
     }
 
     const { invoiceNumber, date, customerName, items, source, paymentMethod } = req.body
-    const user: any = req.session.user
+    const user: any = req.user
     const createdBy = `${user.username} (${user.role})`
     let product: any[];
 
@@ -120,7 +120,7 @@ export const addSales = async (req: Request, res: Response) => {
 }
 
 export const viewSales = async (req: Request, res: Response) => {
-    const user: any = req.session.user;
+    const user: any = req.user;
     const viewSales = await Sales.find({ businessID: user.businessId })
     if (viewSales.length == 0) {
         return res.status(400).send({ message: 'Sales records are empty.' })
@@ -214,7 +214,7 @@ export const importSales = async (req: Request, res: Response) => {
     }
 
     const { rows } = req.body
-    const user: any = req.session.user
+    const user: any = req.user
     const createdBy = `${user.username} (${user.role})`
 
     if (!Array.isArray(rows) || rows.length === 0) {

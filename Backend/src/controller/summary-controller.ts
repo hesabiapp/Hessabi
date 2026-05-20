@@ -5,7 +5,7 @@ import { summaryCalculation } from "../function/summaryCalculation.js";
 
 
 export const getSummary = async (req: Request, res: Response) => {
-    const user: any = req.session.user;
+    const user: any = req.user;
     const sales = await Sales.find({ businessID: user.businessId })
     const expenses = await Expenses.find({ businessID: user.businessId })
     const summary = summaryCalculation(sales, expenses)

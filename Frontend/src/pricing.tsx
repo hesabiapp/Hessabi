@@ -68,13 +68,10 @@ const PricingPage = () => {
   const currentPlan = installmentPrices[installment];
 
   // ── Check if user is logged in ──────────────────────────
-  useEffect(() => {
-    fetch(`${API}/auth/viewUser`, { credentials: "include" })
-      .then(res => { if (res.ok) setIsLoggedIn(true); })
-      .catch(() => setIsLoggedIn(false));
-  }, []);
-
-
+useEffect(() => {
+  const token = localStorage.getItem("token");
+  if (token) setIsLoggedIn(true);
+}, []);
  
    //  demo-activate instead of charge
   const choosePlan = async (
@@ -96,12 +93,14 @@ const PricingPage = () => {
 
   try {
   
-    const res = await fetch(`${API}/subscriptions/demo-activate`, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      credentials: "include",
-      body: JSON.stringify({ planType, installmentMonths }),
-    });
+   const res = await fetch(`${API}/subscriptions/demo-activate`, {
+  method: "POST",
+  headers: {
+    "Content-Type": "application/json",
+    Authorization: `Bearer ${localStorage.getItem("token")}`,
+  },
+  body: JSON.stringify({ planType, installmentMonths }),
+});
 
     const data = await res.json();
 
@@ -154,7 +153,7 @@ const PricingPage = () => {
       const res = await fetch(`${API}/subscriptions/charge`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({
           amount,
           planType,

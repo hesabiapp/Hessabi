@@ -51,13 +51,13 @@ const Auth = () => {
       // Auto-login after signup
       const loginRes = await fetch(`${API}/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
+       
         body: JSON.stringify({ username, password }),
       });
       if (!loginRes.ok) { setSignupError("Signup succeeded but login failed."); return; }
 
-      const userRes = await fetch(`${API}/auth/viewUser`, { credentials: "include" });
+      const userRes = await fetch(`${API}/auth/viewUser`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
       const userData = await userRes.json();
       sessionStorage.setItem("user", JSON.stringify({
         firstName: userData.Fname,
@@ -80,15 +80,14 @@ const Auth = () => {
     try {
       const res = await fetch(`${API}/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ username: loginUsername, password: loginPassword }),
       });
 
       const data = await res.json();
       if (!res.ok) { setLoginError(data.message); return; }
 
-      const userRes = await fetch(`${API}/auth/viewUser`, { credentials: "include" });
+      const userRes = await fetch(`${API}/auth/viewUser`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
       const userData = await userRes.json();
       sessionStorage.setItem("user", JSON.stringify({
         firstName: userData.Fname,

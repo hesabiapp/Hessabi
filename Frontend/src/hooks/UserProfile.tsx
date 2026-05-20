@@ -43,7 +43,7 @@ export const userProfile = () => {
         setLoading(true);
         try {
             const res = await fetch(`${API}/auth/viewUser`, {
-                credentials: "include",
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
             });
             const data = await res.json();
             if (res.ok) {
@@ -74,7 +74,7 @@ export const userProfile = () => {
         try {
             const res = await fetch(`${API}/auth/editUsers`, {
                 method: "PUT",
-                credentials: "include",
+                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({
                     userId,

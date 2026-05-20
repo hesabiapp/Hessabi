@@ -8,7 +8,7 @@ export const addExpenses = async (req: Request, res: Response) => {
     }
 
     const { date, category, amount, description } = req.body
-    const user: any = req.session.user
+    const user: any = req.user
     const createdBy = user.username
 
     const valExpenseR = valExpense.safeParse({ date, category, amount, description, createdBy })
@@ -56,7 +56,7 @@ export const viewExpense = async (req: Request, res: Response) => {
 }
 
 export const viewExpenses = async (req: Request, res: Response) => {
-    const user: any = req.session.user;
+    const user: any = req.user;
     const viewExpenses = await Expenses.find({ businessID: user.businessId })
 
     if (viewExpenses.length === 0) {
@@ -103,7 +103,7 @@ const parseExcelDate = (date: any): Date | null => {
 };
 
 export const importExpenses = async (req: Request, res: Response) => {
-    const user: any = req.session.user;
+    const user: any = req.user;
     const { rows } = req.body;
     const results: { description: string; status: string; message?: string }[] = [];
 

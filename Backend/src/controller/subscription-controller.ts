@@ -65,7 +65,7 @@ export const getAllSubscriptions = async (req: Request, res: Response) => {
 // POST /subscription/  — create or update a subscription
 // ─────────────────────────────────────────────────────────
 export const upsertSubscription = async (req: Request, res: Response) => {
-  const sessionUser: any = req.session.user;
+  const sessionUser: any = req.user;
   const businessId = req.body.businessId ?? sessionUser?.businessId;
   const { planType, installmentMonths, paidAmount } = req.body;
 
@@ -172,7 +172,7 @@ export const recordPayment = async (req: Request, res: Response) => {
 // GET /subscription/me  — current user's subscription
 // ─────────────────────────────────────────────────────────
 export const getMySubscription = async (req: Request, res: Response) => {
-  const user: any = req.session.user;
+  const user: any = req.user;
   try {
     const sub = await Subscription.findOne({ businessId: user.businessId });
     if (!sub) return res.status(404).json({ message: "No subscription found." });
@@ -209,7 +209,7 @@ export const expireOverdueSubscriptions = async () => {
 // ─────────────────────────────────────────────────────────
 export const createTapCharge = async (req: Request, res: Response) => {
   const { amount, planType, installmentMonths, isOnetime } = req.body;
-  const sessionUser: any = req.session.user;
+  const sessionUser: any = req.user;
 
   if (!sessionUser) return res.status(401).json({ message: "Not authenticated." });
 
@@ -253,7 +253,7 @@ export const createTapCharge = async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────────────────
 export const verifyTapPayment = async (req: Request, res: Response) => {
   const { tapId } = req.body;
-  const sessionUser: any = req.session.user;
+  const sessionUser: any = req.user;
 
   if (!sessionUser) return res.status(401).json({ message: "Not authenticated." });
 
@@ -313,7 +313,7 @@ export const verifyTapPayment = async (req: Request, res: Response) => {
 // ─────────────────────────────────────────────────────────
 export const demoActivate = async (req: Request, res: Response) => {
   const { planType, installmentMonths } = req.body;
-  const user: any = req.session.user;
+  const user: any = req.user;
 
   if (!user) return res.status(401).json({ message: "Not authenticated." });
 

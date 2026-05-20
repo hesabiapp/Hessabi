@@ -64,7 +64,7 @@ const Users = () => {
   const fetchUsers = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/auth/viewUsers`, { credentials: "include" });
+      const res = await fetch(`${API}/auth/viewUsers`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
       const data = await res.json();
       if (res.ok) setUsers(data.users ?? []);
     } catch (err) {
@@ -95,8 +95,7 @@ const Users = () => {
     try {
       const res = await fetch(`${API}/auth/createUsers`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({
           username: form.username,
           Fname: form.Fname,
@@ -128,8 +127,7 @@ const Users = () => {
     try {
       const res = await fetch(`${API}/auth/editUsers`, {
         method: "PUT",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({
           userId: editingUser.userId,
           username: form.username,
@@ -160,8 +158,7 @@ const Users = () => {
     try {
       const res = await fetch(`${API}/auth/editUsers`, {
         method: "PUT",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({
           userId: user.userId,
           username: user.username,
@@ -179,8 +176,7 @@ const Users = () => {
     try {
       const res = await fetch(`${API}/auth/deleteUsers`, {
         method: "DELETE",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ userId }),
       });
       if (res.ok) await fetchUsers();

@@ -129,7 +129,7 @@ const Sales = () => {
   const fetchSales = async () => {
     setLoading(true);
     try {
-      const res = await fetch(`${API}/sales/viewSales`, { credentials: "include" });
+      const res = await fetch(`${API}/sales/viewSales`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
       const data = await res.json();
       if (res.ok) setSales(data.sales ?? []);
       else setSales([]);
@@ -143,7 +143,7 @@ const Sales = () => {
 
   const fetchProducts = async () => {
     try {
-      const res = await fetch(`${API}/product/viewProducts`, { credentials: "include" });
+      const res = await fetch(`${API}/product/viewProducts`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
       const data = await res.json();
       if (res.ok) setProducts(data.products ?? []);
     } catch (err) {
@@ -226,8 +226,7 @@ const Sales = () => {
 
       const res = await fetch(`${API}/sales/addSales`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify(payload),
       });
 
@@ -273,8 +272,7 @@ const Sales = () => {
         try {
           const aiRes = await fetch(`${API}/sales/mapHeaders`, {
             method: "POST",
-            credentials: "include",
-            headers: { "Content-Type": "application/json" },
+            headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
             body: JSON.stringify({ headers: excelHeaders }),
           });
           const aiData = await aiRes.json();
@@ -348,8 +346,7 @@ const Sales = () => {
     try {
       const res = await fetch(`${API}/sales/importSales`, {
         method: "POST",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ rows: validRows }),
       });
 
@@ -368,8 +365,7 @@ const Sales = () => {
     try {
       const res = await fetch(`${API}/sales/deleteSale`, {
         method: "DELETE",
-        credentials: "include",
-        headers: { "Content-Type": "application/json" },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
         body: JSON.stringify({ invoiceNumber }),
       });
       if (res.ok) {

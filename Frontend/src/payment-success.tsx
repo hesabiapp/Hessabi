@@ -19,8 +19,7 @@ const PaymentSuccess = () => {
       try {
        const res = await fetch(`${API}/subscription/verify`, {
           method: "POST",
-          headers: { "Content-Type": "application/json" },
-          credentials: "include",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
           body: JSON.stringify({ tapId }),
         });
 
