@@ -12,6 +12,8 @@ import reportRoutes from './routes/report-routes.js';
 import path from "path";
 import adminRoutes from "./routes/admin.routes.js";
 import subscriptionRouter from "./routes/subscription-routes.js";
+import instagramRoutes from "./routes/instagram.js";
+
 
 
 const MongoDBStore = ConnectMongoDBSession(session);
@@ -56,6 +58,8 @@ app.use('/summary',  summaryRoutes);
 app.use('/admin',    adminRoutes);
 app.use('/ai',       aiRoutes);
 app.use('/reports',  reportRoutes);
+app.use('/instagram', instagramRoutes);
+
 
 app.get('/', (req, res) => { return res.send('api is working...') });
 
