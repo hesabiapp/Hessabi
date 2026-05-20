@@ -1,5 +1,6 @@
 import express from "express";
 import axios from "axios";
+import jwt from "jsonwebtoken";
 import { auth } from "../middleware/auth.js";
 import User from "../collections/user-collection.js";
 
@@ -12,11 +13,24 @@ const FRONTEND_URL  = process.env.FRONTEND_URL ?? "http://localhost:5173";
 
 // ─────────────────────────────────────────────
 // STEP 1 — Redirect user to Meta OAuth screen
-// GET /api/instagram/auth
+// GET /instagram/auth?token=<jwt>
 // ─────────────────────────────────────────────
-router.get("/auth", auth, (req: any, res) => {
-  // Encode userId in state so we know who to save the token for on callback
-  const state = Buffer.from(req.user.id).toString("base64");
+router.get("/auth", (req: any, res) => {
+  const token = req.query.token as string;
+
+  if (!token) {
+    return res.status(401).json({ message: "You need to login." });
+  }
+
+  let userId: string;
+  try {
+    const decoded: any = jwt.verify(token, process.env.JWT_SECRET!);
+    userId = decoded.id;
+  } catch {
+    return res.status(401).json({ message: "Invalid or expired token." });
+  }
+
+  const state = Buffer.from(userId).toString("base64");
   const scope = [
     "instagram_basic",
     "instagram_manage_insights",
@@ -37,12 +51,11 @@ router.get("/auth", auth, (req: any, res) => {
 
 // ─────────────────────────────────────────────
 // STEP 2 — Meta redirects back here with code
-// GET /api/instagram/callback
+// GET /instagram/callback
 // ─────────────────────────────────────────────
 router.get("/callback", async (req, res) => {
   const { code, state, error } = req.query;
 
-  // User denied permission on Meta's screen
   if (error) {
     return res.redirect(`${FRONTEND_URL}/dashboard?ig=denied`);
   }
@@ -51,16 +64,15 @@ router.get("/callback", async (req, res) => {
     return res.redirect(`${FRONTEND_URL}/dashboard?ig=error`);
   }
 
-  // Decode userId from state
   const userId = Buffer.from(state as string, "base64").toString("utf8");
 
   try {
-    // Exchange code → short-lived token (1 hour)
+    // Exchange code → short-lived token
     const shortRes = await axios.get(
       `https://graph.facebook.com/v19.0/oauth/access_token`,
       {
         params: {
-          client_id:    CLIENT_ID,
+          client_id:     CLIENT_ID,
           client_secret: CLIENT_SECRET,
           redirect_uri:  REDIRECT_URI,
           code,
@@ -81,17 +93,15 @@ router.get("/callback", async (req, res) => {
       }
     );
 
-    const longToken  = longRes.data.access_token as string;
-    const expiresIn  = longRes.data.expires_in  as number; // ~5184000s = 60 days
+    const longToken = longRes.data.access_token as string;
+    const expiresIn = longRes.data.expires_in   as number;
 
-    // Save token to THIS user's document
     await User.findByIdAndUpdate(userId, {
       igAccessToken:  longToken,
       igConnectedAt:  new Date(),
       igTokenExpires: new Date(Date.now() + expiresIn * 1000),
     });
 
-    // Redirect back to dashboard with instagram tab open
     res.redirect(`${FRONTEND_URL}/dashboard?ig=connected`);
 
   } catch (err: any) {
@@ -102,7 +112,7 @@ router.get("/callback", async (req, res) => {
 
 // ─────────────────────────────────────────────
 // STEP 3 — Frontend fetches all IG data
-// GET /api/instagram/data
+// GET /instagram/data
 // ─────────────────────────────────────────────
 router.get("/data", auth, async (req: any, res) => {
   try {
@@ -112,14 +122,13 @@ router.get("/data", auth, async (req: any, res) => {
       return res.json({ connected: false });
     }
 
-    // Check if token has expired
     if (user.igTokenExpires && new Date() > user.igTokenExpires) {
       return res.json({ connected: false, reason: "token_expired" });
     }
 
     const token = user.igAccessToken;
 
-    // 1. Get Facebook Pages linked to this token
+    // 1. Get Facebook Pages
     const pagesRes = await axios.get(
       `https://graph.facebook.com/v19.0/me/accounts`,
       { params: { access_token: token } }
@@ -132,9 +141,9 @@ router.get("/data", auth, async (req: any, res) => {
 
     const page      = pages[0];
     const pageToken = page.access_token as string;
-    const pageId    = page.id as string;
+    const pageId    = page.id           as string;
 
-    // 2. Get Instagram Business Account linked to that page
+    // 2. Get Instagram Business Account
     const igAccRes = await axios.get(
       `https://graph.facebook.com/v19.0/${pageId}`,
       {
@@ -155,16 +164,12 @@ router.get("/data", auth, async (req: any, res) => {
     const until = Math.floor(Date.now() / 1000);
 
     const [profileRes, insightsRes, mediaRes, storiesRes] = await Promise.all([
-
-      // Profile: followers + username
       axios.get(`https://graph.facebook.com/v19.0/${igId}`, {
         params: {
           fields:       "username,followers_count,media_count,profile_picture_url",
           access_token: pageToken,
         },
       }),
-
-      // Insights: reach, impressions (last 30 days)
       axios.get(`https://graph.facebook.com/v19.0/${igId}/insights`, {
         params: {
           metric:       "reach,impressions,profile_views",
@@ -174,8 +179,6 @@ router.get("/data", auth, async (req: any, res) => {
           access_token: pageToken,
         },
       }),
-
-      // Top posts sorted by engagement
       axios.get(`https://graph.facebook.com/v19.0/${igId}/media`, {
         params: {
           fields:       "id,caption,media_type,media_url,thumbnail_url,timestamp,like_count,comments_count",
@@ -183,14 +186,12 @@ router.get("/data", auth, async (req: any, res) => {
           access_token: pageToken,
         },
       }),
-
-      // Stories
       axios.get(`https://graph.facebook.com/v19.0/${igId}/stories`, {
         params: {
           fields:       "id,media_url,timestamp",
           access_token: pageToken,
         },
-      }).catch(() => ({ data: { data: [] } })), // stories can fail silently
+      }).catch(() => ({ data: { data: [] } })),
     ]);
 
     const profile  = profileRes.data;
@@ -198,7 +199,6 @@ router.get("/data", auth, async (req: any, res) => {
     const media    = mediaRes.data.data    ?? [];
     const stories  = storiesRes.data.data  ?? [];
 
-    // Parse insights into totals
     const insightMap: Record<string, number> = {};
     insights.forEach((metric: any) => {
       insightMap[metric.name] = (metric.values ?? []).reduce(
@@ -206,7 +206,6 @@ router.get("/data", auth, async (req: any, res) => {
       );
     });
 
-    // Sort posts by engagement
     const topPosts = [...media].sort(
       (a: any, b: any) =>
         (b.like_count + b.comments_count) - (a.like_count + a.comments_count)
@@ -237,7 +236,7 @@ router.get("/data", auth, async (req: any, res) => {
 
 // ─────────────────────────────────────────────
 // STEP 4 — Disconnect
-// POST /api/instagram/disconnect
+// POST /instagram/disconnect
 // ─────────────────────────────────────────────
 router.post("/disconnect", auth, async (req: any, res) => {
   try {
