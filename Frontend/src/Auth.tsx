@@ -2,8 +2,8 @@ import React, { useState, useEffect } from "react";
 import "./Style/Auth.css";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { useSubscription } from "./context/SubscriptionContext";
-const API = import.meta.env.VITE_API_URL;
 
+const API = import.meta.env.VITE_API_URL;
 
 const Auth = () => {
   const [isActive, setIsActive] = useState(false);
@@ -38,7 +38,7 @@ const Auth = () => {
     if (password !== confirmPassword) {
       setSignupError("Password do not match.");
       return;
-    }   
+    }
     try {
       const res = await fetch(`${API}/auth/signup`, {
         method: "POST",
@@ -48,28 +48,27 @@ const Auth = () => {
       const data = await res.json();
       if (!res.ok) { setSignupError(data.message); return; }
 
-      // Auto-login after signup
       const loginRes = await fetch(`${API}/auth/login`, {
         method: "POST",
-          headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
-       
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username, password }),
       });
       if (!loginRes.ok) { setSignupError("Signup succeeded but login failed."); return; }
 
+      const loginData = await loginRes.json();
+      localStorage.setItem("token", loginData.token);
+
       const userRes = await fetch(`${API}/auth/viewUser`, {
-      headers: { Authorization: `Bearer ${data.token}` } });
+        headers: { Authorization: `Bearer ${loginData.token}` },
+      });
       const userData = await userRes.json();
       sessionStorage.setItem("user", JSON.stringify({
         firstName: userData.Fname,
         lastName:  userData.Lname,
         role:      userData.role,
-        
       }));
 
-      // Refetch subscription so context has the new user's trial data
       await refetch();
-
       navigate("/Pricing?newUser=true");
     } catch (err) {
       setSignupError("Something went wrong. Try again.");
@@ -81,14 +80,18 @@ const Auth = () => {
     try {
       const res = await fetch(`${API}/auth/login`, {
         method: "POST",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
+        headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ username: loginUsername, password: loginPassword }),
       });
 
       const data = await res.json();
       if (!res.ok) { setLoginError(data.message); return; }
-      localStorage.setItem("token", data.token); 
-      const userRes = await fetch(`${API}/auth/viewUser`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+
+      localStorage.setItem("token", data.token);
+
+      const userRes = await fetch(`${API}/auth/viewUser`, {
+        headers: { Authorization: `Bearer ${data.token}` },
+      });
       const userData = await userRes.json();
       sessionStorage.setItem("user", JSON.stringify({
         firstName: userData.Fname,
@@ -96,10 +99,8 @@ const Auth = () => {
         role:      userData.role,
       }));
 
-      // Refetch subscription so context has the logged in user's data
       await refetch();
 
-      // Check if there is a redirect param
       const redirect = searchParams.get("redirect");
       navigate(redirect ?? "/Dashboard");
 
@@ -107,7 +108,7 @@ const Auth = () => {
       setLoginError("Something went wrong. Try again.");
     }
   };
-console.log("API URL:", import.meta.env.VITE_API_URL);
+
   return (
     <div className="auth-page">
     <div className={`auth-container${isActive ? " active" : ""}${loaded ? " loaded" : ""}`}>
