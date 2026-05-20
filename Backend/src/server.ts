@@ -1,6 +1,3 @@
-import { config } from "dotenv";
-config();
-
 import app from "./express.js";
 import { mongoClient } from "./config/mongo.js";
 
