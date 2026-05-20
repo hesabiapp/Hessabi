@@ -41,7 +41,7 @@ export const addSales = async (req: Request, res: Response) => {
         return res.status(400).send({ input: error.path, message: error.message })
     }
 
-    const salesR = await Sales.findOne({ invoiceNumber })
+    const salesR = await Sales.findOne({ invoiceNumber, businessID: user.businessId })
     if (salesR) {
         return res.status(400).json({ message: 'Invoice (Sale) number already exists.' })
     }
