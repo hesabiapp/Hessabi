@@ -235,9 +235,13 @@ const Sales = () => {
       try { data = JSON.parse(text); } catch {}
 
       if (res.ok) {
+        if (res.ok) {
         await fetchSales();
+        await fetchProducts();
         setShowModal(false);
         setForm(emptyForm(sales.length + 1));
+}
+
       } else {
         setSubmitError(data.message ?? `Error ${res.status}`);
       }
@@ -370,6 +374,7 @@ const Sales = () => {
       });
       if (res.ok) {
         setSales(prev => prev.filter(s => s.invoiceNumber !== invoiceNumber));
+        await fetchProducts(); 
         setSelectedSale(null);
       } else {
         const data = await res.json();
