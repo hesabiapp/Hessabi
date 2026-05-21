@@ -136,7 +136,7 @@ router.get("/data", auth, async (req: any, res) => {
 
     const pages = pagesRes.data.data ?? [];
     if (pages.length === 0) {
-      return res.json({ connected: false, reason: "no_page" });
+     return res.json({ connected: false, reason: "no_page", debug: "Token valid but no Facebook Pages found" });
     }
 
     const page      = pages[0];
@@ -156,7 +156,7 @@ router.get("/data", auth, async (req: any, res) => {
 
     const igId = igAccRes.data.instagram_business_account?.id as string;
     if (!igId) {
-      return res.json({ connected: false, reason: "no_ig_business_account" });
+      return res.json({ connected: false, reason: "no_ig_business_account", debug: `Page ${pageId} has no linked Instagram Business account` });
     }
 
     // 3. Fetch all data in parallel
