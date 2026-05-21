@@ -522,7 +522,7 @@
 }
 
 .dash-ai-text {
-  font-size: 0.3rem;
+  font-size: 0.4rem;
   color: rgba(255,255,255,0.6);
   line-height: 1.5;
   display: -webkit-box;
@@ -533,7 +533,7 @@
 
 .dash-ai-text strong {
   color: rgba(255,255,255,0.9);
-  font-weight: 700;
+  font-weight: 500;
 }
 
 /* Stat cards */
