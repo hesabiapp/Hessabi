@@ -93,58 +93,96 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Dashboard illustration replacing raw photo */}
+        {/* Real Hessabi dashboard recreation */}
         <div className="Home-image-container">
           <div className="Home-dashboard-mock">
-            <div className="dash-header-bar">
-              <span className="dash-logo-dot" />
-              <span className="dash-title">Hessabi Dashboard</span>
-              <span className="dash-badge">Live</span>
-            </div>
-            <div className="dash-stats-row">
-              <div className="dash-stat">
-                <span className="dash-stat-label">Revenue</span>
-                <span className="dash-stat-value">BD 4,280</span>
-                <span className="dash-stat-change positive">+12%</span>
+
+            {/* Sidebar */}
+            <div className="dash-sidebar">
+              <div className="dash-sidebar-logo">
+                <div className="dash-sidebar-icon" />
+                <span className="dash-sidebar-name">HESSABI</span>
               </div>
-              <div className="dash-stat">
-                <span className="dash-stat-label">Invoices</span>
-                <span className="dash-stat-value">38</span>
-                <span className="dash-stat-change positive">+5</span>
-              </div>
-              <div className="dash-stat">
-                <span className="dash-stat-label">Expenses</span>
-                <span className="dash-stat-value">BD 1,140</span>
-                <span className="dash-stat-change negative">-3%</span>
-              </div>
-            </div>
-            <div className="dash-chart-area">
-              <div className="dash-chart-label">Monthly Overview</div>
-              <div className="dash-bars">
-                {[55, 70, 45, 90, 65, 80, 100].map((h, i) => (
-                  <div key={i} className="dash-bar-wrap">
-                    <div className="dash-bar" style={{ height: `${h}%`, animationDelay: `${i * 0.1 + 0.6}s` }} />
-                  </div>
-                ))}
-              </div>
-              <div className="dash-months">
-                {["Jan","Feb","Mar","Apr","May","Jun","Jul"].map(m => (
-                  <span key={m}>{m}</span>
-                ))}
-              </div>
-            </div>
-            <div className="dash-recent">
-              <div className="dash-recent-label">Recent Invoices</div>
+              <div className="dash-sidebar-label">MAIN MENU</div>
               {[
-                { name: "Fatima Al-Ansari", amt: "BD 320", status: "Paid" },
-                { name: "Ahmed Hassan", amt: "BD 180", status: "Pending" },
-              ].map((inv, i) => (
-                <div className="dash-inv-row" key={i}>
-                  <span className="dash-inv-name">{inv.name}</span>
-                  <span className="dash-inv-amt">{inv.amt}</span>
-                  <span className={`dash-inv-status ${inv.status.toLowerCase()}`}>{inv.status}</span>
+                { label: "Dashboard", active: true },
+                { label: "Products" },
+                { label: "Sales" },
+                { label: "Expenses" },
+                { label: "Reports" },
+              ].map((item, i) => (
+                <div key={i} className={`dash-nav-item${item.active ? " active" : ""}`}>
+                  {item.label}
                 </div>
               ))}
+            </div>
+
+            {/* Main area */}
+            <div className="dash-main">
+              {/* Topbar */}
+              <div className="dash-topbar">
+                <span className="dash-topbar-title">Dashboard</span>
+                <div className="dash-topbar-right">
+                  <span className="dash-trial-badge">
+                    <span className="dash-trial-dot" /> Free Trial · 37 days left
+                  </span>
+                  <span className="dash-upgrade-btn">Upgrade</span>
+                  <span className="dash-avatar">ZA</span>
+                </div>
+              </div>
+
+              {/* Tab bar */}
+              <div className="dash-tabs">
+                <span className="dash-tab active">Overview</span>
+                <span className="dash-tab">Ask AI</span>
+                <span className="dash-tab">Instagram</span>
+                <div className="dash-tabs-right">
+                  <span className="dash-time-btn">All Time</span>
+                  <span className="dash-time-outline">Date Range ▾</span>
+                </div>
+              </div>
+
+              {/* Content */}
+              <div className="dash-content">
+                {/* Alert */}
+                <div className="dash-alert">
+                  <span className="dash-alert-title">⚠ Low Stock Alert — 4 products running low</span>
+                  <div className="dash-alert-tags">
+                    {["Eid Embroidery Abaya", "Classic Black Abaya", "Blazer Style Abaya", "Gray Casual Abaya"].map((t, i) => (
+                      <span key={i} className="dash-alert-tag">{t}</span>
+                    ))}
+                  </div>
+                </div>
+
+                {/* AI Summary */}
+                <div className="dash-ai-card">
+                  <div className="dash-ai-header">
+                    <span className="dash-ai-label">✦ AI Summary</span>
+                    <span className="dash-ai-refresh">↻ Refresh</span>
+                  </div>
+                  <p className="dash-ai-text">
+                    <strong>Executive Summary</strong> The business generated BHD 452.000 in revenue from 15 transactions in May 2026, operating at a net deficit of BHD -2,403.041.
+                    The Classic Black Abaya drives 69% of revenue. <strong>Immediate action required:</strong> Conduct an urgent expense audit to reduce fixed costs by 80–85% to reach break-even.
+                  </p>
+                </div>
+
+                {/* Stat cards */}
+                <div className="dash-stat-row">
+                  {[
+                    { label: "TOTAL REVENUE",   value: "BHD 452.000",     sub: "15 transactions",   color: "" },
+                    { label: "GROSS PROFIT",     value: "BHD 183.909",     sub: "After cost of goods", color: "green" },
+                    { label: "TOTAL EXPENSES",   value: "BHD 2,586.950",   sub: "16 expense records",  color: "red" },
+                    { label: "NET PROFIT",       value: "BHD -2,403.041",  sub: "-531.6% margin",      color: "red", highlight: true },
+                    { label: "AVG ORDER VALUE",  value: "BHD 30.133",      sub: "Per transaction",     color: "" },
+                  ].map((s, i) => (
+                    <div key={i} className={`dash-stat-card${s.highlight ? " highlight" : ""}`}>
+                      <span className="dash-stat-label">{s.label}</span>
+                      <span className={`dash-stat-value${s.color ? ` ${s.color}` : ""}`}>{s.value}</span>
+                      <span className="dash-stat-sub">{s.sub}</span>
+                    </div>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
         </div>
