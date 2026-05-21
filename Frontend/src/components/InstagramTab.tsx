@@ -38,6 +38,31 @@ type IGData = {
   stories?: Story[];
 };
 
+// ── Demo data ──────────────────────────────────
+const DEMO_DATA: IGData = {
+  connected: true,
+  profile: {
+    username: "8zaii._",
+    followersCount: 1240,
+    mediaCount: 47,
+    profilePictureUrl: undefined,
+  },
+  insights: {
+    reach: 3850,
+    impressions: 9200,
+    profileViews: 412,
+  },
+  topPosts: [
+    { id: "1", caption: "New collection just dropped 🔥", media_type: "IMAGE", timestamp: "2026-05-10T10:00:00Z", like_count: 184, comments_count: 23 },
+    { id: "2", caption: "Behind the scenes ✨", media_type: "IMAGE", timestamp: "2026-05-05T14:00:00Z", like_count: 156, comments_count: 18 },
+    { id: "3", caption: "Thank you for 1000 followers! 🎉", media_type: "IMAGE", timestamp: "2026-04-28T09:00:00Z", like_count: 312, comments_count: 45 },
+    { id: "4", caption: "Summer vibes only ☀️", media_type: "IMAGE", timestamp: "2026-04-20T16:00:00Z", like_count: 98, comments_count: 12 },
+    { id: "5", caption: "New arrivals this week 🛍️", media_type: "IMAGE", timestamp: "2026-04-15T11:00:00Z", like_count: 143, comments_count: 19 },
+    { id: "6", caption: "Restock alert 🚨", media_type: "IMAGE", timestamp: "2026-04-10T08:00:00Z", like_count: 87, comments_count: 9 },
+  ],
+  stories: [],
+};
+
 const formatNumber = (n: number) =>
   n >= 1000 ? `${(n / 1000).toFixed(1)}K` : `${n}`;
 
@@ -48,14 +73,12 @@ const InstagramTab = () => {
   const [data, setData]       = useState<IGData | null>(null);
   const [loading, setLoading] = useState(true);
   const [disconnecting, setDisconnecting] = useState(false);
+  const [isDemo, setIsDemo]   = useState(false);
 
   useEffect(() => {
     fetchIGData();
-
-    // If user just came back from OAuth, check the URL param
     const params = new URLSearchParams(window.location.search);
     if (params.get("ig") === "connected") {
-      // Clean the URL without reload
       window.history.replaceState({}, "", window.location.pathname + "?tab=instagram");
       fetchIGData();
     }
@@ -68,16 +91,23 @@ const InstagramTab = () => {
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
       const json = await res.json();
-      setData(json);
+      if (json.connected) {
+        setData(json);
+        setIsDemo(false);
+      } else {
+        // Fall back to demo mode
+        setData(DEMO_DATA);
+        setIsDemo(true);
+      }
     } catch {
-      setData({ connected: false });
+      setData(DEMO_DATA);
+      setIsDemo(true);
     } finally {
       setLoading(false);
     }
   };
 
   const handleConnect = () => {
-    // Redirect to backend OAuth entry point
     window.location.href = `${API}/instagram/auth?token=${localStorage.getItem("token")}`;
   };
 
@@ -89,7 +119,8 @@ const InstagramTab = () => {
         method: "POST",
         headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
       });
-      setData({ connected: false });
+      setData(DEMO_DATA);
+      setIsDemo(true);
     } catch {
       alert("Something went wrong. Try again.");
     } finally {
@@ -107,49 +138,8 @@ const InstagramTab = () => {
     );
   }
 
-  // ── Not connected state ────────────────────
-  if (!data?.connected) {
-    return (
-      <div className="ig-connect-wrapper">
-        <div className="ig-connect-card">
-          <div className="ig-connect-icon">
-            <svg viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-              <rect x="2" y="2" width="20" height="20" rx="5" stroke="white" strokeWidth="1.8"/>
-              <circle cx="12" cy="12" r="4.5" stroke="white" strokeWidth="1.8"/>
-              <circle cx="17.5" cy="6.5" r="1" fill="white"/>
-            </svg>
-          </div>
-          <h2>Connect Instagram</h2>
-          <p>
-            Link your Instagram Business account to see followers, reach,
-            post engagement, stories, and your top posts — all inside Hessabi.
-          </p>
-          <div className="ig-connect-features">
-            <div className="ig-feature"><span>📈</span> Followers & Growth</div>
-            <div className="ig-feature"><span>👁</span> Reach & Impressions</div>
-            <div className="ig-feature"><span>❤️</span> Post Engagement</div>
-            <div className="ig-feature"><span>🎬</span> Stories Performance</div>
-            <div className="ig-feature"><span>🏆</span> Top Performing Posts</div>
-          </div>
-          <button className="ig-connect-btn" onClick={handleConnect}>
-            <svg viewBox="0 0 24 24" fill="none" width="18" height="18">
-              <rect x="2" y="2" width="20" height="20" rx="5" stroke="white" strokeWidth="2"/>
-              <circle cx="12" cy="12" r="4.5" stroke="white" strokeWidth="2"/>
-              <circle cx="17.5" cy="6.5" r="1" fill="white"/>
-            </svg>
-            Connect Instagram Account
-          </button>
-          {data?.reason === "token_expired" && (
-            <p className="ig-expired-note">⚠️ Your session expired — please reconnect.</p>
-          )}
-          <p className="ig-connect-note">Requires an Instagram Business or Creator account</p>
-        </div>
-      </div>
-    );
-  }
-
-  // ── Connected state ────────────────────────
-  const { profile, insights, topPosts = [], stories = [] } = data;
+  // ── Connected state (real or demo) ─────────
+  const { profile, insights, topPosts = [], stories = [] } = data!;
   const totalEngagement = topPosts.reduce(
     (s, p) => s + p.like_count + p.comments_count, 0
   );
@@ -179,14 +169,54 @@ const InstagramTab = () => {
             <div className="ig-tag">Instagram Business</div>
           </div>
         </div>
-        <button
-          className="ig-disconnect-btn"
-          onClick={handleDisconnect}
-          disabled={disconnecting}
-        >
-          {disconnecting ? "Disconnecting..." : "Disconnect"}
-        </button>
+        <div style={{ display: "flex", alignItems: "center", gap: 10 }}>
+          {isDemo && (
+            <span style={{
+              background: "linear-gradient(135deg, #f093fb, #f5576c)",
+              color: "#fff",
+              fontSize: 11,
+              fontWeight: 600,
+              padding: "4px 10px",
+              borderRadius: 20,
+              letterSpacing: 0.5,
+            }}>
+              DEMO MODE
+            </span>
+          )}
+          {isDemo ? (
+            <button className="ig-disconnect-btn" onClick={handleConnect}>
+              Connect Real Account
+            </button>
+          ) : (
+            <button
+              className="ig-disconnect-btn"
+              onClick={handleDisconnect}
+              disabled={disconnecting}
+            >
+              {disconnecting ? "Disconnecting..." : "Disconnect"}
+            </button>
+          )}
+        </div>
       </div>
+
+      {/* Demo banner */}
+      {isDemo && (
+        <div style={{
+          background: "linear-gradient(135deg, #667eea20, #764ba220)",
+          border: "1px solid #667eea40",
+          borderRadius: 12,
+          padding: "12px 16px",
+          marginBottom: 16,
+          fontSize: 13,
+          color: "#555",
+          display: "flex",
+          alignItems: "center",
+          gap: 8,
+        }}>
+          <span>✨</span>
+          <span>This is a preview with sample data. Connect your Instagram Business account to see your real analytics.</span>
+        </div>
+      )}
 
       {/* KPI row */}
       <div className="ig-kpi-grid">
@@ -234,7 +264,12 @@ const InstagramTab = () => {
                       className="ig-post-img"
                     />
                   ) : (
-                    <div className="ig-post-placeholder" />
+                    <div className="ig-post-placeholder">
+                      <svg viewBox="0 0 24 24" fill="none" width="24" height="24" style={{ opacity: 0.3 }}>
+                        <rect x="2" y="2" width="20" height="20" rx="5" stroke="white" strokeWidth="1.5"/>
+                        <circle cx="12" cy="12" r="4" stroke="white" strokeWidth="1.5"/>
+                      </svg>
+                    </div>
                   )}
                   {i < 3 && <span className="ig-post-rank">#{i + 1}</span>}
                   <div className="ig-post-overlay">
