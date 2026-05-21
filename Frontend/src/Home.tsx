@@ -75,7 +75,6 @@ const HomePage: React.FC = () => {
         <div className="Home-text">
           <div className="Home-eyebrow">Built for Bahrain's Home Businesses</div>
           <h1>Run your business<br />from home.</h1>
-          {/* removed competing h2 — folded into paragraph */}
           <p>Stay in control of your finances with ease and confidence — all from the comfort of your home.</p>
           <div className="Home-cta-row">
             <Link to="/pricing">
@@ -138,7 +137,7 @@ const HomePage: React.FC = () => {
                 <span className="dash-tab">Instagram</span>
                 <div className="dash-tabs-right">
                   <span className="dash-time-btn">All Time</span>
-                  <span className="dash-time-outline">Date Range ▾</span>
+                  <span className="dash-time-outline">Date Range </span>
                 </div>
               </div>
 
@@ -146,7 +145,7 @@ const HomePage: React.FC = () => {
               <div className="dash-content">
                 {/* Alert */}
                 <div className="dash-alert">
-                  <span className="dash-alert-title">⚠ Low Stock Alert — 4 products running low</span>
+                  <span className="dash-alert-title"> Low Stock Alert — 4 products running low</span>
                   <div className="dash-alert-tags">
                     {["Eid Embroidery Abaya", "Classic Black Abaya", "Blazer Style Abaya", "Gray Casual Abaya"].map((t, i) => (
                       <span key={i} className="dash-alert-tag">{t}</span>
@@ -158,7 +157,7 @@ const HomePage: React.FC = () => {
                 <div className="dash-ai-card">
                   <div className="dash-ai-header">
                     <span className="dash-ai-label">✦ AI Summary</span>
-                    <span className="dash-ai-refresh">↻ Refresh</span>
+                    <span className="dash-ai-refresh"> Refresh</span>
                   </div>
                   <p className="dash-ai-text">
                     <strong>Executive Summary</strong> The business generated BHD 452.000 in revenue from 15 transactions in May 2026, operating at a net deficit of BHD -2,403.041.
