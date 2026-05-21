@@ -173,6 +173,7 @@
   padding: 0;
 }
 
+/* h2 removed — no longer in markup */
 
 .Home p {
   font-size: 1.05rem;
@@ -463,6 +464,7 @@
   border: 1px solid #fca5a5;
   border-radius: 8px;
   padding: 7px 10px;
+  flex-shrink: 0;
 }
 
 .dash-alert-title {
@@ -493,6 +495,7 @@
   background: #1e2d40;
   border-radius: 8px;
   padding: 8px 10px;
+  flex-shrink: 0;
 }
 
 .dash-ai-header {
@@ -520,6 +523,10 @@
   font-size: 0.6rem;
   color: rgba(255,255,255,0.6);
   line-height: 1.6;
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }
 
 .dash-ai-text strong {
@@ -532,6 +539,7 @@
   display: grid;
   grid-template-columns: repeat(5, 1fr);
   gap: 6px;
+  flex-shrink: 0;
 }
 
 .dash-stat-card {
@@ -572,7 +580,7 @@
   color: #718096;
 }
 
-/* SVG Wave */
+/* SVG Wave — changed to white to cleanly transition into offers section */
 .custom-shape-divider-bottom-1776816989 {
   position: absolute;
   bottom: 0; left: 0;
@@ -587,7 +595,7 @@
 }
 .custom-shape-divider-bottom-1776816989 .shape-fill { fill: #ffffff; }
 
-/* OFFERS  */
+/* ── OFFERS ── */
 .offers-container { background: #fff; }
 
 .Home-offers {
@@ -687,7 +695,7 @@
 .icon-3 { background: #7A9DB5; color: #fff; }
 .icon-4 { background: #D4E3EE; color: #7DA0BA; }
 
-/* WHY HESSABI  */
+/* ── WHY HESSABI — light section ── */
 .Home-benefits-container {
   padding: 80px 10%;
   text-align: center;
@@ -772,7 +780,7 @@
   padding: 0;
 }
 
-/* ABOUT US  */
+/* ── ABOUT US — dark section for clear visual separation ── */
 .about-us-cont {
   padding: 100px 10%;
   text-align: center;
@@ -796,7 +804,7 @@
   padding: 0;
 }
 
-/* FOOTER  */
+/* ── FOOTER ── */
 .footer {
   background: #1a2635;
   color: #A0AEC0;
@@ -866,7 +874,7 @@
 .footer a { color: #718096; text-decoration: none; transition: color 0.2s; }
 .footer a:hover { color: #A0AEC0; }
 
-/* HAMBURGER  */
+/* ── HAMBURGER ── */
 .Home-hamburger {
   display: none;
   background: none;
@@ -876,7 +884,7 @@
   color: #2F4157;
 }
 
-/* MOBILE */
+/* ── MOBILE ── */
 @media (max-width: 768px) {
   .Home {
     min-height: auto;
@@ -912,7 +920,7 @@
     gap: 14px;
   }
 
-  /* Dashboard mock  */
+  /* Dashboard mock — show on mobile but shrink */
   .Home-image-container {
     width: 100%;
     padding: 0 16px 60px;
@@ -950,7 +958,7 @@
   .footer { padding: 40px 20px 0; }
 }
 
-/* MOBILE MENU  */
+/* ── MOBILE MENU ── */
 .Home-mobile-menu {
   position: absolute;
   top: 56px; left: 0;
