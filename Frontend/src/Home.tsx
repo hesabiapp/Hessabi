@@ -124,7 +124,7 @@ const HomePage: React.FC = () => {
                 <span className="dash-topbar-title">Dashboard</span>
                 <div className="dash-topbar-right">
                   <span className="dash-trial-badge">
-                    <span className="dash-trial-dot" /> Free Trial · 37 days left
+                    <span className="dash-trial-dot" /> Free Trial · 14 days left
                   </span>
                   <span className="dash-upgrade-btn">Upgrade</span>
                   <span className="dash-avatar">ZA</span>
@@ -263,7 +263,7 @@ const HomePage: React.FC = () => {
               <div className="social-icon" onClick={() => window.open("https://www.instagram.com/hessabi.app?igsh=MnJhMXJlOHp4NjY3&utm_source=qr", "_blank")} style={{ cursor: "pointer" }}>
                 <FaInstagram size={16} />
               </div>
-              {/* removed un-wired placeholder icons — add real links when ready */}
+              
             </div>
           </div>
         </div>
