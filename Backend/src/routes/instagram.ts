@@ -6,21 +6,22 @@ import User from "../collections/user-collection.js";
 
 const router = express.Router();
 
-const CLIENT_ID     = process.env.META_APP_ID!;
-const CLIENT_SECRET = process.env.META_APP_SECRET!;
-const REDIRECT_URI  = process.env.META_REDIRECT_URI!;
-const FRONTEND_URL  = process.env.FRONTEND_URL ?? "http://localhost:5173";
+const ZERNIO_API_KEY = process.env.ZERNIO_API_KEY!;
+const FRONTEND_URL   = process.env.FRONTEND_URL ?? "http://localhost:5173";
+const BACKEND_URL    = process.env.BACKEND_URL  ?? "https://hessabi.onrender.com";
+
+const zernio = axios.create({
+  baseURL: "https://zernio.com/api/v1",
+  headers: { Authorization: `Bearer ${ZERNIO_API_KEY}` },
+});
 
 // ─────────────────────────────────────────────
-// STEP 1 — Redirect user to Meta OAuth screen
+// STEP 1 — Create Zernio profile + get auth URL
 // GET /instagram/auth?token=<jwt>
 // ─────────────────────────────────────────────
-router.get("/auth", (req: any, res) => {
+router.get("/auth", async (req: any, res) => {
   const token = req.query.token as string;
-
-  if (!token) {
-    return res.status(401).json({ message: "You need to login." });
-  }
+  if (!token) return res.status(401).json({ message: "You need to login." });
 
   let userId: string;
   try {
@@ -30,82 +31,72 @@ router.get("/auth", (req: any, res) => {
     return res.status(401).json({ message: "Invalid or expired token." });
   }
 
-  const state = Buffer.from(userId).toString("base64");
-  const scope = [
-    "instagram_basic",
-    "instagram_manage_insights",
-    "pages_show_list",
-    "pages_read_engagement",
-  ].join(",");
+  try {
+    const user = await User.findById(userId);
+    let profileId = user?.zernioProfileId;
 
-  const url =
-    `https://www.facebook.com/v19.0/dialog/oauth` +
-    `?client_id=${CLIENT_ID}` +
-    `&redirect_uri=${encodeURIComponent(REDIRECT_URI)}` +
-    `&scope=${scope}` +
-    `&response_type=code` +
-    `&state=${state}`;
+    if (!profileId) {
+      const profileRes = await zernio.post("/profiles", {
+        name: `Hessabi User ${userId}`,
+      });
+      profileId = profileRes.data.profile._id;
+      await User.findByIdAndUpdate(userId, { zernioProfileId: profileId });
+    }
 
-  res.redirect(url);
+    const connectRes = await zernio.get(`/connect/instagram`, {
+      params: {
+        profileId,
+        redirectUrl: `${BACKEND_URL}/instagram/callback?userId=${userId}`,
+      },
+    });
+
+    const authUrl = connectRes.data.authUrl ?? connectRes.data.url ?? connectRes.data.connectUrl;
+    res.redirect(authUrl);
+
+  } catch (err: any) {
+    console.error("Zernio auth error:", err.response?.data ?? err.message);
+    res.redirect(`${FRONTEND_URL}/dashboard?ig=error`);
+  }
 });
 
 // ─────────────────────────────────────────────
-// STEP 2 — Meta redirects back here with code
+// STEP 2 — Zernio redirects back after OAuth
 // GET /instagram/callback
 // ─────────────────────────────────────────────
 router.get("/callback", async (req, res) => {
-  const { code, state, error } = req.query;
+  const { userId, error } = req.query;
 
-  if (error) {
+  if (error || !userId) {
     return res.redirect(`${FRONTEND_URL}/dashboard?ig=denied`);
   }
 
-  if (!code || !state) {
-    return res.redirect(`${FRONTEND_URL}/dashboard?ig=error`);
-  }
-
-  const userId = Buffer.from(state as string, "base64").toString("utf8");
-
   try {
-    // Exchange code → short-lived token
-    const shortRes = await axios.get(
-      `https://graph.facebook.com/v19.0/oauth/access_token`,
-      {
-        params: {
-          client_id:     CLIENT_ID,
-          client_secret: CLIENT_SECRET,
-          redirect_uri:  REDIRECT_URI,
-          code,
-        },
-      }
-    );
+    const user = await User.findById(userId as string);
+    if (!user?.zernioProfileId) {
+      return res.redirect(`${FRONTEND_URL}/dashboard?ig=error`);
+    }
 
-    // Exchange short-lived → long-lived token (60 days)
-    const longRes = await axios.get(
-      `https://graph.facebook.com/v19.0/oauth/access_token`,
-      {
-        params: {
-          grant_type:        "fb_exchange_token",
-          client_id:         CLIENT_ID,
-          client_secret:     CLIENT_SECRET,
-          fb_exchange_token: shortRes.data.access_token,
-        },
-      }
-    );
+    const accountsRes = await zernio.get("/accounts", {
+      params: { profileId: user.zernioProfileId, platform: "instagram" },
+    });
 
-    const longToken = longRes.data.access_token as string;
-    const expiresIn = longRes.data.expires_in   as number;
+    const accounts = accountsRes.data.accounts ?? [];
+    if (accounts.length === 0) {
+      return res.redirect(`${FRONTEND_URL}/dashboard?ig=error`);
+    }
 
-    await User.findByIdAndUpdate(userId, {
-      igAccessToken:  longToken,
-      igConnectedAt:  new Date(),
-      igTokenExpires: new Date(Date.now() + expiresIn * 1000),
+    const igAccount = accounts[0];
+
+    await User.findByIdAndUpdate(userId as string, {
+      zernioAccountId: igAccount._id,
+      igConnectedAt:   new Date(),
+      igTokenExpires:  new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
     });
 
     res.redirect(`${FRONTEND_URL}/dashboard?ig=connected`);
 
   } catch (err: any) {
-    console.error("Instagram callback error:", err.response?.data ?? err.message);
+    console.error("Zernio callback error:", err.response?.data ?? err.message);
     res.redirect(`${FRONTEND_URL}/dashboard?ig=error`);
   }
 });
@@ -118,114 +109,60 @@ router.get("/data", auth, async (req: any, res) => {
   try {
     const user = await User.findById(req.user.id);
 
-    if (!user?.igAccessToken) {
+    if (!user?.zernioAccountId) {
       return res.json({ connected: false });
     }
 
-    if (user.igTokenExpires && new Date() > user.igTokenExpires) {
-      return res.json({ connected: false, reason: "token_expired" });
-    }
+    const accountId = user.zernioAccountId;
 
-    const token = user.igAccessToken;
-
-    // 1. Get Facebook Pages
-    const pagesRes = await axios.get(
-      `https://graph.facebook.com/v19.0/me/accounts`,
-      { params: { access_token: token } }
-    );
-
-    const pages = pagesRes.data.data ?? [];
-    if (pages.length === 0) {
-     return res.json({ connected: false, reason: "no_page", debug: "Token valid but no Facebook Pages found" });
-    }
-
-    const page      = pages[0];
-    const pageToken = page.access_token as string;
-    const pageId    = page.id           as string;
-
-    // 2. Get Instagram Business Account
-    const igAccRes = await axios.get(
-      `https://graph.facebook.com/v19.0/${pageId}`,
-      {
-        params: {
-          fields:       "instagram_business_account",
-          access_token: pageToken,
-        },
-      }
-    );
-
-    const igId = igAccRes.data.instagram_business_account?.id as string;
-    if (!igId) {
-      return res.json({ connected: false, reason: "no_ig_business_account", debug: `Page ${pageId} has no linked Instagram Business account` });
-    }
-
-    // 3. Fetch all data in parallel
-    const since = Math.floor((Date.now() - 30 * 24 * 60 * 60 * 1000) / 1000);
-    const until = Math.floor(Date.now() / 1000);
-
-    const [profileRes, insightsRes, mediaRes, storiesRes] = await Promise.all([
-      axios.get(`https://graph.facebook.com/v19.0/${igId}`, {
-        params: {
-          fields:       "username,followers_count,media_count,profile_picture_url",
-          access_token: pageToken,
-        },
-      }),
-      axios.get(`https://graph.facebook.com/v19.0/${igId}/insights`, {
-        params: {
-          metric:       "reach,impressions,profile_views",
-          period:       "day",
-          since,
-          until,
-          access_token: pageToken,
-        },
-      }),
-      axios.get(`https://graph.facebook.com/v19.0/${igId}/media`, {
-        params: {
-          fields:       "id,caption,media_type,media_url,thumbnail_url,timestamp,like_count,comments_count",
-          limit:        12,
-          access_token: pageToken,
-        },
-      }),
-      axios.get(`https://graph.facebook.com/v19.0/${igId}/stories`, {
-        params: {
-          fields:       "id,media_url,timestamp",
-          access_token: pageToken,
-        },
-      }).catch(() => ({ data: { data: [] } })),
+    const [accountsRes, insightsRes, analyticsRes, storiesRes] = await Promise.all([
+      zernio.get("/accounts").catch(() => ({ data: { accounts: [] } })),
+      zernio.get("/analytics/instagram/account-insights", {
+        params: { accountId },
+      }).catch(() => ({ data: {} })),
+      zernio.get("/analytics", {
+        params: { platform: "instagram", accountId, sortBy: "engagement", limit: 12 },
+      }).catch(() => ({ data: { posts: [] } })),
+      zernio.get(`/accounts/${accountId}/instagram/stories`)
+        .catch(() => ({ data: { stories: [] } })),
     ]);
 
-    const profile  = profileRes.data;
-    const insights = insightsRes.data.data ?? [];
-    const media    = mediaRes.data.data    ?? [];
-    const stories  = storiesRes.data.data  ?? [];
+    const accounts  = accountsRes.data.accounts ?? [];
+    const igAccount = accounts.find((a: any) => a._id === accountId) ?? accounts[0] ?? {};
+    const insights  = insightsRes.data ?? {};
+    const posts     = analyticsRes.data.posts ?? analyticsRes.data ?? [];
+    const stories   = storiesRes.data.stories ?? [];
 
-    const insightMap: Record<string, number> = {};
-    insights.forEach((metric: any) => {
-      insightMap[metric.name] = (metric.values ?? []).reduce(
-        (sum: number, v: any) => sum + (v.value ?? 0), 0
-      );
-    });
-
-    const topPosts = [...media].sort(
-      (a: any, b: any) =>
-        (b.like_count + b.comments_count) - (a.like_count + a.comments_count)
-    );
+    const topPosts = (Array.isArray(posts) ? posts : []).map((p: any) => ({
+      id:             p.postId ?? p._id,
+      caption:        p.content ?? "",
+      media_type:     p.mediaType ?? "IMAGE",
+      media_url:      p.thumbnailUrl ?? p.mediaItems?.[0]?.url,
+      thumbnail_url:  p.thumbnailUrl,
+      timestamp:      p.publishedAt ?? p.scheduledFor,
+      like_count:     p.analytics?.likes    ?? 0,
+      comments_count: p.analytics?.comments ?? 0,
+    }));
 
     res.json({
       connected: true,
       profile: {
-        username:          profile.username,
-        followersCount:    profile.followers_count,
-        mediaCount:        profile.media_count,
-        profilePictureUrl: profile.profile_picture_url,
+        username:          igAccount.username ?? igAccount.accountUsername ?? "",
+        followersCount:    igAccount.followerCount ?? igAccount.followersCount ?? 0,
+        mediaCount:        igAccount.mediaCount ?? 0,
+        profilePictureUrl: igAccount.profilePictureUrl ?? igAccount.avatar,
       },
       insights: {
-        reach:        insightMap["reach"]         ?? 0,
-        impressions:  insightMap["impressions"]   ?? 0,
-        profileViews: insightMap["profile_views"] ?? 0,
+        reach:        insights.reach        ?? insights.data?.reach        ?? 0,
+        impressions:  insights.impressions  ?? insights.data?.impressions  ?? 0,
+        profileViews: insights.profileViews ?? insights.data?.profileViews ?? 0,
       },
       topPosts,
-      stories,
+      stories: stories.map((s: any) => ({
+        id:        s._id ?? s.storyId,
+        media_url: s.mediaUrl,
+        timestamp: s.timestamp,
+      })),
     });
 
   } catch (err: any) {
@@ -240,13 +177,21 @@ router.get("/data", auth, async (req: any, res) => {
 // ─────────────────────────────────────────────
 router.post("/disconnect", auth, async (req: any, res) => {
   try {
+    const user = await User.findById(req.user.id);
+
+    if (user?.zernioAccountId) {
+      await zernio.delete(`/accounts/${user.zernioAccountId}`).catch(() => {});
+    }
+
     await User.findByIdAndUpdate(req.user.id, {
       $unset: {
-        igAccessToken:  "",
-        igConnectedAt:  "",
-        igTokenExpires: "",
+        zernioAccountId: "",
+        zernioProfileId: "",
+        igConnectedAt:   "",
+        igTokenExpires:  "",
       },
     });
+
     res.json({ success: true });
   } catch (err: any) {
     console.error("Instagram disconnect error:", err.message);

@@ -16,11 +16,13 @@ const user = new Schema(
       default: "Admin",
     },
 
-    // ── Instagram fields ──────────────────────
+    
     igAccessToken:  { type: String, default: null },
     igConnectedAt:  { type: Date,   default: null },
     igTokenExpires: { type: Date,   default: null },
-    // ─────────────────────────────────────────
+    zernioProfileId: { type: String },
+    zernioAccountId: { type: String },
+
 
     userStatus: { type: Boolean, default: true },
   },
