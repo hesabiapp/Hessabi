@@ -8,13 +8,7 @@
   gap: 12px;
 }
 
-.dash-tabs {
-  display: flex;
-  gap: 8px;
-  background: transparent;
-  border-radius: 10px;
-  padding: 4px;
-}
+
 
 .dash-tab {
   padding: 8px 20px;
