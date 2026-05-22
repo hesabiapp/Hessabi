@@ -5,7 +5,7 @@ import {
 } from "react-icons/fa";
 import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { FaArrowRight, FaGithub, FaLinkedin, FaX } from "react-icons/fa6";
+import { FaArrowRight } from "react-icons/fa6";
 import { motion } from "framer-motion";
 
 const HomePage: React.FC = () => {
@@ -92,17 +92,17 @@ const HomePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Real Hessabi dashboard recreation */}
+        {/* Dashboard mock */}
         <div className="Home-image-container">
           <div className="Home-dashboard-mock">
 
             {/* Sidebar */}
-            <div className="dash-sidebar">
-              <div className="dash-sidebar-logo">
-                <div className="dash-sidebar-icon" />
-                <span className="dash-sidebar-name">HESSABI</span>
+            <div className="mock-sidebar">
+              <div className="mock-sidebar-logo">
+                <div className="mock-sidebar-icon" />
+                <span className="mock-sidebar-name">HESSABI</span>
               </div>
-              <div className="dash-sidebar-label">MAIN MENU</div>
+              <div className="mock-sidebar-label">MAIN MENU</div>
               {[
                 { label: "Dashboard", active: true },
                 { label: "Products" },
@@ -110,74 +110,74 @@ const HomePage: React.FC = () => {
                 { label: "Expenses" },
                 { label: "Reports" },
               ].map((item, i) => (
-                <div key={i} className={`dash-nav-item${item.active ? " active" : ""}`}>
+                <div key={i} className={`mock-nav-item${item.active ? " active" : ""}`}>
                   {item.label}
                 </div>
               ))}
             </div>
 
             {/* Main area */}
-            <div className="dash-main">
+            <div className="mock-main">
               {/* Topbar */}
-              <div className="dash-topbar">
-                <span className="dash-topbar-title">Dashboard</span>
-                <div className="dash-topbar-right">
-                  <span className="dash-trial-badge">
-                    <span className="dash-trial-dot" /> Free Trial · 14 days left
+              <div className="mock-topbar">
+                <span className="mock-topbar-title">Dashboard</span>
+                <div className="mock-topbar-right">
+                  <span className="mock-trial-badge">
+                    <span className="mock-trial-dot" /> Free Trial · 14 days left
                   </span>
-                  <span className="dash-upgrade-btn">Upgrade</span>
-                  <span className="dash-avatar">ZA</span>
+                  <span className="mock-upgrade-btn">Upgrade</span>
+                  <span className="mock-avatar">ZA</span>
                 </div>
               </div>
 
               {/* Tab bar */}
-              <div className="dash-tabs">
-                <span className="dash-tab active">Overview</span>
-                <span className="dash-tab">Ask AI</span>
-                <span className="dash-tab">Instagram</span>
-                <div className="dash-tabs-right">
-                  <span className="dash-time-btn">All Time</span>
-                  <span className="dash-time-outline">Date Range </span>
+              <div className="mock-tabs">
+                <span className="mock-tab active">Overview</span>
+                <span className="mock-tab">Ask AI</span>
+                <span className="mock-tab">Instagram</span>
+                <div className="mock-tabs-right">
+                  <span className="mock-time-btn">All Time</span>
+                  <span className="mock-time-outline">Date Range</span>
                 </div>
               </div>
 
               {/* Content */}
-              <div className="dash-content">
+              <div className="mock-content">
                 {/* Alert */}
-                <div className="dash-alert">
-                  <span className="dash-alert-title"> Low Stock Alert — 4 products running low</span>
-                  <div className="dash-alert-tags">
+                <div className="mock-alert">
+                  <span className="mock-alert-title">⚠️ Low Stock Alert — 4 products running low</span>
+                  <div className="mock-alert-tags">
                     {["Eid Embroidery Abaya", "Classic Black Abaya", "Blazer Style Abaya", "Gray Casual Abaya"].map((t, i) => (
-                      <span key={i} className="dash-alert-tag">{t}</span>
+                      <span key={i} className="mock-alert-tag">{t}</span>
                     ))}
                   </div>
                 </div>
 
                 {/* AI Summary */}
-                <div className="dash-ai-card">
-                  <div className="dash-ai-header">
-                    <span className="dash-ai-label">✦ AI Summary</span>
-                    <span className="dash-ai-refresh"> Refresh</span>
+                <div className="mock-ai-card">
+                  <div className="mock-ai-header">
+                    <span className="mock-ai-label">✦ AI Summary</span>
+                    <span className="mock-ai-refresh">↻ Refresh</span>
                   </div>
-                  <p className="dash-ai-text">
+                  <p className="mock-ai-text">
                     <strong>Executive Summary</strong> The business generated BHD 452.000 in revenue from 15 transactions in May 2026, operating at a net deficit of BHD -2,403.041.
                     The Classic Black Abaya drives 69% of revenue. <strong>Immediate action required:</strong> Conduct an urgent expense audit to reduce fixed costs by 80–85% to reach break-even.
                   </p>
                 </div>
 
                 {/* Stat cards */}
-                <div className="dash-stat-row">
+                <div className="mock-stat-row">
                   {[
-                    { label: "TOTAL REVENUE",   value: "BHD 452.000",     sub: "15 transactions",   color: "" },
-                    { label: "GROSS PROFIT",     value: "BHD 183.909",     sub: "After cost of goods", color: "green" },
-                    { label: "TOTAL EXPENSES",   value: "BHD 2,586.950",   sub: "16 expense records",  color: "red" },
-                    { label: "NET PROFIT",       value: "BHD -2,403.041",  sub: "-531.6% margin",      color: "red", highlight: true },
-                    { label: "AVG ORDER VALUE",  value: "BHD 30.133",      sub: "Per transaction",     color: "" },
+                    { label: "TOTAL REVENUE",   value: "BHD 452.000",    sub: "15 transactions",    color: "" },
+                    { label: "GROSS PROFIT",     value: "BHD 183.909",    sub: "After cost of goods", color: "green" },
+                    { label: "TOTAL EXPENSES",   value: "BHD 2,586.950",  sub: "16 expense records",  color: "red" },
+                    { label: "NET PROFIT",       value: "BHD -2,403.041", sub: "-531.6% margin",      color: "red", highlight: true },
+                    { label: "AVG ORDER VALUE",  value: "BHD 30.133",     sub: "Per transaction",     color: "" },
                   ].map((s, i) => (
-                    <div key={i} className={`dash-stat-card${s.highlight ? " highlight" : ""}`}>
-                      <span className="dash-stat-label">{s.label}</span>
-                      <span className={`dash-stat-value${s.color ? ` ${s.color}` : ""}`}>{s.value}</span>
-                      <span className="dash-stat-sub">{s.sub}</span>
+                    <div key={i} className={`mock-stat-card${s.highlight ? " highlight" : ""}`}>
+                      <span className="mock-stat-label">{s.label}</span>
+                      <span className={`mock-stat-value${s.color ? ` ${s.color}` : ""}`}>{s.value}</span>
+                      <span className="mock-stat-sub">{s.sub}</span>
                     </div>
                   ))}
                 </div>
@@ -237,7 +237,7 @@ const HomePage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── ABOUT US — dark section for visual separation ── */}
+      {/* ── ABOUT US ── */}
       <div id="about-us" className="about-us-cont">
         <div className="about-header">
           <h1>About Us</h1>
@@ -262,7 +262,6 @@ const HomePage: React.FC = () => {
               <div className="social-icon" onClick={() => window.open("https://www.instagram.com/hessabi.app?igsh=MnJhMXJlOHp4NjY3&utm_source=qr", "_blank")} style={{ cursor: "pointer" }}>
                 <FaInstagram size={16} />
               </div>
-              
             </div>
           </div>
         </div>
