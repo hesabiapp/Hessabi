@@ -9,7 +9,9 @@
   background: #f5f6fa;
   gap: 12px;
 }
-
+.dash-topbar {
+  background: red !important;
+}
 /* TABS */
 .dash-tabs {
   display: flex;
