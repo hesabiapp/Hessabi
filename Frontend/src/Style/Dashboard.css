@@ -6,6 +6,7 @@
   align-items: center;
   margin-bottom: 20px;
   flex-wrap: wrap;
+  background: #f5f6fa;
   gap: 12px;
 }
 
@@ -15,7 +16,7 @@
   align-items: center;
   gap: 8px;
 
-  background: #f5f6fa;
+  background: transparent;
   padding: 0;
   border-radius: 0;
   box-shadow: none;
@@ -26,7 +27,7 @@
   border: none;
   border-radius: 10px;
 
-  background: #f5f6fa;
+  background: transparent;
   color: #7b8190;
 
   font-size: 14px;
