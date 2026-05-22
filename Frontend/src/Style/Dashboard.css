@@ -1,11 +1,10 @@
-/* TOP BAR */
+/* â”€â”€â”€â”€â”€ TOP BAR â”€â”€â”€â”€â”€ */
 .dash-topbar {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 20px;
   flex-wrap: wrap;
-  background: transparent !important;
   gap: 12px;
 }
 
@@ -65,7 +64,7 @@
   color: #2F4157;
 }
 
-/*  CUSTOM DATE RANGE  */
+/* â”€â”€â”€â”€â”€ CUSTOM DATE RANGE â”€â”€â”€â”€â”€ */
 .dash-custom-range-wrapper {
   position: relative;
 }
@@ -164,7 +163,7 @@
 .dash-datepicker-apply:hover { background: #16304f; }
 .dash-datepicker-apply:disabled { background: #ccc; cursor: not-allowed; }
 
-/*  LOADING  */
+/* â”€â”€â”€â”€â”€ LOADING â”€â”€â”€â”€â”€ */
 .dash-loading {
   display: flex;
   flex-direction: column;
@@ -187,7 +186,7 @@
 
 @keyframes spin { to { transform: rotate(360deg); } }
 
-/*  EMPTY  */
+/* â”€â”€â”€â”€â”€ EMPTY â”€â”€â”€â”€â”€ */
 .dash-empty {
   color: #bbb;
   font-size: 13px;
@@ -195,7 +194,7 @@
   margin: 40px 0;
 }
 
-/*  LOW STOCK  */
+/* â”€â”€â”€â”€â”€ LOW STOCK â”€â”€â”€â”€â”€ */
 .dash-low-stock {
   background: #fff5f5;
   border: 1.5px solid #c0392b;
@@ -237,7 +236,7 @@
   font-size: 11px;
 }
 
-/*  AI CARD  */
+/* â”€â”€â”€â”€â”€ AI CARD â”€â”€â”€â”€â”€ */
 .dash-ai-card {
   background: linear-gradient(135deg, #1e3a5f 0%, #2F4157 100%);
   border-radius: 14px;
@@ -270,7 +269,7 @@
 .dash-ai-refresh:disabled { opacity: 0.6; cursor: not-allowed; }
 .dash-ai-text { font-size: 14px; line-height: 1.7; color: rgba(255,255,255,0.9); margin: 0; }
 
-/*  KPI GRID  */
+/* â”€â”€â”€â”€â”€ KPI GRID â”€â”€â”€â”€â”€ */
 .dash-kpi-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -299,7 +298,7 @@
 .dash-kpi-value.loss     { color: #c0392b; }
 .dash-kpi-sub { font-size: 12px; color: #aaa; }
 
-/*  CARDS & ROWS  */
+/* â”€â”€â”€â”€â”€ CARDS & ROWS â”€â”€â”€â”€â”€ */
 .dash-row  { display: flex; gap: 16px; margin-bottom: 20px; }
 .dash-card {
   background: #fff;
@@ -314,7 +313,7 @@
 .dash-card.full { flex: 1; width: 100%; }
 .dash-card-title { font-size: 15px; font-weight: 700; color: #2F4157; margin: 0 0 18px; }
 
-/*  BAR CHART  */
+/* â”€â”€â”€â”€â”€ BAR CHART â”€â”€â”€â”€â”€ */
 .dash-bar-chart {
   display: flex;
   align-items: flex-end;
@@ -338,13 +337,13 @@
 .dash-legend-dot.profit  { background: #2e7d32; }
 .dash-legend-dot.expense { background: #c0392b; }
 
-/*  LINE CHART  */
+/* â”€â”€â”€â”€â”€ LINE CHART â”€â”€â”€â”€â”€ */
 .dash-line-wrapper { display: flex; flex-direction: column; gap: 8px; }
 .dash-line-svg { width: 100%; height: 130px; overflow: visible; }
 .dash-line-labels { display: flex; justify-content: space-between; padding: 0 2px; }
 .dash-line-label { font-size: 11px; color: #888; white-space: nowrap; }
 
-/*  DONUT CHART  */
+/* â”€â”€â”€â”€â”€ DONUT CHART â”€â”€â”€â”€â”€ */
 .dash-donut-wrapper { position: relative; width: 150px; height: 150px; margin: 0 auto 16px; }
 .dash-donut-svg { width: 100%; height: 100%; }
 .dash-donut-center { position: absolute; inset: 0; display: flex; flex-direction: column; align-items: center; justify-content: center; }
@@ -354,7 +353,7 @@
 .dash-payment-item { display: flex; align-items: center; gap: 8px; font-size: 13px; color: #2F4157; font-weight: 600; }
 .dash-legend-count { margin-left: auto; color: #888; font-size: 12px; }
 
-/*  EXPENSES BY CATEGORY  */
+/* â”€â”€â”€â”€â”€ EXPENSES BY CATEGORY â”€â”€â”€â”€â”€ */
 .dash-category-list { display: flex; flex-direction: column; gap: 12px; }
 .dash-category-row { display: flex; flex-direction: column; gap: 5px; }
 .dash-category-header { display: flex; justify-content: space-between; align-items: center; }
@@ -364,7 +363,7 @@
 .dash-category-pct { font-size: 12px; color: #888; }
 .dash-category-amt { font-size: 13px; font-weight: 700; color: #2F4157; }
 
-/* TOP PRODUCTS */
+/* â”€â”€â”€â”€â”€ TOP PRODUCTS â”€â”€â”€â”€â”€ */
 .dash-top-products { display: flex; flex-direction: column; gap: 14px; }
 .dash-product-row { display: flex; align-items: flex-start; gap: 12px; }
 .dash-rank-num {
@@ -383,14 +382,14 @@
 .dash-rank-bar-fill { height: 100%; background: linear-gradient(90deg, #1e3a5f, #e6a817); border-radius: 3px; transition: width 0.6s ease; }
 .dash-product-qty { font-size: 11px; color: #aaa; }
 
-/*  STOCK CHART  */
+/* â”€â”€â”€â”€â”€ STOCK CHART â”€â”€â”€â”€â”€ */
 .dash-stock-chart { display: flex; flex-direction: column; gap: 10px; }
 .dash-stock-row { display: flex; align-items: center; gap: 10px; }
 .dash-stock-name { font-size: 12px; font-weight: 600; color: #2F4157; width: 140px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; flex-shrink: 0; }
 .dash-stock-qty { font-size: 12px; font-weight: 700; color: #2F4157; width: 32px; text-align: right; flex-shrink: 0; }
 .dash-stock-qty.low { color: #c0392b; }
 
-/*  RECENT TRANSACTIONS  */
+/* â”€â”€â”€â”€â”€ RECENT TRANSACTIONS â”€â”€â”€â”€â”€ */
 .dash-recent-list { display: flex; flex-direction: column; gap: 2px; }
 .dash-recent-item { display: flex; justify-content: space-between; align-items: center; padding: 10px 0; border-bottom: 1px solid #f5f6fa; }
 .dash-recent-item:last-child { border-bottom: none; }
@@ -400,7 +399,7 @@
 .dash-recent-date     { font-size: 11px; color: #bbb; }
 .dash-recent-amount   { font-size: 14px; font-weight: 700; color: #e6a817; }
 
-/*  AI CHAT  */
+/* â”€â”€â”€â”€â”€ AI CHAT â”€â”€â”€â”€â”€ */
 .dash-chat-container {
   display: flex;
   flex-direction: column;
@@ -471,7 +470,7 @@
 .dash-chat-send:disabled { opacity: 0.5; cursor: not-allowed; }
 .dash-chat-hint { text-align: center; font-size: 11px; color: #bbb; padding: 0 0 10px; margin: 0; }
 
-/*  RESPONSIVE  */
+/* â”€â”€â”€â”€â”€ RESPONSIVE â”€â”€â”€â”€â”€ */
 @media (max-width: 1200px) { .dash-kpi-grid { grid-template-columns: repeat(3, 1fr); } }
 @media (max-width: 1024px) {
   .dash-kpi-grid { grid-template-columns: repeat(2, 1fr); }
@@ -484,7 +483,7 @@
   .dash-chat-bubble { max-width: 90%; }
 }
 
-/*  AI MAPPING BANNER  */
+/*  AI MAPPING BANNER â”€â”€â”€â”€â”€ */
 .ai-mapping-banner {
   display: flex;
   align-items: center;
