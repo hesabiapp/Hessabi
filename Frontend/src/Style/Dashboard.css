@@ -4,10 +4,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: transparent;
+  background: transparent !important;
   flex-wrap: wrap;
   
-  gap: 12px;
+  gap: 12px; 
 }
 
 /* TABS */
