@@ -321,6 +321,9 @@
   width: 100%;
   height: 100%;
   background: linear-gradient(135deg, #e8edf2, #d0d8e4);
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .ig-post-rank {
@@ -336,6 +339,26 @@
   z-index: 2;
 }
 
+/* Caption — always visible, pinned to bottom */
+.ig-post-caption {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(to top, rgba(0,0,0,0.72) 0%, transparent 100%);
+  color: #fff;
+  font-size: 10px;
+  font-weight: 500;
+  padding: 22px 8px 7px;
+  line-height: 1.4;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  border-radius: 0 0 10px 10px;
+  z-index: 1;
+}
+
+/* Stats overlay — visible on hover, sits above caption */
 .ig-post-overlay {
   position: absolute;
   inset: 0;
@@ -346,6 +369,7 @@
   gap: 10px;
   opacity: 0;
   transition: all 0.25s;
+  z-index: 3;
 }
 
 .ig-post-thumb:hover .ig-post-overlay {
@@ -353,10 +377,18 @@
   opacity: 1;
 }
 
+/* Hide caption on hover so stats are clear */
+.ig-post-thumb:hover .ig-post-caption {
+  opacity: 0;
+}
+
 .ig-post-stat {
   color: #fff;
   font-size: 12px;
   font-weight: 700;
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
 }
 
 /* ── Engagement bars ───────────────────────── */
@@ -416,9 +448,16 @@
   margin-top: 4px;
   padding-top: 10px;
   border-top: 1px solid #f5f6fa;
+  align-items: center;
 }
 
-/* ── Stories ───────────────────────────────── */
+.ig-eng-legend span {
+  display: inline-flex;
+  align-items: center;
+  gap: 5px;
+}
+
+/*  Stories  */
 .ig-stories-row {
   display: flex;
   gap: 14px;
@@ -460,7 +499,7 @@
   white-space: nowrap;
 }
 
-/* ── Responsive ────────────────────────────── */
+/*  Responsive  */
 @media (max-width: 1200px) {
   .ig-kpi-grid { grid-template-columns: repeat(3, 1fr); }
 }

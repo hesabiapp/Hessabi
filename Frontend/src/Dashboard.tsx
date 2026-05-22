@@ -4,6 +4,9 @@ import Sidebar from "./components/Sidebar";
 import InstagramTab from "./components/InstagramTab";
 import "./Style/Dashboard.css";
 import "./Style/System.css";
+import { Bot, LayoutDashboard } from "lucide-react";
+import { FaInstagram } from "react-icons/fa";
+
 
 
 const API = import.meta.env.VITE_API_URL;
@@ -347,10 +350,16 @@ Currency: BHD`.trim();
           {/* Top bar */}
           <div className="dash-topbar">
           <div className="dash-tabs">
-          <button className={`dash-tab ${activeTab === "overview" ? "active" : ""}`} onClick={() => setActiveTab("overview")}>📊 Overview</button>
-          <button className={`dash-tab ${activeTab === "chat"     ? "active" : ""}`} onClick={() => setActiveTab("chat")}>🤖 Ask AI</button>
-          <button className={`dash-tab ${activeTab === "instagram"  ? "active" : ""}`} onClick={() => setActiveTab("instagram")}>📸 Instagram</button>
-          </div>
+           <button className={`dash-tab ${activeTab === "overview" ? "active" : ""}`} onClick={() => setActiveTab("overview")}>
+           <LayoutDashboard size={15} /> Overview
+           </button>
+           <button className={`dash-tab ${activeTab === "chat" ? "active" : ""}`} onClick={() => setActiveTab("chat")}>
+           <Bot size={15} /> Ask AI
+           </button>
+           <button className={`dash-tab ${activeTab === "instagram" ? "active" : ""}`} onClick={() => setActiveTab("instagram")}>
+           <FaInstagram size={15} /> Instagram
+            </button>
+               </div>
 
 
             <div className="dash-range-filters">

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import "../Style/Instagram.css";
+import { Heart, MessageCircle } from "lucide-react";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -95,7 +96,6 @@ const InstagramTab = () => {
         setData(json);
         setIsDemo(false);
       } else {
-        // Fall back to demo mode
         setData(DEMO_DATA);
         setIsDemo(true);
       }
@@ -128,7 +128,6 @@ const InstagramTab = () => {
     }
   };
 
-  // ── Loading state ──────────────────────────
   if (loading) {
     return (
       <div className="ig-loading">
@@ -138,7 +137,6 @@ const InstagramTab = () => {
     );
   }
 
-  // ── Connected state (real or demo) ─────────
   const { profile, insights, topPosts = [], stories = [] } = data!;
   const totalEngagement = topPosts.reduce(
     (s, p) => s + p.like_count + p.comments_count, 0
@@ -272,9 +270,20 @@ const InstagramTab = () => {
                     </div>
                   )}
                   {i < 3 && <span className="ig-post-rank">#{i + 1}</span>}
+
+                  {/* Caption — always visible at bottom */}
+                  {post.caption && (
+                    <div className="ig-post-caption">{post.caption}</div>
+                  )}
+
+                  {/* Stats — visible on hover */}
                   <div className="ig-post-overlay">
-                    <span className="ig-post-stat">❤️ {formatNumber(post.like_count)}</span>
-                    <span className="ig-post-stat">💬 {formatNumber(post.comments_count)}</span>
+                    <span className="ig-post-stat">
+                      <Heart size={13} color="#fff" /> {formatNumber(post.like_count)}
+                    </span>
+                    <span className="ig-post-stat">
+                      <MessageCircle size={13} color="#fff" /> {formatNumber(post.comments_count)}
+                    </span>
                   </div>
                 </div>
               ))}
@@ -303,8 +312,8 @@ const InstagramTab = () => {
                 );
               })}
               <div className="ig-eng-legend">
-                <span>❤️ {formatNumber(topPosts.reduce((s, p) => s + p.like_count, 0))} likes</span>
-                <span>💬 {formatNumber(topPosts.reduce((s, p) => s + p.comments_count, 0))} comments</span>
+                <span><Heart size={14} color="#e24b4a" /> {formatNumber(topPosts.reduce((s, p) => s + p.like_count, 0))} likes</span>
+                <span><MessageCircle size={14} color="#378add" /> {formatNumber(topPosts.reduce((s, p) => s + p.comments_count, 0))} comments</span>
               </div>
             </div>
           )}
