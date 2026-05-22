@@ -46,7 +46,7 @@ router.get("/auth", async (req: any, res) => {
     const connectRes = await zernio.get(`/connect/instagram`, {
       params: {
         profileId,
-        redirectUrl: `${BACKEND_URL}/instagram/callback?userId=${userId}`,
+        redirect_url: `${BACKEND_URL}/instagram/callback/${userId}`,
       },
     });
 
@@ -61,17 +61,18 @@ router.get("/auth", async (req: any, res) => {
 
 // ─────────────────────────────────────────────
 // STEP 2 — Zernio redirects back after OAuth
-// GET /instagram/callback
+// GET /instagram/callback/:userId
 // ─────────────────────────────────────────────
-router.get("/callback", async (req, res) => {
-  const { userId, error } = req.query;
+router.get("/callback/:userId", async (req, res) => {
+  const { userId } = req.params;
+  const error = req.query.error;
 
   if (error || !userId) {
     return res.redirect(`${FRONTEND_URL}/dashboard?ig=denied`);
   }
 
   try {
-    const user = await User.findById(userId as string);
+    const user = await User.findById(userId);
     if (!user?.zernioProfileId) {
       return res.redirect(`${FRONTEND_URL}/dashboard?ig=error`);
     }
@@ -87,7 +88,7 @@ router.get("/callback", async (req, res) => {
 
     const igAccount = accounts[0];
 
-    await User.findByIdAndUpdate(userId as string, {
+    await User.findByIdAndUpdate(userId, {
       zernioAccountId: igAccount._id,
       igConnectedAt:   new Date(),
       igTokenExpires:  new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),

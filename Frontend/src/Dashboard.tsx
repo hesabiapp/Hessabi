@@ -346,11 +346,12 @@ Currency: BHD`.trim();
 
           {/* Top bar */}
           <div className="dash-topbar">
-            <div className="dash-tabs">
-              <button className={`dash-tab ${activeTab === "overview" ? "active" : ""}`} onClick={() => setActiveTab("overview")}> Overview</button>
-              <button className={`dash-tab ${activeTab === "chat"     ? "active" : ""}`} onClick={() => setActiveTab("chat")}> Ask AI</button>
-              <button className={`dash-tab ${activeTab === "instagram"  ? "active" : ""}`} onClick={() => setActiveTab("instagram")}> Instagram</button>
-            </div>
+          <div className="dash-tabs">
+          <button className={`dash-tab ${activeTab === "overview" ? "active" : ""}`} onClick={() => setActiveTab("overview")}>📊 Overview</button>
+          <button className={`dash-tab ${activeTab === "chat"     ? "active" : ""}`} onClick={() => setActiveTab("chat")}>🤖 Ask AI</button>
+          <button className={`dash-tab ${activeTab === "instagram"  ? "active" : ""}`} onClick={() => setActiveTab("instagram")}>📸 Instagram</button>
+          </div>
+
 
             <div className="dash-range-filters">
               {([ "all"] as RangeFilter[]).map(r => (
