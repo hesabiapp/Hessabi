@@ -43,7 +43,7 @@ type IGData = {
 const DEMO_DATA: IGData = {
   connected: true,
   profile: {
-    username: "8zaii._",
+    username: "Hessabi._",
     followersCount: 1240,
     mediaCount: 47,
     profilePictureUrl: undefined,
