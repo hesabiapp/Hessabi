@@ -16,10 +16,20 @@
   padding: 4px;
 }
 
-
+.dash-tab {
+  padding: 8px 20px;
+  border: none;
+  border-radius: 8px;
+  background: transparent;
+  color: #888;
+  font-size: 14px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s;
+}
 
 .dash-tab.active {
-  background: #fff;
+  
   color: #2F4157;
   box-shadow: 0 2px 8px rgba(0,0,0,0.08);
 }
