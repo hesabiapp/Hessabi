@@ -706,7 +706,7 @@ Currency: BHD`.trim();
           ) : activeTab === "chat" ? (
             <div className="dash-chat-container">
               <div className="dash-chat-intro">
-                <div className="dash-chat-icon"> <Bot size={15} /></div>
+                <div className="dash-chat-icon"> <Bot size={27} /></div>
                 <h3>Ask me anything about your business</h3>
                 <p>I have full access to your sales and expenses data.</p>
                 {chatMessages.length === 0 && (
