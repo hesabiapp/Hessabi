@@ -3,7 +3,7 @@ import "./Style/Reports.css";
 import "./Style/System.css"
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
-import { Scale, TrendingUp, Trophy, Wallet, Calendar, CreditCard, Package } from "lucide-react";
+import { Scale, TrendingUp, Trophy, Wallet, Calendar, CreditCard, Package, Bot } from "lucide-react";
 import * as XLSX from "xlsx";
 import { FiArrowDown } from "react-icons/fi";
 
@@ -424,7 +424,7 @@ const Reports = () => {
 
             {/* AI Custom Report */}
             <div className="rp-ai-section-label">
-              <span>🤖 AI Custom Report</span>
+              <span> <Bot size={15} /> AI Custom Report</span>
               <span className="rp-ai-badge">Powered by Claude</span>
             </div>
 
@@ -459,7 +459,7 @@ const Reports = () => {
                   onClick={generateAiReport}
                   disabled={aiGenerating || !aiPrompt.trim()}
                 >
-                  {aiGenerating ? "🤖 Generating PDF..." : "🤖 Generate & Download PDF"}
+                  {aiGenerating ? " Generating PDF..." : " Generate & Download PDF"}
                 </button>
               </div>
             </div>

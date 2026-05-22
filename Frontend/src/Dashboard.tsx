@@ -4,7 +4,7 @@ import Sidebar from "./components/Sidebar";
 import InstagramTab from "./components/InstagramTab";
 import "./Style/Dashboard.css";
 import "./Style/System.css";
-import { Bot, LayoutDashboard } from "lucide-react";
+import { Bot, LayoutDashboard, Sparkles } from "lucide-react";
 import { FaInstagram } from "react-icons/fa";
 
 
@@ -440,7 +440,7 @@ Currency: BHD`.trim();
               {/* AI Insight */}
               <div className="dash-ai-card">
                 <div className="dash-ai-header">
-                  <span className="dash-ai-badge">🤖 AI Summary</span>
+                  <span className="dash-ai-badge"><Sparkles size={13}/> AI Summary</span>
                   <button className="dash-ai-refresh" onClick={() => generateAutoInsight(sales, expenses)} disabled={aiLoading}>
                     {aiLoading ? "Analyzing..." : "↻ Refresh"}
                   </button>
@@ -706,7 +706,7 @@ Currency: BHD`.trim();
           ) : activeTab === "chat" ? (
             <div className="dash-chat-container">
               <div className="dash-chat-intro">
-                <div className="dash-chat-icon">🤖</div>
+                <div className="dash-chat-icon"> <Bot size={15} /></div>
                 <h3>Ask me anything about your business</h3>
                 <p>I have full access to your sales and expenses data.</p>
                 {chatMessages.length === 0 && (
