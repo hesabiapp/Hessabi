@@ -4,10 +4,10 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  background: transparent !important;
+  margin-bottom: 20px;
   flex-wrap: wrap;
-  
-  gap: 12px; 
+  background: transparent !important;
+  gap: 12px;
 }
 
 /* TABS */
@@ -15,6 +15,7 @@
   display: flex;
   align-items: center;
   gap: 8px;
+
   background: transparent;
   padding: 0;
   border-radius: 0;
