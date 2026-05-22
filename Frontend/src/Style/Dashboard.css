@@ -1,6 +1,14 @@
 /* TOP BAR */
 /* TOP BAR */
-
+.dash-topbar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+   background:  #f5f6fa !important;
+  gap: 12px;
+}
 
 /* TABS */
 .dash-tabs {

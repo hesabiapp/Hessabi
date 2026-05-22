@@ -345,7 +345,7 @@ Currency: BHD`.trim();
         <div className="System-content">
 
           {/* Top bar */}
-          <div className="System-topbar">
+          <div className="dash-topbar">
             <div className="dash-tabs">
               <button className={`dash-tab ${activeTab === "overview" ? "active" : ""}`} onClick={() => setActiveTab("overview")}> Overview</button>
               <button className={`dash-tab ${activeTab === "chat"     ? "active" : ""}`} onClick={() => setActiveTab("chat")}> Ask AI</button>
