@@ -5,7 +5,7 @@ import {
 } from "react-icons/fa";
 import React, { useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
-import { FaArrowRight } from "react-icons/fa6";
+import { FaArrowRight, FaGithub, FaLinkedinIn, FaX } from "react-icons/fa6";
 import { motion } from "framer-motion";
 
 const HomePage: React.FC = () => {
@@ -261,6 +261,13 @@ const HomePage: React.FC = () => {
             <div className="Contact-social">
               <div className="social-icon" onClick={() => window.open("https://www.instagram.com/hessabi.app?igsh=MnJhMXJlOHp4NjY3&utm_source=qr", "_blank")} style={{ cursor: "pointer" }}>
                 <FaInstagram size={16} />
+                 <div className="social-icon" onClick={() => window.open("", "_blank")} style={{ cursor: "pointer" }}>
+                <FaX size={16} />
+                 <div className="social-icon" onClick={() => window.open("", "_blank")} style={{ cursor: "pointer" }}>
+                <FaLinkedinIn size={16} />
+                 <div className="social-icon" onClick={() => window.open("", "_blank")} style={{ cursor: "pointer" }}>
+                <FaGithub size={16} />
+                </div>
               </div>
             </div>
           </div>
@@ -268,7 +275,10 @@ const HomePage: React.FC = () => {
         <div className="footer-bottom">
           ©2026 Hessabi Inc. — All rights reserved.
         </div>
+        </div>
+        </div>
       </footer>
+
 
     </div>
   );
