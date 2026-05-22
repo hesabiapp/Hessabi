@@ -8,19 +8,15 @@
   gap: 12px;
 }
 
-
-
-.dash-tab {
-  padding: 8px 20px;
-  border: none;
-  border-radius: 8px;
-  background: transparent;
-  color: #888;
-  font-size: 14px;
-  font-weight: 600;
-  cursor: pointer;
-  transition: all 0.2s;
+.dash-tabs {
+  display: flex;
+  gap: 8px;
+  background: #f5f6fa;
+  border-radius: 10px;
+  padding: 4px;
 }
+
+
 
 .dash-tab.active {
   background: #fff;
