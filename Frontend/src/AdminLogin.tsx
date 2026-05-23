@@ -26,7 +26,7 @@ const AdminLogin = () => {
       });
       const data = await res.json();
       if (res.ok) {
-        localStorage.setItem("adminToken", data.token); // ← adminToken not token
+        localStorage.setItem("adminToken", data.token); 
         navigate("/admin-dashboard");
       } else {
         setError(data.message ?? "Login failed.");
