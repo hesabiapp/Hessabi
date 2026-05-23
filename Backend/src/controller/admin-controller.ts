@@ -171,7 +171,7 @@ export const toggleUserStatus = async (req: Request, res: Response) => {
     return res.status(200).json({ message: "User status updated.", userStatus: user.userStatus });
 };
 
-// Get all subscriptions (Subscriptions tab)
+// Subscriptions tab
 export const getAllSubscriptions = async (req: Request, res: Response) => {
   try {
     const subs = await Subscription.find({}).sort({ createdAt: -1 });
@@ -200,13 +200,12 @@ export const getAllSubscriptions = async (req: Request, res: Response) => {
   }
 };
 
-// Get single business profile with full details
+
 export const getBusinessProfile = async (req: Request, res: Response) => {
     const { businessId } = req.params;
     try {
         const admin = await User.findById(businessId);
         if (!admin) return res.status(404).json({ message: "Business not found." });
-
         
         const staffCount   = await User.countDocuments({ businessID: admin._id, role: { $ne: "Admin" } });
         const productCount = await Product.countDocuments({ businessID: admin._id });

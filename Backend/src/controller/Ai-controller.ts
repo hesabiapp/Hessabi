@@ -19,7 +19,7 @@ const callClaude = async (system: string, messages: { role: string; content: str
     return data.content?.map((c: any) => c.text).join('') ?? ''
 }
 
-// POST /ai/insight  — auto summary on page load
+// auto summary on page load
 export const getInsight = async (req: Request, res: Response) => {
     const { context } = req.body
     if (!context) return res.status(400).json({ message: 'Context is required.' })
@@ -36,7 +36,7 @@ export const getInsight = async (req: Request, res: Response) => {
     }
 }
 
-// POST /ai/chat  — ongoing conversation
+// ongoing conversation
 export const chat = async (req: Request, res: Response) => {
     const { context, messages } = req.body
     if (!context || !messages) return res.status(400).json({ message: 'Context and messages are required.' })

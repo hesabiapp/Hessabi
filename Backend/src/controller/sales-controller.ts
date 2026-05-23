@@ -4,7 +4,7 @@ import Product from '../collections/product-collection.js'
 import { validateSales } from '../function/zodValidators.js'
 import { salesCalculation } from '../function/salesCalculation.js'
 
-//  Sales controller: add, view all, view one, delete, import from excel
+
 export const addSales = async (req: Request, res: Response) => {
     if (!req.body) {
         return res.status(404).json({ message: 'input is required.' })
