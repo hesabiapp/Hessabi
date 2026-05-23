@@ -250,35 +250,34 @@ const HomePage: React.FC = () => {
       </div>
 
       {/* ── FOOTER ── */}
-      <footer className="footer">
-        <div className="footer-top">
-          <div id="Contact-us" className="Contact">
-            <img src="images/HLogo.png" alt="Hessabi" className="footer-logo" />
-            <div className="Contact-info">
-              <p><strong>Address:</strong> 123 Main Street, Manama, Kingdom of Bahrain</p>
-              <p><strong>Email:</strong> tryhessabi.app@gmail.com</p>
-            </div>
-            <div className="Contact-social">
-              <div className="social-icon" onClick={() => window.open("https://www.instagram.com/hessabi.app?igsh=MnJhMXJlOHp4NjY3&utm_source=qr", "_blank")} style={{ cursor: "pointer" }}>
-                <FaInstagram size={16} />
-                 <div className="social-icon" onClick={() => window.open("", "_blank")} style={{ cursor: "pointer" }}>
-                <FaX size={16} />
-                 <div className="social-icon" onClick={() => window.open("", "_blank")} style={{ cursor: "pointer" }}>
-                <FaLinkedinIn size={16} />
-                 <div className="social-icon" onClick={() => window.open("", "_blank")} style={{ cursor: "pointer" }}>
-                <FaGithub size={16} />
-                </div>
-              </div>
-            </div>
-          </div>
+ <footer className="footer">
+  <div className="footer-top">
+    <div id="Contact-us" className="Contact">
+      <img src="images/HLogo.png" alt="Hessabi" className="footer-logo" />
+      <div className="Contact-info">
+        <p><strong>Address:</strong> 123 Main Street, Manama, Kingdom of Bahrain</p>
+        <p><strong>Email:</strong> tryhessabi.app@gmail.com</p>
+      </div>
+      <div className="Contact-social">
+        <div className="social-icon" onClick={() => window.open("https://www.instagram.com/hessabi.app?igsh=MnJhMXJlOHp4NjY3&utm_source=qr", "_blank")} style={{ cursor: "pointer" }}>
+          <FaInstagram size={16} />
         </div>
-        <div className="footer-bottom">
-          ©2026 Hessabi Inc. — All rights reserved.
+        <div className="social-icon" onClick={() => window.open("", "_blank")} style={{ cursor: "pointer" }}>
+          <FaX size={16} />
         </div>
+        <div className="social-icon" onClick={() => window.open("", "_blank")} style={{ cursor: "pointer" }}>
+          <FaLinkedinIn size={16} />
         </div>
+        <div className="social-icon" onClick={() => window.open("", "_blank")} style={{ cursor: "pointer" }}>
+          <FaGithub size={16} />
         </div>
-      </footer>
-
+      </div>
+    </div>
+  </div>
+  <div className="footer-bottom">
+    ©2026 Hessabi Inc. — All rights reserved.
+  </div>
+</footer>
 
     </div>
   );

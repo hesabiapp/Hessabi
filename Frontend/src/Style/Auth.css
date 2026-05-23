@@ -3,14 +3,18 @@ html, body, #root {
     margin: 0;
 }
 
+#root:has(.auth-page) {
+  background: url("/images/Background.png") center/cover no-repeat !important;
+}
 
 .auth-page {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: #e8edf2;
+  background: transparent;
 }
+
 
 .auth-container {
     background-color: #fff;
