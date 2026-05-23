@@ -4,13 +4,16 @@ import {
   BarChart, Bar, XAxis, YAxis, Tooltip, ResponsiveContainer,
   LineChart, Line, CartesianGrid,
 } from "recharts";
+import {
+  LayoutDashboard, Building2, CreditCard, Users,
+  KeyRound, LogOut, ChevronDown, ChevronUp,
+} from "lucide-react";
 import "./Style/Admin.css";
 
 const API = import.meta.env.VITE_API_URL;
 
 const getToken = () => localStorage.getItem("adminToken");
 
-// ── Decode username from JWT ───────────────────
 const getAdminUsername = () => {
   try {
     const token = getToken();
@@ -122,11 +125,7 @@ const statusColor: Record<PlanStatus, { bg: string; color: string }> = {
 };
 
 // ── Change Password Modal ──────────────────────
-const ChangePasswordModal = ({
-  onClose,
-}: {
-  onClose: () => void;
-}) => {
+const ChangePasswordModal = ({ onClose }: { onClose: () => void }) => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword,     setNewPassword]     = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
@@ -136,92 +135,47 @@ const ChangePasswordModal = ({
 
   const handleSubmit = async () => {
     setError(""); setSuccess("");
-    if (!currentPassword || !newPassword || !confirmPassword) {
-      setError("All fields are required."); return;
-    }
-    if (newPassword.length < 6) {
-      setError("New password must be at least 6 characters."); return;
-    }
-    if (newPassword !== confirmPassword) {
-      setError("New passwords don't match."); return;
-    }
+    if (!currentPassword || !newPassword || !confirmPassword) { setError("All fields are required."); return; }
+    if (newPassword.length < 6) { setError("New password must be at least 6 characters."); return; }
+    if (newPassword !== confirmPassword) { setError("New passwords don't match."); return; }
     setLoading(true);
     try {
-      const res = await fetch(`${API}/admin/change-password`, {
-        method:  "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization:  `Bearer ${getToken()}`,
-        },
+      const res  = await fetch(`${API}/admin/change-password`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
         body: JSON.stringify({ currentPassword, newPassword }),
       });
       const data = await res.json();
-      if (res.ok) {
-        setSuccess("Password changed successfully!");
-        setTimeout(onClose, 1500);
-      } else {
-        setError(data.message ?? "Failed to change password.");
-      }
-    } catch {
-      setError("Something went wrong.");
-    } finally {
-      setLoading(false);
-    }
+      if (res.ok) { setSuccess("Password changed successfully!"); setTimeout(onClose, 1500); }
+      else { setError(data.message ?? "Failed to change password."); }
+    } catch { setError("Something went wrong."); }
+    finally { setLoading(false); }
   };
 
   return (
     <div className="ad-modal-overlay" onClick={onClose}>
       <div className="ad-modal" onClick={e => e.stopPropagation()}>
         <div className="ad-modal-header">
-          <div>
-            <h2>Change Password</h2>
-            <p className="ad-modal-sub">Update your Super Admin password</p>
-          </div>
+          <div><h2>Change Password</h2><p className="ad-modal-sub">Update your Super Admin password</p></div>
           <button className="ad-modal-close" onClick={onClose}>✕</button>
         </div>
-
         <div className="ad-modal-section">
           <label className="ad-modal-label">Current Password</label>
-          <input
-            className="payment-input"
-            type="password"
-            placeholder="Enter current password"
-            value={currentPassword}
-            onChange={e => setCurrentPassword(e.target.value)}
-          />
+          <input className="payment-input" type="password" placeholder="Enter current password" value={currentPassword} onChange={e => setCurrentPassword(e.target.value)} />
         </div>
-
         <div className="ad-modal-section">
           <label className="ad-modal-label">New Password</label>
-          <input
-            className="payment-input"
-            type="password"
-            placeholder="Enter new password (min 6 characters)"
-            value={newPassword}
-            onChange={e => setNewPassword(e.target.value)}
-          />
+          <input className="payment-input" type="password" placeholder="Enter new password (min 6 characters)" value={newPassword} onChange={e => setNewPassword(e.target.value)} />
         </div>
-
         <div className="ad-modal-section">
           <label className="ad-modal-label">Confirm New Password</label>
-          <input
-            className="payment-input"
-            type="password"
-            placeholder="Confirm new password"
-            value={confirmPassword}
-            onChange={e => setConfirmPassword(e.target.value)}
-            onKeyDown={e => e.key === "Enter" && handleSubmit()}
-          />
+          <input className="payment-input" type="password" placeholder="Confirm new password" value={confirmPassword} onChange={e => setConfirmPassword(e.target.value)} onKeyDown={e => e.key === "Enter" && handleSubmit()} />
         </div>
-
         {error   && <p style={{ color: "#c0392b", fontSize: "13px", padding: "0 24px", fontWeight: 600 }}>{error}</p>}
         {success && <p style={{ color: "#2e7d32", fontSize: "13px", padding: "0 24px", fontWeight: 600 }}>{success}</p>}
-
         <div className="ad-modal-actions">
           <button className="ad-cancel-btn" onClick={onClose}>Cancel</button>
-          <button className="ad-save-btn" onClick={handleSubmit} disabled={loading}>
-            {loading ? "Saving..." : "Change Password"}
-          </button>
+          <button className="ad-save-btn" onClick={handleSubmit} disabled={loading}>{loading ? "Saving..." : "Change Password"}</button>
         </div>
       </div>
     </div>
@@ -244,10 +198,7 @@ const ManageModal = ({
     <div className="ad-modal-overlay" onClick={onClose}>
       <div className="ad-modal" onClick={e => e.stopPropagation()}>
         <div className="ad-modal-header">
-          <div>
-            <h2>{business.ownerName}</h2>
-            <p className="ad-modal-sub">@{business.username} · {business.email}</p>
-          </div>
+          <div><h2>{business.ownerName}</h2><p className="ad-modal-sub">@{business.username} · {business.email}</p></div>
           <button className="ad-modal-close" onClick={onClose}>✕</button>
         </div>
         <div className="ad-modal-section">
@@ -329,17 +280,17 @@ const PaymentModal = ({
 
 // ── Main Dashboard ─────────────────────────────
 const AdminDashboard = () => {
-  const [stats,            setStats]            = useState<Stats | null>(null);
-  const [businesses,       setBusinesses]       = useState<Business[]>([]);
-  const [users,            setUsers]            = useState<User[]>([]);
-  const [subscriptions,    setSubscriptions]    = useState<Subscription[]>([]);
-  const [activeTab,        setActiveTab]        = useState<"overview" | "businesses" | "subscriptions" | "users">("overview");
-  const [search,           setSearch]           = useState("");
-  const [loading,          setLoading]          = useState(true);
-  const [manageBusiness,   setManageBusiness]   = useState<Business | null>(null);
-  const [paymentSub,       setPaymentSub]       = useState<Subscription | null>(null);
-  const [showAccountMenu,  setShowAccountMenu]  = useState(false);
-  const [showChangePass,   setShowChangePass]   = useState(false);
+  const [stats,           setStats]           = useState<Stats | null>(null);
+  const [businesses,      setBusinesses]      = useState<Business[]>([]);
+  const [users,           setUsers]           = useState<User[]>([]);
+  const [subscriptions,   setSubscriptions]   = useState<Subscription[]>([]);
+  const [activeTab,       setActiveTab]       = useState<"overview" | "businesses" | "subscriptions" | "users">("overview");
+  const [search,          setSearch]          = useState("");
+  const [loading,         setLoading]         = useState(true);
+  const [manageBusiness,  setManageBusiness]  = useState<Business | null>(null);
+  const [paymentSub,      setPaymentSub]      = useState<Subscription | null>(null);
+  const [showAccountMenu, setShowAccountMenu] = useState(false);
+  const [showChangePass,  setShowChangePass]  = useState(false);
   const accountMenuRef = useRef<HTMLDivElement>(null);
   const navigate       = useNavigate();
   const adminUsername  = getAdminUsername();
@@ -350,7 +301,6 @@ const AdminDashboard = () => {
     fetchAll();
   }, []);
 
-  // Close account menu on outside click
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (accountMenuRef.current && !accountMenuRef.current.contains(e.target as Node)) {
@@ -369,36 +319,23 @@ const AdminDashboard = () => {
         fetch(`${API}/admin/users`,         { headers: { Authorization: `Bearer ${getToken()}` } }),
         fetch(`${API}/admin/subscriptions`, { headers: { Authorization: `Bearer ${getToken()}` } }),
       ]);
-
       if (statsRes.status === 401) { navigate("/admin-login"); return; }
-
       const [statsData, bizData, usersData, subsData] = await Promise.all([
         statsRes.json(), bizRes.json(), usersRes.json(), subsRes.json(),
       ]);
-
       if (statsRes.ok) setStats(statsData.stats ?? null);
       if (bizRes.ok)   setBusinesses(bizData.businesses ?? []);
       if (usersRes.ok) setUsers(usersData.users ?? []);
       if (subsRes.ok) {
         setSubscriptions((subsData.subscriptions ?? []).map((s: any) => ({
-          businessId:        s.businessId,
-          ownerName:         s.ownerName,
-          email:             s.email,
-          planType:          s.planType,
-          planStatus:        s.planStatus,
-          startDate:         s.startDate,
-          endDate:           s.endDate,
-          totalAmount:       s.totalAmount,
-          paidAmount:        s.paidAmount,
-          installmentMonths: s.installmentMonths ?? null,
-          lastLogin:         s.lastLogin ?? null,
+          businessId: s.businessId, ownerName: s.ownerName, email: s.email,
+          planType: s.planType, planStatus: s.planStatus, startDate: s.startDate,
+          endDate: s.endDate, totalAmount: s.totalAmount, paidAmount: s.paidAmount,
+          installmentMonths: s.installmentMonths ?? null, lastLogin: s.lastLogin ?? null,
         })));
       }
-    } catch (err) {
-      console.error("fetchAll error:", err);
-    } finally {
-      setLoading(false);
-    }
+    } catch (err) { console.error("fetchAll error:", err); }
+    finally { setLoading(false); }
   };
 
   const handleLogout = async () => {
@@ -407,27 +344,15 @@ const AdminDashboard = () => {
     navigate("/admin-login");
   };
 
-  const handleManageSave = async (
-    businessId: string,
-    updates: { userStatus: boolean; planType: PlanType; extendMonths: number }
-  ) => {
+  const handleManageSave = async (businessId: string, updates: { userStatus: boolean; planType: PlanType; extendMonths: number }) => {
     try {
-      await fetch(`${API}/admin/toggleUser`, {
-        method: "PUT", headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
-        body: JSON.stringify({ userId: businessId, userStatus: updates.userStatus }),
-      });
+      await fetch(`${API}/admin/toggleUser`, { method: "PUT", headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` }, body: JSON.stringify({ userId: businessId, userStatus: updates.userStatus }) });
       const currentBiz = businesses.find(b => b.businessId === businessId);
       if (currentBiz?.planType !== updates.planType) {
-        await fetch(`${API}/subscriptions/`, {
-          method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
-          body: JSON.stringify({ businessId, planType: updates.planType }),
-        });
+        await fetch(`${API}/subscriptions/`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` }, body: JSON.stringify({ businessId, planType: updates.planType }) });
       }
       if (updates.extendMonths > 0) {
-        await fetch(`${API}/subscriptions/extend`, {
-          method: "PUT", headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
-          body: JSON.stringify({ businessId, months: updates.extendMonths }),
-        });
+        await fetch(`${API}/subscriptions/extend`, { method: "PUT", headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` }, body: JSON.stringify({ businessId, months: updates.extendMonths }) });
       }
       await fetchAll();
     } catch (err) { console.error("handleManageSave error:", err); }
@@ -435,12 +360,8 @@ const AdminDashboard = () => {
 
   const handleRecordPayment = async (businessId: string, amount: number) => {
     try {
-      const res = await fetch(`${API}/subscriptions/pay`, {
-        method: "PUT", headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
-        body: JSON.stringify({ businessId, amount }),
-      });
-      if (res.ok) { await fetchAll(); }
-      else { alert("Failed to record payment. Please try again."); }
+      const res = await fetch(`${API}/subscriptions/pay`, { method: "PUT", headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` }, body: JSON.stringify({ businessId, amount }) });
+      if (res.ok) { await fetchAll(); } else { alert("Failed to record payment. Please try again."); }
     } catch (err) { console.error("handleRecordPayment error:", err); alert("Something went wrong."); }
   };
 
@@ -449,67 +370,69 @@ const AdminDashboard = () => {
   const overdueCount    = subscriptions.filter(s => s.planStatus === "overdue").length;
   const fullBuyersCount = subscriptions.filter(s => s.planType === "full").length;
 
-  const filteredBusinesses = businesses.filter(b =>
-    b.ownerName.toLowerCase().includes(search.toLowerCase()) ||
-    b.email.toLowerCase().includes(search.toLowerCase())
-  );
-  const filteredUsers = users.filter(u =>
-    `${u.Fname} ${u.Lname}`.toLowerCase().includes(search.toLowerCase()) ||
-    u.email.toLowerCase().includes(search.toLowerCase())
-  );
-  const filteredSubs = subscriptions.filter(s =>
-    s.ownerName.toLowerCase().includes(search.toLowerCase()) ||
-    s.email.toLowerCase().includes(search.toLowerCase())
-  );
+  const filteredBusinesses = businesses.filter(b => b.ownerName.toLowerCase().includes(search.toLowerCase()) || b.email.toLowerCase().includes(search.toLowerCase()));
+  const filteredUsers      = users.filter(u => `${u.Fname} ${u.Lname}`.toLowerCase().includes(search.toLowerCase()) || u.email.toLowerCase().includes(search.toLowerCase()));
+  const filteredSubs       = subscriptions.filter(s => s.ownerName.toLowerCase().includes(search.toLowerCase()) || s.email.toLowerCase().includes(search.toLowerCase()));
 
   const tabLabels: Record<string, string> = {
     overview: "System Overview", businesses: "Businesses",
     subscriptions: "Subscriptions", users: "All Users",
   };
 
+  const navItems = [
+    { key: "overview",      label: "Overview",      icon: <LayoutDashboard size={16} /> },
+    { key: "businesses",    label: "Businesses",    icon: <Building2       size={16} /> },
+    { key: "subscriptions", label: "Subscriptions", icon: <CreditCard      size={16} /> },
+    { key: "users",         label: "All Users",     icon: <Users           size={16} /> },
+  ] as const;
+
   return (
     <div className="ad-dashboard">
-
       <aside className="ad-sidebar">
+
+        {/* ── Logo — centered ── */}
         <div className="ad-sidebar-logo">
           <img src="/images/HLogo.png" alt="Hessabi" style={{ height: "32px", filter: "brightness(0) invert(1)" }} />
         </div>
 
+        {/* ── Nav ── */}
         <nav className="ad-nav">
-          {(["overview", "businesses", "subscriptions", "users"] as const).map(tab => (
-            <button key={tab} className={activeTab === tab ? "active" : ""} onClick={() => { setActiveTab(tab); setSearch(""); }}>
-              {tab === "overview"      && "📊 Overview"}
-              {tab === "businesses"    && "🏢 Businesses"}
-              {tab === "subscriptions" && "💳 Subscriptions"}
-              {tab === "users"         && "👥 All Users"}
+          {navItems.map(({ key, label, icon }) => (
+            <button
+              key={key}
+              className={activeTab === key ? "active" : ""}
+              onClick={() => { setActiveTab(key); setSearch(""); }}
+            >
+              {icon}
+              {label}
             </button>
           ))}
         </nav>
 
         {/* ── Account Menu ── */}
         <div className="ad-account-wrapper" ref={accountMenuRef}>
-          <button className="ad-account-btn" onClick={() => setShowAccountMenu(prev => !prev)}>
-            <div className="ad-account-avatar">
-              {adminUsername.charAt(0).toUpperCase()}
+
+          {/* Dropdown — renders ABOVE the button */}
+          {showAccountMenu && (
+            <div className="ad-account-menu">
+              <button className="ad-account-menu-item" onClick={() => { setShowChangePass(true); setShowAccountMenu(false); }}>
+                <KeyRound size={14} /> Change Password
+              </button>
+              <div className="ad-account-menu-divider" />
+              <button className="ad-account-menu-item danger" onClick={handleLogout}>
+                <LogOut size={14} /> Logout
+              </button>
             </div>
+          )}
+
+          <button className="ad-account-btn" onClick={() => setShowAccountMenu(prev => !prev)}>
+            <div className="ad-account-avatar">{adminUsername.charAt(0).toUpperCase()}</div>
             <div className="ad-account-info">
               <span className="ad-account-name">{adminUsername}</span>
               <span className="ad-account-role">Super Admin</span>
             </div>
-            <span className="ad-account-chevron">{showAccountMenu ? "▴" : "▾"}</span>
+            {showAccountMenu ? <ChevronUp size={14} color="rgba(255,255,255,0.5)" /> : <ChevronDown size={14} color="rgba(255,255,255,0.5)" />}
           </button>
-
-          {showAccountMenu && (
-            <div className="ad-account-menu">
-              <button className="ad-account-menu-item" onClick={() => { setShowChangePass(true); setShowAccountMenu(false); }}>
-                🔑 Change Password
-              </button>
-              <div className="ad-account-menu-divider" />
-              <button className="ad-account-menu-item danger" onClick={handleLogout}>
-                ↩ Logout
-              </button>
-            </div>
-          )}
         </div>
       </aside>
 
@@ -521,9 +444,7 @@ const AdminDashboard = () => {
           )}
         </div>
 
-        {loading ? (
-          <p className="empty-msg">Loading...</p>
-        ) : (
+        {loading ? <p className="empty-msg">Loading...</p> : (
           <>
             {/* ── OVERVIEW ── */}
             {activeTab === "overview" && stats && (
@@ -534,14 +455,12 @@ const AdminDashboard = () => {
                   <div className="ad-card"><p className="ad-card-label">Active Users</p><p className="ad-card-value green">{stats.activeUsers}</p></div>
                   <div className="ad-card"><p className="ad-card-label">Total Products</p><p className="ad-card-value" style={{ color: "#2F4157" }}>{stats.totalProducts}</p></div>
                 </div>
-
                 <div className="ad-cards" style={{ marginTop: "0" }}>
                   <div className="ad-card ad-card-highlight"><p className="ad-card-label">Hessabi Revenue</p><p className="ad-card-value green">{fmtBHD(totalRevenue)}</p><span className="ad-card-sub">All time collected</span></div>
                   <div className="ad-card"><p className="ad-card-label">Active Subscriptions</p><p className="ad-card-value green">{activeCount}</p></div>
                   <div className="ad-card"><p className="ad-card-label">Overdue Payments</p><p className="ad-card-value" style={{ color: overdueCount > 0 ? "#c0392b" : "#2F4157" }}>{overdueCount}</p></div>
                   <div className="ad-card"><p className="ad-card-label">Full Buyers</p><p className="ad-card-value" style={{ color: "#EFB036" }}>{fullBuyersCount}</p></div>
                 </div>
-
                 <div className="ad-charts-row">
                   <div className="ad-chart-card">
                     <h3>Monthly Revenue (BHD)</h3>
@@ -567,7 +486,6 @@ const AdminDashboard = () => {
                     </div>
                   </div>
                 </div>
-
                 <div className="ad-chart-card" style={{ marginTop: "16px" }}>
                   <h3>Recent Businesses</h3>
                   <table className="sales-table">
@@ -576,8 +494,7 @@ const AdminDashboard = () => {
                       {businesses.slice(0, 5).map(b => (
                         <tr key={b.businessId} className="sale-row">
                           <td><strong>{b.ownerName}</strong><br /><span style={{ color: "#888", fontSize: "12px" }}>@{b.username}</span></td>
-                          <td>{b.email}</td>
-                          <td>{b.staffCount}</td>
+                          <td>{b.email}</td><td>{b.staffCount}</td>
                           <td className="sale-amount">BHD {fmt(b.totalSales)}</td>
                           <td>{b.planType ? <span className="ad-plan-badge" style={{ background: `${planColor[b.planType]}20`, color: planColor[b.planType] }}>{planLabel[b.planType]}</span> : <span style={{ color: "#ccc" }}>—</span>}</td>
                           <td><span className={`status-toggle ${b.userStatus ? "active" : "inactive"}`}>{b.userStatus ? "Active" : "Disabled"}</span></td>

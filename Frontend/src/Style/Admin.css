@@ -595,7 +595,12 @@
   background: #c8e6c9 !important;
 }
 
-.role-badge.Accountant {
+.role-badge.admin {
+  background: #FEF3C7;
+  color: #92400E;
+}
+
+.role-badge.accountant {
   background: #DBEAFE;
   color: #1E40AF;
 }
@@ -610,9 +615,8 @@
   color: #991B1B;
 }
 
-/* ── Add these styles to your existing Admin.css ── */
 
-/* Account wrapper at bottom of sidebar */
+
 .ad-account-wrapper {
   position: relative;
   margin-top: auto;
