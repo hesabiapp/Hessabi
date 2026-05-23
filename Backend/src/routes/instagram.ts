@@ -56,7 +56,6 @@ router.get("/auth", async (req: any, res) => {
   await User.findByIdAndUpdate(userId, { zernioProfileId: profileId });
 }
 
-
     const connectRes = await zernio.get(`/connect/instagram`, {
       params: {
         profileId,
