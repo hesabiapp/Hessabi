@@ -288,7 +288,14 @@ const AdminDashboard = () => {
   const [paymentSub,     setPaymentSub]     = useState<Subscription | null>(null);
   const navigate = useNavigate();
 
-  useEffect(() => { fetchAll(); }, []);
+  useEffect(() => {
+    const token = getToken();
+    if (!token) {
+      navigate("/admin-login");
+      return;
+    }
+    fetchAll();
+  }, []);
 
   const fetchAll = async () => {
     try {
@@ -344,14 +351,12 @@ const AdminDashboard = () => {
     updates: { userStatus: boolean; planType: PlanType; extendMonths: number }
   ) => {
     try {
-      // 1. Toggle user status
       await fetch(`${API}/admin/toggleUser`, {
         method:  "PUT",
         headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
         body:    JSON.stringify({ userId: businessId, userStatus: updates.userStatus }),
       });
 
-      // 2. Update plan type if changed
       const currentBiz = businesses.find(b => b.businessId === businessId);
       if (currentBiz?.planType !== updates.planType) {
         await fetch(`${API}/subscriptions/`, {
@@ -361,7 +366,6 @@ const AdminDashboard = () => {
         });
       }
 
-      // 3. Extend only if months selected
       if (updates.extendMonths > 0) {
         await fetch(`${API}/subscriptions/extend`, {
           method:  "PUT",
