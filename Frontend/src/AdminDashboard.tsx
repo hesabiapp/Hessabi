@@ -600,7 +600,7 @@ const AdminDashboard = () => {
                         <td>{u.Fname} {u.Lname}</td>
                         <td className="invoice-num">@{u.username}</td>
                         <td>{u.email}</td>
-                        <td><span className={`role-badge ${u.role === "Admin" ? "admin" : "accountant"}`}>{u.role}</span></td>
+                        <td><span className={`role-badge ${u.role === "Admin" ? "admin" : "Accountant"}`}>{u.role}</span></td>
                         <td><span className={`status-toggle ${u.userStatus ? "active" : "inactive"}`}>{u.userStatus ? "Active" : "Disabled"}</span></td>
                         <td>{formatDate(u.createdAt)}</td>
                       </tr>
