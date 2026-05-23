@@ -7,8 +7,8 @@ const API = import.meta.env.VITE_API_URL;
 const AdminLogin = () => {
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
-  const [error, setError] = useState("");
-  const [loading, setLoading] = useState(false);
+  const [error,    setError]    = useState("");
+  const [loading,  setLoading]  = useState(false);
   const navigate = useNavigate();
 
   const handleLogin = async () => {
@@ -19,14 +19,14 @@ const AdminLogin = () => {
     setLoading(true);
     setError("");
     try {
-   const res = await fetch(`${API}/admin/login`, {
-  method: "POST",
-  headers: { "Content-Type": "application/json" },
-  body: JSON.stringify({ username, password }),
-});
+      const res  = await fetch(`${API}/admin/login`, {
+        method:  "POST",
+        headers: { "Content-Type": "application/json" },
+        body:    JSON.stringify({ username, password }),
+      });
       const data = await res.json();
       if (res.ok) {
-        localStorage.setItem("token", data.token);
+        localStorage.setItem("adminToken", data.token); // ← adminToken not token
         navigate("/admin-dashboard");
       } else {
         setError(data.message ?? "Login failed.");

@@ -8,6 +8,9 @@ import "./Style/Admin.css";
 
 const API = import.meta.env.VITE_API_URL;
 
+// ── Helper to get admin token ──────────────────
+const getToken = () => localStorage.getItem("adminToken");
+
 type Stats = {
   totalUsers:    number;
   totalAdmins:   number;
@@ -135,8 +138,8 @@ const ManageModal = ({
         <div className="ad-modal-section">
           <label className="ad-modal-label">Business Status</label>
           <div className="ad-toggle-row">
-            <button className={`ad-toggle-option ${userStatus ? "active-green" : ""}`} onClick={() => setUserStatus(true)}>✓ Active</button>
-            <button className={`ad-toggle-option ${!userStatus ? "active-red" : ""}`} onClick={() => setUserStatus(false)}>✕ Disabled</button>
+            <button className={`ad-toggle-option ${userStatus ? "active-green" : ""}`}  onClick={() => setUserStatus(true)}>✓ Active</button>
+            <button className={`ad-toggle-option ${!userStatus ? "active-red" : ""}`}   onClick={() => setUserStatus(false)}>✕ Disabled</button>
           </div>
         </div>
 
@@ -177,7 +180,7 @@ const ManageModal = ({
   );
 };
 
-// Payment Modal 
+// ── Payment Modal ──────────────────────────────────────────
 const PaymentModal = ({
   sub,
   onClose,
@@ -272,7 +275,7 @@ const PaymentModal = ({
   );
 };
 
-// Main Dashboard 
+// ── Main Dashboard ─────────────────────────────────────────
 const AdminDashboard = () => {
   const [stats,          setStats]          = useState<Stats | null>(null);
   const [businesses,     setBusinesses]     = useState<Business[]>([]);
@@ -290,10 +293,10 @@ const AdminDashboard = () => {
   const fetchAll = async () => {
     try {
       const [statsRes, bizRes, usersRes, subsRes] = await Promise.all([
-        fetch(`${API}/admin/stats`,         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
-        fetch(`${API}/admin/businesses`,    { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
-        fetch(`${API}/admin/users`,         { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
-        fetch(`${API}/admin/subscriptions`, { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } }),
+        fetch(`${API}/admin/stats`,         { headers: { Authorization: `Bearer ${getToken()}` } }),
+        fetch(`${API}/admin/businesses`,    { headers: { Authorization: `Bearer ${getToken()}` } }),
+        fetch(`${API}/admin/users`,         { headers: { Authorization: `Bearer ${getToken()}` } }),
+        fetch(`${API}/admin/subscriptions`, { headers: { Authorization: `Bearer ${getToken()}` } }),
       ]);
 
       if (statsRes.status === 401) { navigate("/admin-login"); return; }
@@ -328,52 +331,57 @@ const AdminDashboard = () => {
   };
 
   const handleLogout = async () => {
-    await fetch(`${API}/admin/logout`, { method: "POST", headers: { Authorization: `Bearer ${localStorage.getItem("token")}` } });
+    await fetch(`${API}/admin/logout`, {
+      method:  "POST",
+      headers: { Authorization: `Bearer ${getToken()}` },
+    });
+    localStorage.removeItem("adminToken");
     navigate("/admin-login");
   };
 
   const handleManageSave = async (
-  businessId: string,
-  updates: { userStatus: boolean; planType: PlanType; extendMonths: number }
-) => {
-  try {
-    // 1. Toggle user status
-    await fetch(`${API}/admin/toggleUser`, {
-  method: "PUT",
-  headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
-  body: JSON.stringify({ userId: businessId, userStatus: updates.userStatus }),
-});
-
-
-   
-    const currentBiz = businesses.find(b => b.businessId === businessId);
-    if (currentBiz?.planType !== updates.planType) {
-      await fetch(`${API}/subscriptions/`, {
-        method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
-        body: JSON.stringify({ businessId, planType: updates.planType }),
+    businessId: string,
+    updates: { userStatus: boolean; planType: PlanType; extendMonths: number }
+  ) => {
+    try {
+      // 1. Toggle user status
+      await fetch(`${API}/admin/toggleUser`, {
+        method:  "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
+        body:    JSON.stringify({ userId: businessId, userStatus: updates.userStatus }),
       });
-    }
 
-    //  Extend only if months selected
-    if (updates.extendMonths > 0) {
-      await fetch(`${API}/subscriptions/extend`, {
-        method: "PUT", headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
-        body: JSON.stringify({ businessId, months: updates.extendMonths }),
-      });
-    }
+      // 2. Update plan type if changed
+      const currentBiz = businesses.find(b => b.businessId === businessId);
+      if (currentBiz?.planType !== updates.planType) {
+        await fetch(`${API}/subscriptions/`, {
+          method:  "POST",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
+          body:    JSON.stringify({ businessId, planType: updates.planType }),
+        });
+      }
 
-    await fetchAll();
-  } catch (err) {
-    console.error("handleManageSave error:", err);
-  }
-};
+      // 3. Extend only if months selected
+      if (updates.extendMonths > 0) {
+        await fetch(`${API}/subscriptions/extend`, {
+          method:  "PUT",
+          headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
+          body:    JSON.stringify({ businessId, months: updates.extendMonths }),
+        });
+      }
+
+      await fetchAll();
+    } catch (err) {
+      console.error("handleManageSave error:", err);
+    }
+  };
 
   const handleRecordPayment = async (businessId: string, amount: number) => {
     try {
       const res = await fetch(`${API}/subscriptions/pay`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` },
-        body: JSON.stringify({ businessId, amount }),
+        method:  "PUT",
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${getToken()}` },
+        body:    JSON.stringify({ businessId, amount }),
       });
       if (res.ok) {
         await fetchAll();
@@ -657,7 +665,7 @@ const AdminDashboard = () => {
                       <CartesianGrid strokeDasharray="3 3" stroke="#f0f0f0" />
                       <XAxis dataKey="month" tick={{ fontSize: 12, fill: "#888" }} />
                       <YAxis tick={{ fontSize: 12, fill: "#888" }} />
-                     <Tooltip formatter={(v: any) => [`BHD ${Number(v).toFixed(3)}`, "Revenue"]} />
+                      <Tooltip formatter={(v: any) => [`BHD ${Number(v).toFixed(3)}`, "Revenue"]} />
                       <Bar dataKey="revenue" fill="#2F4157" radius={[6, 6, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
@@ -710,7 +718,6 @@ const AdminDashboard = () => {
                             <td style={{ color: "#2e7d32", fontWeight: 700 }}>{fmtBHD(s.paidAmount)}</td>
                             <td style={{ color: remaining > 0 ? "#c0392b" : "#2e7d32", fontWeight: 700 }}>{fmtBHD(remaining)}</td>
 
-                            {/* Days Left */}
                             <td style={{ fontSize: "13px", fontWeight: 700 }}>
                               {daysLeft === null
                                 ? <span style={{ color: "#888" }}>—</span>
@@ -722,7 +729,6 @@ const AdminDashboard = () => {
                               }
                             </td>
 
-                            {/* Action */}
                             <td>
                               <div style={{ display: "flex", flexDirection: "column", gap: "6px" }}>
                                 <button
@@ -790,7 +796,6 @@ const AdminDashboard = () => {
         )}
       </main>
 
-      {/* ── Manage Modal ── */}
       {manageBusiness && (
         <ManageModal
           business={manageBusiness}
@@ -799,7 +804,6 @@ const AdminDashboard = () => {
         />
       )}
 
-      {/* ── Payment Modal ── */}
       {paymentSub && (
         <PaymentModal
           sub={paymentSub}
