@@ -55,7 +55,7 @@ router.get("/auth", async (req: any, res) => {
 
   } catch (err: any) {
     console.error("Zernio auth error:", err.response?.data ?? err.message);
-    res.redirect(`${FRONTEND_URL}/Dashboard?ig=error`);
+    res.redirect(`${FRONTEND_URL}/dashboard?ig=error`);
   }
 });
 
@@ -68,13 +68,13 @@ router.get("/callback/:userId", async (req, res) => {
   const error = req.query.error;
 
   if (error || !userId) {
-    return res.redirect(`${FRONTEND_URL}/Dashboard?ig=denied`);
+    return res.redirect(`${FRONTEND_URL}/dashboard?ig=denied`);
   }
 
   try {
     const user = await User.findById(userId);
     if (!user?.zernioProfileId) {
-      return res.redirect(`${FRONTEND_URL}/Dashboard?ig=error`);
+      return res.redirect(`${FRONTEND_URL}/dashboard?ig=error`);
     }
 
     const accountsRes = await zernio.get("/accounts", {
@@ -83,7 +83,7 @@ router.get("/callback/:userId", async (req, res) => {
 
     const accounts = accountsRes.data.accounts ?? [];
     if (accounts.length === 0) {
-      return res.redirect(`${FRONTEND_URL}/Dashboard?ig=error`);
+      return res.redirect(`${FRONTEND_URL}/dashboard?ig=error`);
     }
 
     const igAccount = accounts[0];
@@ -94,11 +94,11 @@ router.get("/callback/:userId", async (req, res) => {
       igTokenExpires:  new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
     });
 
-    res.redirect(`${FRONTEND_URL}/Dashboard?ig=connected`);
+    res.redirect(`${FRONTEND_URL}/dashboard?ig=connected`);
 
   } catch (err: any) {
     console.error("Zernio callback error:", err.response?.data ?? err.message);
-    res.redirect(`${FRONTEND_URL}/Dashboard?ig=error`);
+    res.redirect(`${FRONTEND_URL}/dashboard?ig=error`);
   }
 });
 
