@@ -3,18 +3,14 @@ html, body, #root {
     margin: 0;
 }
 
-#root:has(.auth-page) {
-  background: url("/images/Background.png") center/cover no-repeat !important;
-}
 
 .auth-page {
   min-height: 100vh;
   display: flex;
   align-items: center;
   justify-content: center;
-  background: transparent;
+  background: #e8edf2;
 }
-
 
 .auth-container {
     background-color: #fff;
@@ -166,7 +162,7 @@ html, body, #root {
 
 .auth-toggle {
     background: linear-gradient(rgba(47, 51, 55, 0.7), rgba(47, 51, 55, 0.7)), 
-              url("images/Background.png");;
+              url("/images/Background.png");;
     
     height: 100%;
     color: #fff;
