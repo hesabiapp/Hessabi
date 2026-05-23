@@ -140,9 +140,9 @@ export const extendSubscription = async (req: Request, res: Response) => {
   }
 };
 
-// ─────────────────────────────────────────────────────────
+// 
 // PUT /subscription/pay  — record an installment payment
-// ─────────────────────────────────────────────────────────
+// 
 export const recordPayment = async (req: Request, res: Response) => {
   const { businessId, amount } = req.body;
   if (!businessId || !amount) {
@@ -188,9 +188,9 @@ export const getMySubscription = async (req: Request, res: Response) => {
   }
 };
 
-// ─────────────────────────────────────────────────────────
+//
 // Cron helper: expire overdue subscriptions
-// ─────────────────────────────────────────────────────────
+//
 export const expireOverdueSubscriptions = async () => {
   const now = new Date();
   await Subscription.updateMany(
@@ -204,9 +204,9 @@ export const expireOverdueSubscriptions = async () => {
   console.log(`[CRON] Subscription expiry check done at ${now.toISOString()}`);
 };
 
-// ─────────────────────────────────────────────────────────
+// 
 // POST /subscription/charge  — create Tap charge
-// ─────────────────────────────────────────────────────────
+//
 export const createTapCharge = async (req: Request, res: Response) => {
   const { amount, planType, installmentMonths, isOnetime } = req.body;
   const sessionUser: any = req.user;
@@ -248,9 +248,9 @@ export const createTapCharge = async (req: Request, res: Response) => {
   }
 };
 
-// ─────────────────────────────────────────────────────────
+// 
 // POST /subscription/verify  — verify Tap payment after redirect
-// ─────────────────────────────────────────────────────────
+// 
 export const verifyTapPayment = async (req: Request, res: Response) => {
   const { tapId } = req.body;
   const sessionUser: any = req.user;
@@ -308,9 +308,9 @@ export const verifyTapPayment = async (req: Request, res: Response) => {
   }
 };
 
-// ─────────────────────────────────────────────────────────
+//
 // POST /subscription/demo-activate  — demo only, bypasses Tap
-// ─────────────────────────────────────────────────────────
+//
 export const demoActivate = async (req: Request, res: Response) => {
   const { planType, installmentMonths } = req.body;
   const user: any = req.user;

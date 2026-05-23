@@ -48,7 +48,6 @@ export const adminLogout = async (req: Request, res: Response) => {
     return res.status(200).json({ message: "Logged out." });
 };
 
-// Create the super admin account (run once)
 export const createAdmin = async (req: Request, res: Response) => {
     const existing = await Admin.findOne({});
     if (existing) {
@@ -234,4 +233,31 @@ export const getBusinessProfile = async (req: Request, res: Response) => {
     } catch (err) {
         return res.status(500).json({ message: "Server error." });
     }
+};
+
+export const changeAdminPassword = async (req: Request, res: Response) => {
+  const { currentPassword, newPassword } = req.body;
+  const adminId = (req as any).user?.id;
+ 
+  if (!currentPassword || !newPassword) {
+    return res.status(400).json({ message: "All fields are required." });
+  }
+  if (newPassword.length < 6) {
+    return res.status(400).json({ message: "New password must be at least 6 characters." });
+  }
+ 
+  try {
+    const admin = await Admin.findById(adminId);
+    if (!admin) return res.status(404).json({ message: "Admin not found." });
+ 
+    const isMatch = await compare(currentPassword, admin.password);
+    if (!isMatch) return res.status(400).json({ message: "Current password is incorrect." });
+ 
+    admin.password = await hash(newPassword, 10);
+    await admin.save();
+ 
+    return res.status(200).json({ message: "Password changed successfully." });
+  } catch (err) {
+    return res.status(500).json({ message: "Server error." });
+  }
 };
