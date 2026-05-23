@@ -36,12 +36,26 @@ router.get("/auth", async (req: any, res) => {
     let profileId = user?.zernioProfileId;
 
     if (!profileId) {
-      const profileRes = await zernio.post("/profiles", {
-        name: `Hessabi User ${userId}`,
-      });
-      profileId = profileRes.data.profile._id;
-      await User.findByIdAndUpdate(userId, { zernioProfileId: profileId });
+  try {
+    const profileRes = await zernio.post("/profiles", {
+      name: `Hessabi User ${userId}`,
+    });
+    profileId = profileRes.data.profile._id;
+  } catch (err: any) {
+    // Profile already exists on Zernio — fetch it instead
+    if (err.response?.data?.error === "A profile with this name already exists") {
+      const listRes = await zernio.get("/profiles");
+      const profiles = listRes.data.profiles ?? listRes.data ?? [];
+      const existing = profiles.find((p: any) => p.name === `Hessabi User ${userId}`);
+      if (!existing) throw err;
+      profileId = existing._id;
+    } else {
+      throw err;
     }
+  }
+  await User.findByIdAndUpdate(userId, { zernioProfileId: profileId });
+}
+
 
     const connectRes = await zernio.get(`/connect/instagram`, {
       params: {
