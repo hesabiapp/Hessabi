@@ -594,3 +594,18 @@
 .payment-btn:hover {
   background: #c8e6c9 !important;
 }
+
+.role-badge.Accountant {
+  background: #DBEAFE;
+  color: #1E40AF;
+}
+
+.status-toggle.active {
+  background: #D1FAE5;
+  color: #065F46;
+}
+
+.status-toggle.inactive {
+  background: #FEE2E2;
+  color: #991B1B;
+}

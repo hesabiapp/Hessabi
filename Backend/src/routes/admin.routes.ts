@@ -16,7 +16,6 @@ import {
     toggleUserStatus
 } from "../controller/admin-controller.js";
 import { adminAuth } from "../middleware/adminAuth.js";
-import { auth } from "../middleware/auth.js";
 
 const router = Router();
 
@@ -25,12 +24,12 @@ router.post('/login', adminLogin);
 router.post('/create', createAdmin); 
 
 
-router.post('/logout',              auth, adminAuth, adminLogout);
-router.get('/businesses',           auth, adminAuth, getAllBusinesses);
-router.get('/stats',                auth, adminAuth, getSystemStats);
-router.get('/users',                auth, adminAuth, getAllUsers);
-router.put('/toggleUser',           auth, adminAuth, toggleUserStatus);
-router.get('/subscriptions',        auth, adminAuth, getAllSubscriptions);
-router.post('/subscription',        auth, adminAuth, upsertSubscription);
-router.get('/business/:businessId', auth, adminAuth, getBusinessProfile);
+router.post('/logout', adminAuth, adminLogout);
+router.get('/businesses', adminAuth, getAllBusinesses);
+router.get('/stats', adminAuth, getSystemStats);
+router.get('/users', adminAuth, getAllUsers);
+router.put('/toggleUser', adminAuth, toggleUserStatus);
+router.get('/subscriptions', adminAuth, getAllSubscriptions);
+router.post('/subscription', adminAuth, upsertSubscription);       
+router.get('/business/:businessId', adminAuth, getBusinessProfile); 
 export default router;
