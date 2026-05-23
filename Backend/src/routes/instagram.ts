@@ -36,25 +36,24 @@ router.get("/auth", async (req: any, res) => {
     let profileId = user?.zernioProfileId;
 
     if (!profileId) {
-  try {
-    const profileRes = await zernio.post("/profiles", {
-      name: `Hessabi User ${userId}`,
-    });
-    profileId = profileRes.data.profile._id;
-  } catch (err: any) {
-    // Profile already exists on Zernio — fetch it instead
-    if (err.response?.data?.error === "A profile with this name already exists") {
-      const listRes = await zernio.get("/profiles");
-      const profiles = listRes.data.profiles ?? listRes.data ?? [];
-      const existing = profiles.find((p: any) => p.name === `Hessabi User ${userId}`);
-      if (!existing) throw err;
-      profileId = existing._id;
-    } else {
-      throw err;
+      try {
+        const profileRes = await zernio.post("/profiles", {
+          name: `Hessabi User ${userId}`,
+        });
+        profileId = profileRes.data.profile._id;
+      } catch (err: any) {
+        if (err.response?.data?.error === "A profile with this name already exists") {
+          const listRes = await zernio.get("/profiles");
+          const profiles = listRes.data.profiles ?? listRes.data ?? [];
+          const existing = profiles.find((p: any) => p.name === `Hessabi User ${userId}`);
+          if (!existing) throw err;
+          profileId = existing._id;
+        } else {
+          throw err;
+        }
+      }
+      await User.findByIdAndUpdate(userId, { zernioProfileId: profileId });
     }
-  }
-  await User.findByIdAndUpdate(userId, { zernioProfileId: profileId });
-}
 
     const connectRes = await zernio.get(`/connect/instagram`, {
       params: {
@@ -68,7 +67,7 @@ router.get("/auth", async (req: any, res) => {
 
   } catch (err: any) {
     console.error("Zernio auth error:", err.response?.data ?? err.message);
-    res.redirect(`${FRONTEND_URL}/dashboard?ig=error`);
+    res.redirect(`${FRONTEND_URL}/Dashboard?ig=error`);
   }
 });
 
@@ -81,13 +80,13 @@ router.get("/callback/:userId", async (req, res) => {
   const error = req.query.error;
 
   if (error || !userId) {
-    return res.redirect(`${FRONTEND_URL}/dashboard?ig=denied`);
+    return res.redirect(`${FRONTEND_URL}/Dashboard?ig=denied`);
   }
 
   try {
     const user = await User.findById(userId);
     if (!user?.zernioProfileId) {
-      return res.redirect(`${FRONTEND_URL}/dashboard?ig=error`);
+      return res.redirect(`${FRONTEND_URL}/Dashboard?ig=error`);
     }
 
     const accountsRes = await zernio.get("/accounts", {
@@ -96,7 +95,7 @@ router.get("/callback/:userId", async (req, res) => {
 
     const accounts = accountsRes.data.accounts ?? [];
     if (accounts.length === 0) {
-      return res.redirect(`${FRONTEND_URL}/dashboard?ig=error`);
+      return res.redirect(`${FRONTEND_URL}/Dashboard?ig=error`);
     }
 
     const igAccount = accounts[0];
@@ -107,11 +106,11 @@ router.get("/callback/:userId", async (req, res) => {
       igTokenExpires:  new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
     });
 
-    res.redirect(`${FRONTEND_URL}/dashboard?ig=connected`);
+    res.redirect(`${FRONTEND_URL}/Dashboard?ig=connected`);
 
   } catch (err: any) {
     console.error("Zernio callback error:", err.response?.data ?? err.message);
-    res.redirect(`${FRONTEND_URL}/dashboard?ig=error`);
+    res.redirect(`${FRONTEND_URL}/Dashboard?ig=error`);
   }
 });
 
@@ -210,6 +209,97 @@ router.post("/disconnect", auth, async (req: any, res) => {
   } catch (err: any) {
     console.error("Instagram disconnect error:", err.message);
     res.status(500).json({ error: "Failed to disconnect" });
+  }
+});
+
+// ─────────────────────────────────────────────
+// INBOX — List conversations
+// GET /instagram/inbox
+// ─────────────────────────────────────────────
+router.get("/inbox", auth, async (req: any, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user?.zernioAccountId) return res.json({ conversations: [] });
+
+    const response = await zernio.get("/inbox/conversations", {
+      params: { accountId: user.zernioAccountId, platform: "instagram" },
+    });
+
+    const conversations = (response.data.conversations ?? []).map((c: any) => ({
+      id:           c._id,
+      participant:  {
+        username:           c.participants?.find((p: any) => !p.isOwner)?.username ?? "Unknown",
+        profilePictureUrl:  c.participants?.find((p: any) => !p.isOwner)?.profilePictureUrl ?? null,
+        isFollower:         c.participants?.find((p: any) => !p.isOwner)?.instagramProfile?.isFollower ?? false,
+      },
+      lastMessage:  c.lastMessage?.text ?? c.lastMessage?.attachments?.[0]?.type ?? "",
+      lastMessageAt: c.lastMessage?.createdAt ?? c.updatedAt,
+      unreadCount:  c.unreadCount ?? 0,
+    }));
+
+    res.json({ conversations });
+  } catch (err: any) {
+    console.error("Inbox list error:", err.response?.data ?? err.message);
+    res.status(500).json({ error: "Failed to fetch inbox" });
+  }
+});
+
+// ─────────────────────────────────────────────
+// INBOX — Get messages in a conversation
+// GET /instagram/inbox/:conversationId/messages
+// ─────────────────────────────────────────────
+router.get("/inbox/:conversationId/messages", auth, async (req: any, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user?.zernioAccountId) return res.json({ messages: [] });
+
+    const { conversationId } = req.params;
+
+    const response = await zernio.get(`/inbox/conversations/${conversationId}/messages`, {
+      params: { accountId: user.zernioAccountId },
+    });
+
+    const messages = (response.data.messages ?? []).map((m: any) => ({
+      id:        m._id,
+      text:      m.text ?? "",
+      fromMe:    m.fromMe ?? m.direction === "outbound",
+      createdAt: m.createdAt,
+      attachments: (m.attachments ?? []).map((a: any) => ({
+        type: a.type,
+        url:  a.url,
+      })),
+    }));
+
+    res.json({ messages });
+  } catch (err: any) {
+    console.error("Messages fetch error:", err.response?.data ?? err.message);
+    res.status(500).json({ error: "Failed to fetch messages" });
+  }
+});
+
+// ─────────────────────────────────────────────
+// INBOX — Send a reply
+// POST /instagram/inbox/:conversationId/reply
+// ─────────────────────────────────────────────
+router.post("/inbox/:conversationId/reply", auth, async (req: any, res) => {
+  try {
+    const user = await User.findById(req.user.id);
+    if (!user?.zernioAccountId) return res.status(400).json({ error: "Not connected" });
+
+    const { conversationId } = req.params;
+    const { text } = req.body;
+
+    if (!text?.trim()) return res.status(400).json({ error: "Message cannot be empty" });
+
+    const response = await zernio.post(`/inbox/conversations/${conversationId}/messages`, {
+      accountId: user.zernioAccountId,
+      text:      text.trim(),
+    });
+
+    res.json({ success: true, message: response.data.message });
+  } catch (err: any) {
+    console.error("Reply error:", err.response?.data ?? err.message);
+    res.status(500).json({ error: "Failed to send reply" });
   }
 });
 
