@@ -9,14 +9,13 @@ const subscriptionSchema = new Schema(
       unique: true,
     },
 
-    // "trial" | "subscription" | "full"
     planType: {
       type: String,
       enum: ["trial", "subscription", "full"],
       default: "trial",
     },
 
-    // "active" | "overdue" | "expired" | "cancelled"
+  
     planStatus: {
       type: String,
       enum: ["active", "overdue", "expired", "cancelled"],
@@ -24,7 +23,7 @@ const subscriptionSchema = new Schema(
     },
 
     startDate:  { type: Date, default: Date.now },
-    endDate:    { type: Date },          // null = no expiry 
+    endDate:    { type: Date },         
 
     // Pricing
     totalAmount:       { type: Number, default: 0 }, 
