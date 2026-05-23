@@ -1,5 +1,7 @@
+/* Admin.css — Hessabi Admin Panel */
 
-/* Login Page*/
+
+/* Login Page */
 
 .admin-login-container {
   min-height: 100vh;
@@ -100,7 +102,7 @@
 }
 
 
-/*Sidebar*/
+/* Sidebar */
 
 .ad-sidebar {
   width: 220px;
@@ -460,8 +462,8 @@
 .ad-plan-badge { font-weight: 700; }
 .role-badge    { font-weight: 700; }
 
-.role-badge.admin       { background: #FEF3C7; color: #92400E; }
-.role-badge.accountant  { background: #DBEAFE; color: #1E40AF; }
+.role-badge.admin       { background: #FEF3C7 !important; color: #92400E !important; }
+.role-badge.Accountant  { background: #DBEAFE !important; color: #1E40AF !important; }
 
 .status-toggle.active   { background: #D1FAE5; color: #065F46; }
 .status-toggle.inactive { background: #FEE2E2; color: #991B1B; }

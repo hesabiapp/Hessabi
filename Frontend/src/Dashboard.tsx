@@ -83,14 +83,16 @@ const Dashboard = () => {
   const [chatMessages, setChatMessages] = useState<ChatMessage[]>([]);
   const [chatInput, setChatInput]       = useState("");
   const [chatLoading, setChatLoading]   = useState(false);
-  const [activeTab, setActiveTab] = useState<"overview" | "chat" | "instagram">("overview");
+  const [activeTab, setActiveTab] = useState<"overview" | "chat" | "instagram">(() => {
+    const params = new URLSearchParams(window.location.search);
+    return params.get("ig") === "connected" ? "instagram" : "overview";
+  });
   const chatEndRef = useRef<HTMLDivElement>(null);
   const datePickerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => { fetchAll(); }, []);
   useEffect(() => { chatEndRef.current?.scrollIntoView({ behavior: "smooth" }); }, [chatMessages]);
 
-  
   useEffect(() => {
     const handleClickOutside = (e: MouseEvent) => {
       if (datePickerRef.current && !datePickerRef.current.contains(e.target as Node)) {
@@ -102,12 +104,11 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-  const params = new URLSearchParams(window.location.search);
-  if (params.get("ig") === "connected") {
-    setActiveTab("instagram");
-    window.history.replaceState({}, "", window.location.pathname);
-  }
-}, []);
+    const params = new URLSearchParams(window.location.search);
+    if (params.get("ig") === "connected") {
+      window.history.replaceState({}, "", window.location.pathname);
+    }
+  }, []);
 
   const fetchAll = async () => {
     setLoading(true);
@@ -136,18 +137,19 @@ const Dashboard = () => {
       setLoading(false);
     }
   };
-const filterByRange = <T extends { date: string }>(data: T[]): T[] => {
-  if (range === "custom" && customFrom && customTo) {
-    const from = new Date(customFrom);
-    const to   = new Date(customTo);
-    to.setHours(23, 59, 59);
-    return data.filter(d => {
-      const date = new Date(d.date);
-      return date >= from && date <= to;
-    });
-  }
-  return data;
-};
+
+  const filterByRange = <T extends { date: string }>(data: T[]): T[] => {
+    if (range === "custom" && customFrom && customTo) {
+      const from = new Date(customFrom);
+      const to   = new Date(customTo);
+      to.setHours(23, 59, 59);
+      return data.filter(d => {
+        const date = new Date(d.date);
+        return date >= from && date <= to;
+      });
+    }
+    return data;
+  };
 
   const filteredSales    = filterByRange(sales);
   const filteredExpenses = filterByRange(expenses);
@@ -308,7 +310,7 @@ Currency: BHD`.trim();
     if (s.length === 0 && e.length === 0) return;
     setAiLoading(true);
     try {
-     const res = await fetch(`${API}/ai/insight`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` }, body: JSON.stringify({ context: buildContext(s, e) }) });
+      const res = await fetch(`${API}/ai/insight`, { method: "POST", headers: { "Content-Type": "application/json", Authorization: `Bearer ${localStorage.getItem("token")}` }, body: JSON.stringify({ context: buildContext(s, e) }) });
       const data = await res.json();
       setAutoInsight(data.reply ?? "");
     } catch (err) { console.error(err); } finally { setAiLoading(false); }
