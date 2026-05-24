@@ -244,6 +244,7 @@ router.get("/inbox/:conversationId/messages", auth, async (req: any, res) => {
     const response = await zernio.get(`/inbox/conversations/${conversationId}/messages`, {
       params: { accountId: user.zernioAccountId },
     });
+    console.log("Messages raw response:", JSON.stringify(response.data, null, 2));
 
  const messages = (response.data.data ?? response.data.messages ?? []).map((m: any) => ({
   id:        m.id ?? m._id,
