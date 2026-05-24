@@ -145,6 +145,7 @@ const InstagramTab = () => {
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const autoRefreshRef = useRef<ReturnType<typeof setInterval> | null>(null);
 
+  
 useEffect(() => { fetchIGData(); }, []);
  useEffect(() => {
   if (activeTab === "inbox") {

@@ -212,16 +212,17 @@ router.get("/inbox", auth, async (req: any, res) => {
 
     const raw = response.data.data ?? response.data.conversations ?? [];
 
-    const conversations = raw.map((c: any) => ({
+
+const conversations = raw.map((c: any) => ({
   id:            c.id ?? c._id,
   participant: {
     username:          c.participantUsername ?? c.participantName ?? "Unknown",
     profilePictureUrl: c.participantProfilePictureUrl ?? null,
     isFollower:        c.instagramProfile?.isFollower ?? false,
   },
-  lastMessage:   c.lastMessage?.text ?? c.lastMessage?.content ?? "",
+  lastMessage:   c.lastMessage?.message ?? c.lastMessage?.text ?? c.lastMessage?.content ?? "",
   lastMessageAt: c.lastMessage?.sentAt ?? c.lastMessage?.createdAt ?? c.updatedAt ?? c.createdAt ?? null,
-  unreadCount:   c.unreadCount ?? 0,
+  unreadCount:   c.unreadCount ?? (c.lastMessage?.direction === "incoming" && !c.lastMessage?.isRead ? 1 : 0),
 }));
 
 
