@@ -359,35 +359,30 @@ const Products = () => {
           className={form.errors.stock ? "input-error-border" : ""}
         />
         {form.errors.stock && <p className="input-error">{form.errors.stock}</p>}
+
         <label>Sizes (optional)</label>
         {form.sizes.map((s, i) => (
-         <div key={i}>
-         <div className="size-row">
-         <div className="size-field">
+          <div key={i}>
+            <div className="size-row">
+              <input
+                value={s.size}
+                onChange={e => updateSize(i, "size", e.target.value)}
+                placeholder="Size (e.g. M, 42, 32x30, 10cm)"
+              />
+             
+              <input
+                type="number"
+                value={s.stock}
+                onChange={e => updateSize(i, "stock", e.target.value)}
+                placeholder="Stock per item"
+              />
 
-         <input
-          value={s.size}
-          onChange={e => updateSize(i, "size", e.target.value)}
-          placeholder="e.g. M, 42, 32x30, 10cm"
-        />
-        </div>
-        <div className="size-field">
-        <label>QTY</label>
-        <input
-          type="number"
-          value={s.stock}
-          onChange={e => updateSize(i, "stock", e.target.value)}
-          placeholder="Stock"
-          min={0}
-         />
-         </div>
-        <button className="delete-btn" onClick={() => removeSize(i)}>✕</button>
-        </div>
-        <small className="field-hint">* Note: Any size format works — S/M/L, numbers, dimensions, etc.</small>
-         {form.errors[`size_${i}`] && <p className="input-error">{form.errors[`size_${i}`]}</p>}
-        </div>
+              <button className="delete-btn" onClick={() => removeSize(i)}>✕</button>
+            </div>
+            <small className="field-hint"> * Note: Any size format works — S/M/L, numbers, dimensions, etc.</small>
+            {form.errors[`size_${i}`] && <p className="input-error">{form.errors[`size_${i}`]}</p>}
+          </div>
         ))}
-          
         <button className="add-size-btn" onClick={addSizeRow}>+ Add Size</button>
 
         <label>Image</label>
