@@ -213,16 +213,17 @@ router.get("/inbox", auth, async (req: any, res) => {
     const raw = response.data.data ?? response.data.conversations ?? [];
 
     const conversations = raw.map((c: any) => ({
-      id:            c.id ?? c._id,
-      participant: {
-        username:          c.participantUsername ?? c.participantName ?? "Unknown",
-        profilePictureUrl: c.participantProfilePictureUrl ?? null,
-        isFollower:        c.instagramProfile?.isFollower ?? false,
-      },
-      lastMessage:   c.lastMessage?.text ?? "",
-      lastMessageAt: c.lastMessage?.sentAt ?? c.updatedAt ?? c.createdAt,
-      unreadCount:   c.unreadCount ?? 0,
-    }));
+  id:            c.id ?? c._id,
+  participant: {
+    username:          c.participantUsername ?? c.participantName ?? "Unknown",
+    profilePictureUrl: c.participantProfilePictureUrl ?? null,
+    isFollower:        c.instagramProfile?.isFollower ?? false,
+  },
+  lastMessage:   c.lastMessage?.text ?? c.lastMessage?.content ?? "",
+  lastMessageAt: c.lastMessage?.sentAt ?? c.lastMessage?.createdAt ?? c.updatedAt ?? c.createdAt ?? null,
+  unreadCount:   c.unreadCount ?? 0,
+}));
+
 
     res.json({ conversations });
   } catch (err: any) {
@@ -244,16 +245,17 @@ router.get("/inbox/:conversationId/messages", auth, async (req: any, res) => {
       params: { accountId: user.zernioAccountId },
     });
 
-  const messages = (response.data.data ?? response.data.messages ?? []).map((m: any) => ({
+ const messages = (response.data.data ?? response.data.messages ?? []).map((m: any) => ({
   id:        m.id ?? m._id,
-  text:      m.text ?? "",
-  fromMe:    m.direction === "outgoing" || m.direction === "outbound",
-  createdAt: m.sentAt ?? m.createdAt,
+  text:      m.text ?? m.content ?? "",
+  fromMe:    m.direction === "outgoing" || m.direction === "outbound" || m.fromMe === true,
+  createdAt: m.sentAt ?? m.createdAt ?? m.timestamp,
   attachments: (m.attachments ?? []).map((a: any) => ({
     type: a.type,
     url:  a.url,
   })),
 }));
+
 
 
     res.json({ messages });

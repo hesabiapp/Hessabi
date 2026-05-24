@@ -115,8 +115,10 @@ const formatNumber = (n: number) =>
 const formatDate = (d: string) =>
   new Date(d).toLocaleDateString("en-US", { month: "short", day: "numeric" });
 
-const formatTime = (d: string) => {
+const formatTime = (d: string | null) => {
+  if (!d) return "";
   const date = new Date(d);
+  if (isNaN(date.getTime())) return "";
   const now = new Date();
   const diff = now.getTime() - date.getTime();
   if (diff < 60000) return "now";
