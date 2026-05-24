@@ -144,7 +144,7 @@ const InstagramTab = () => {
   const [messagesLoading, setMessagesLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const autoRefreshRef = useRef<ReturnType<typeof setInterval> | null>(null);
-  
+
 useEffect(() => { fetchIGData(); }, []);
  useEffect(() => {
   if (activeTab === "inbox") {
@@ -204,19 +204,23 @@ const fetchConversations = async (silent = false) => {
 
    
     if (silent && conversations.length > 0) {
-      newConvs.forEach(newConv => {
-        const existing = conversations.find(c => c.id === newConv.id);
-        if (newConv.unreadCount > 0 && (!existing || newConv.unreadCount > existing.unreadCount)) {
-        
-          if (Notification.permission === "granted") {
-            new Notification(`New message from @${newConv.participant.username}`, {
-              body: newConv.lastMessage,
-              icon: "/images/HLogo.png",
-            });
-          }
-        }
-      });
+  newConvs.forEach(newConv => {
+    const existing = conversations.find(c => c.id === newConv.id);
+    const isNewMessage = !existing || 
+      (newConv.lastMessageAt && existing.lastMessageAt && 
+       new Date(newConv.lastMessageAt) > new Date(existing.lastMessageAt));
+    
+    if (isNewMessage && newConv.lastMessage) {
+      if (Notification.permission === "granted") {
+        new Notification(`New message from @${newConv.participant.username}`, {
+          body: newConv.lastMessage,
+          icon: "/images/HLogo.png",
+        });
+      }
     }
+  });
+}
+
 
     setConversations(newConvs);
   } catch {
