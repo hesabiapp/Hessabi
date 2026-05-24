@@ -256,9 +256,6 @@ router.get("/inbox/:conversationId/messages", auth, async (req: any, res) => {
     url:  a.url,
   })),
 }));
-
-
-
     res.json({ messages });
   } catch (err: any) {
     console.error("Messages fetch error:", err.response?.data ?? err.message);
