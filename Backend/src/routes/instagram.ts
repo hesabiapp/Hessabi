@@ -207,19 +207,21 @@ router.get("/inbox", auth, async (req: any, res) => {
     if (!user?.zernioAccountId) return res.json({ conversations: [] });
 
     const response = await zernio.get("/inbox/conversations", {
-      params: { accountId: user.zernioAccountId, platform: "instagram" },
+      params: { accountId: user.zernioAccountId },
     });
 
-    const conversations = (response.data.conversations ?? []).map((c: any) => ({
-      id:           c._id,
-      participant:  {
-        username:           c.participants?.find((p: any) => !p.isOwner)?.username ?? "Unknown",
-        profilePictureUrl:  c.participants?.find((p: any) => !p.isOwner)?.profilePictureUrl ?? null,
-        isFollower:         c.participants?.find((p: any) => !p.isOwner)?.instagramProfile?.isFollower ?? false,
+    const raw = response.data.data ?? response.data.conversations ?? [];
+
+    const conversations = raw.map((c: any) => ({
+      id:            c.id ?? c._id,
+      participant: {
+        username:          c.participantUsername ?? c.participantName ?? "Unknown",
+        profilePictureUrl: c.participantProfilePictureUrl ?? null,
+        isFollower:        c.instagramProfile?.isFollower ?? false,
       },
-      lastMessage:  c.lastMessage?.text ?? c.lastMessage?.attachments?.[0]?.type ?? "",
-      lastMessageAt: c.lastMessage?.createdAt ?? c.updatedAt,
-      unreadCount:  c.unreadCount ?? 0,
+      lastMessage:   c.lastMessage?.text ?? "",
+      lastMessageAt: c.lastMessage?.sentAt ?? c.updatedAt ?? c.createdAt,
+      unreadCount:   c.unreadCount ?? 0,
     }));
 
     res.json({ conversations });
@@ -228,6 +230,7 @@ router.get("/inbox", auth, async (req: any, res) => {
     res.status(500).json({ error: "Failed to fetch inbox" });
   }
 });
+
 
 
 router.get("/inbox/:conversationId/messages", auth, async (req: any, res) => {
@@ -241,16 +244,17 @@ router.get("/inbox/:conversationId/messages", auth, async (req: any, res) => {
       params: { accountId: user.zernioAccountId },
     });
 
-    const messages = (response.data.messages ?? []).map((m: any) => ({
-      id:        m._id,
-      text:      m.text ?? "",
-      fromMe:    m.fromMe ?? m.direction === "outbound",
-      createdAt: m.createdAt,
-      attachments: (m.attachments ?? []).map((a: any) => ({
-        type: a.type,
-        url:  a.url,
-      })),
-    }));
+  const messages = (response.data.data ?? response.data.messages ?? []).map((m: any) => ({
+  id:        m.id ?? m._id,
+  text:      m.text ?? "",
+  fromMe:    m.direction === "outgoing" || m.direction === "outbound",
+  createdAt: m.sentAt ?? m.createdAt,
+  attachments: (m.attachments ?? []).map((a: any) => ({
+    type: a.type,
+    url:  a.url,
+  })),
+}));
+
 
     res.json({ messages });
   } catch (err: any) {
