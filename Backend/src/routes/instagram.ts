@@ -248,7 +248,7 @@ router.get("/inbox/:conversationId/messages", auth, async (req: any, res) => {
 
  const messages = (response.data.data ?? response.data.messages ?? []).map((m: any) => ({
   id:        m.id ?? m._id,
-  text:      m.text ?? m.content ?? "",
+  text: m.message ?? m.text ?? m.content ?? "",
   fromMe:    m.direction === "outgoing" || m.direction === "outbound" || m.fromMe === true,
   createdAt: m.sentAt ?? m.createdAt ?? m.timestamp,
   attachments: (m.attachments ?? []).map((a: any) => ({

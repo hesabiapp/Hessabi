@@ -208,26 +208,24 @@ const InstagramTab = () => {
     }
   };
 
-const fetchMessages = async (convId: string, silent = false) => {
-  if (!silent) setMessagesLoading(true);
-  try {
-    if (isDemo) {
-      setMessages(DEMO_MESSAGES[convId] ?? []);
-      return;
+  const fetchMessages = async (convId: string, silent = false) => {
+    if (!silent) setMessagesLoading(true);
+    try {
+      if (isDemo) {
+        setMessages(DEMO_MESSAGES[convId] ?? []);
+        return;
+      }
+      const res = await fetch(`${API}/instagram/inbox/${convId}/messages`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      const json = await res.json();
+      setMessages(json.messages ?? []);
+    } catch {
+      if (isDemo) setMessages(DEMO_MESSAGES[convId] ?? []);
+    } finally {
+      if (!silent) setMessagesLoading(false);
     }
-    const res = await fetch(`${API}/instagram/inbox/${convId}/messages`, {
-      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-    });
-    const json = await res.json();
-    console.log("Frontend messages response:", json); // ← ADD THIS
-    setMessages(json.messages ?? []);
-  } catch {
-    if (isDemo) setMessages(DEMO_MESSAGES[convId] ?? []);
-  } finally {
-    if (!silent) setMessagesLoading(false);
-  }
-};
-
+  };
 
   const handleSelectConversation = (convId: string) => {
     setSelectedConvId(convId);
