@@ -496,7 +496,7 @@ const Sales = () => {
           </div>
         </div>
 
-        {/* ── View Sale Modal ── */}
+        {/*View Sale Modal */}
         {selectedSale && (
           <div className="modal-overlay" onClick={() => setSelectedSale(null)}>
             <div className="modal view-modal" onClick={e => e.stopPropagation()}>
@@ -595,7 +595,7 @@ const Sales = () => {
           </div>
         )}
 
-        {/* ── Add Sale Modal ── */}
+        {/*Add Sale Modal*/}
         {showModal && (
           <div className="modal-overlay" onClick={() => { setShowModal(false); setForm(emptyForm()); }}>
             <div className="modal sales-modal" onClick={e => e.stopPropagation()}>
@@ -706,7 +706,7 @@ const Sales = () => {
 
               <button type="button" className="add-size-btn" onClick={addItem}>+ Add Item</button>
 
-              {/* Order total summary box */}
+              
               <div className="sale-total-preview">
                 <div style={{ width: "100%" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", gap: "40px" }}>
@@ -734,7 +734,7 @@ const Sales = () => {
           </div>
         )}
 
-        {/* ── Import Preview Modal ── */}
+        {/* Import Preview Modal */}
         {showImportModal && (
           <div className="modal-overlay" onClick={closeImportModal}>
             <div className="modal import-modal" onClick={e => e.stopPropagation()}>

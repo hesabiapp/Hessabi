@@ -73,5 +73,5 @@ export const SubscriptionProvider = ({ children }: { children: React.ReactNode }
   );
 };
 
-// ── Hook to use anywhere in the app ──
+
 export const useSubscription = () => useContext(SubscriptionContext);

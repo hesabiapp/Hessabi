@@ -67,13 +67,13 @@ const PricingPage = () => {
 
   const currentPlan = installmentPrices[installment];
 
-  // ── Check if user is logged in ──────────────────────────
+  // Check if user is logged in 
 useEffect(() => {
   const token = localStorage.getItem("token");
   if (token) setIsLoggedIn(true);
 }, []);
  
-   //  demo-activate instead of charge
+   //  demo activate instead of charge
   const choosePlan = async (
   planType: "trial" | "subscription" | "full",
   installmentMonths?: number,
@@ -306,7 +306,7 @@ useEffect(() => {
             </motion.div>
           )}
 
-          {/* ── FULL PURCHASE ── */}
+          {/* FULL PURCHASE */}
           {plan === "full" && (
             <motion.div
               key="full"

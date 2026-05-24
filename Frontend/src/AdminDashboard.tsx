@@ -124,7 +124,7 @@ const statusColor: Record<PlanStatus, { bg: string; color: string }> = {
   cancelled: { bg: "#f5f5f5", color: "#888"    },
 };
 
-// ── Change Password Modal ──────────────────────
+// Change Password Modal 
 const ChangePasswordModal = ({ onClose }: { onClose: () => void }) => {
   const [currentPassword, setCurrentPassword] = useState("");
   const [newPassword,     setNewPassword]     = useState("");
@@ -182,7 +182,7 @@ const ChangePasswordModal = ({ onClose }: { onClose: () => void }) => {
   );
 };
 
-// ── Manage Modal ───────────────────────────────
+// Manage Modal 
 const ManageModal = ({
   business, onClose, onSave,
 }: {
@@ -233,7 +233,7 @@ const ManageModal = ({
   );
 };
 
-// ── Payment Modal ──────────────────────────────
+// Payment Modal 
 const PaymentModal = ({
   sub, onClose, onSave,
 }: {
@@ -278,7 +278,7 @@ const PaymentModal = ({
   );
 };
 
-// ── Main Dashboard ─────────────────────────────
+//  Main Dashboard 
 const AdminDashboard = () => {
   const [stats,           setStats]           = useState<Stats | null>(null);
   const [businesses,      setBusinesses]      = useState<Business[]>([]);
@@ -389,13 +389,9 @@ const AdminDashboard = () => {
   return (
     <div className="ad-dashboard">
       <aside className="ad-sidebar">
-
-        {/* ── Logo — centered ── */}
         <div className="ad-sidebar-logo">
           <img src="/images/HLogo.png" alt="Hessabi" style={{ height: "32px", filter: "brightness(0) invert(1)" }} />
         </div>
-
-        {/* ── Nav ── */}
         <nav className="ad-nav">
           {navItems.map(({ key, label, icon }) => (
             <button
@@ -408,11 +404,7 @@ const AdminDashboard = () => {
             </button>
           ))}
         </nav>
-
-        {/* ── Account Menu ── */}
         <div className="ad-account-wrapper" ref={accountMenuRef}>
-
-          {/* Dropdown — renders ABOVE the button */}
           {showAccountMenu && (
             <div className="ad-account-menu">
               <button className="ad-account-menu-item" onClick={() => { setShowChangePass(true); setShowAccountMenu(false); }}>

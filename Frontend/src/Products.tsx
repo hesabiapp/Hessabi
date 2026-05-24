@@ -290,7 +290,7 @@ const Products = () => {
         />
         {form.errors.costPrice && <p className="input-error">{form.errors.costPrice}</p>}
 
-        {/* Selling Price = Total customer-facing price (incl. VAT) */}
+       
         <label>Selling Price incl. VAT (BHD) *</label>
         <input
           value={form.sellingPrice}
@@ -312,8 +312,7 @@ const Products = () => {
         />
         {form.errors.vatRate && <p className="input-error">{form.errors.vatRate}</p>}
 
-        {/* Live auto-calculated preview inside the form */}
-        
+       
         {form.sellingPrice && form.vatRate && !isNaN(Number(form.sellingPrice)) && !isNaN(Number(form.vatRate)) && (
           <div className="vat-preview">
             <div className="vat-preview-row">
@@ -516,7 +515,7 @@ const Products = () => {
                     <span className="view-value">BHD {Number(selectedProduct.costPrice).toFixed(3)}</span>
                   </div>
 
-                  {/* Selling Price = Total incl. VAT (what customer pays) */}
+                 
                   <div className="view-detail-row">
                     <span className="view-label">Selling Price (incl. VAT)</span>
                     <span className="view-value">BHD {Number(selectedProduct.sellingPrice).toFixed(3)}</span>

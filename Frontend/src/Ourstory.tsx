@@ -67,11 +67,9 @@ const featuresRef = useRef<HTMLDivElement>(null);
                           <Link to="/Auth?signup=true" onClick={() => setDropdownOpen(false)}>Sign Up</Link>
                         </div>  
                       )}
-                      
-                      
-        </div>
-        </div>
-      </header>
+                    </div>
+                   </div>
+            </header>
 
       {/* HERO */}
       <section className="Story-hero">
@@ -94,7 +92,7 @@ const featuresRef = useRef<HTMLDivElement>(null);
         </div>
       </section>
 
-      {/* ── TIMELINE ── */}
+      {/* TIMELINE */}
       <section className="Story-timeline-section">
         <div className="Story-timeline">
           {milestones.map((m, i) => (

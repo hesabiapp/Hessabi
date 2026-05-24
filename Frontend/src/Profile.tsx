@@ -84,7 +84,7 @@ const Profile = () => {
         setSubmitError("");
         setSubmitSuccess("");
 
-        // Validate password fields if user wants to change password
+        
         if (form.newPassword || form.currentPassword || form.confirmNewPassword) {
             if (!form.currentPassword) {
                 setSubmitError("Please enter your current password.");
@@ -100,7 +100,7 @@ const Profile = () => {
             }
         }
 
-        // Upload photo first if changed
+        
         let photoUrl = profile?.photo ?? null;
         if (photoFile) {
             const formData = new FormData();
@@ -165,7 +165,7 @@ const Profile = () => {
                     ) : (
                         <div className="profile-card">
 
-                            {/* ── LEFT: Photo ── */}
+                            
                             <div className="profile-photo-section">
                                 <div
                                     className="profile-avatar-wrapper"
@@ -198,12 +198,12 @@ const Profile = () => {
                                 </span>
                             </div>
 
-                            {/* ── RIGHT: Info ── */}
+                          
                             <div className="profile-info-section">
                                 {submitSuccess && <p className="profile-success">{submitSuccess}</p>}
                                 {submitError && <p className="input-error" style={{ textAlign: "center" }}>{submitError}</p>}
 
-                                {/* Basic fields */}
+                                
                                 <div className="profile-fields">
                                     <div className="profile-field">
                                         <label>First Name</label>
@@ -227,7 +227,7 @@ const Profile = () => {
                                     </div>
                                 </div>
 
-                                {/* Password change — only shown when editing */}
+                               
                                 {editing && (
                                     <div className="profile-password-section">
                                         <div className="profile-password-header">

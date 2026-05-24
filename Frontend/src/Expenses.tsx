@@ -353,7 +353,7 @@ const Expenses = () => {
         </div>
       </div>
 
-      {/* ── View Expense Modal ── */}
+      {/* View Expense Modal */}
       {selectedExpense && (
         <div className="modal-overlay" onClick={() => setSelectedExpense(null)}>
           <div className="modal view-modal" onClick={e => e.stopPropagation()}>
@@ -386,7 +386,7 @@ const Expenses = () => {
         </div>
       )}
 
-      {/* ── Add Expense Modal ── */}
+      {/* Add Expense Modal */}
       {showModal && (
         <div className="modal-overlay" onClick={() => { setShowModal(false); setForm(emptyForm()); }}>
           <div className="modal" onClick={e => e.stopPropagation()}>
@@ -428,7 +428,7 @@ const Expenses = () => {
         </div>
       )}
 
-      {/* ── Import Preview Modal ── */}
+      {/* Import Preview Modal */}
       {showImportModal && (
         <div className="modal-overlay" onClick={closeImportModal}>
           <div className="modal import-modal" onClick={e => e.stopPropagation()}>

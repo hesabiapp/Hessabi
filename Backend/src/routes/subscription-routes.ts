@@ -14,13 +14,13 @@ import { auth } from "../middleware/auth.js";
 
 const router = Router();
 
-// ── Super admin routes ─────────────────────────────────────
+// Super admin routes 
 router.get("/",       adminAuth, getAllSubscriptions);
 router.post("/",      adminAuth, upsertSubscription);
 router.put("/extend", adminAuth, extendSubscription);
 router.put("/pay",    adminAuth, recordPayment);
 
-// ── Business owner routes ──────────────────────────────────
+// Business owner routes 
 router.get("/me",     auth, getMySubscription);
 router.post("/me",    auth, upsertSubscription);
 router.post("/charge", auth, createTapCharge);

@@ -116,7 +116,7 @@ const Reports = () => {
     Object.fromEntries(TEMPLATES.map(t => [t.id, { start: firstOfMonth, end: today }]))
   );
 
-  // Close dropdown when clicking outside
+  
   useEffect(() => {
     const handler = (e: MouseEvent) => {
       if (exportRef.current && !exportRef.current.contains(e.target as Node)) {
@@ -166,7 +166,7 @@ const Reports = () => {
     ]);
 
     if (!productsRes.ok) throw new Error("Failed to fetch products");
-    // sales/expenses may return 400 when empty — that's fine, we handle it below
+  
 
     const products = await productsRes.json();
     const sales    = salesRes.ok    ? await salesRes.json()    : { sales: [] };

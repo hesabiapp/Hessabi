@@ -15,10 +15,7 @@ const zernio = axios.create({
   headers: { Authorization: `Bearer ${ZERNIO_API_KEY}` },
 });
 
-// ─────────────────────────────────────────────
-// STEP 1 — Create Zernio profile + get auth URL
-// GET /instagram/auth?token=<jwt>
-// ─────────────────────────────────────────────
+
 router.get("/auth", async (req: any, res) => {
   const token = req.query.token as string;
   if (!token) return res.status(401).json({ message: "You need to login." });
@@ -71,10 +68,7 @@ router.get("/auth", async (req: any, res) => {
   }
 });
 
-// ─────────────────────────────────────────────
-// STEP 2 — Zernio redirects back after OAuth
-// GET /instagram/callback/:userId
-// ─────────────────────────────────────────────
+
 router.get("/callback/:userId", async (req, res) => {
   const { userId } = req.params;
   const error = req.query.error;
@@ -114,10 +108,7 @@ router.get("/callback/:userId", async (req, res) => {
   }
 });
 
-// ─────────────────────────────────────────────
-// STEP 3 — Frontend fetches all IG data
-// GET /instagram/data
-// ─────────────────────────────────────────────
+
 router.get("/data", auth, async (req: any, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -184,10 +175,7 @@ router.get("/data", auth, async (req: any, res) => {
   }
 });
 
-// ─────────────────────────────────────────────
-// STEP 4 — Disconnect
-// POST /instagram/disconnect
-// ─────────────────────────────────────────────
+
 router.post("/disconnect", auth, async (req: any, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -212,10 +200,7 @@ router.post("/disconnect", auth, async (req: any, res) => {
   }
 });
 
-// ─────────────────────────────────────────────
-// INBOX — List conversations
-// GET /instagram/inbox
-// ─────────────────────────────────────────────
+
 router.get("/inbox", auth, async (req: any, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -244,10 +229,7 @@ router.get("/inbox", auth, async (req: any, res) => {
   }
 });
 
-// ─────────────────────────────────────────────
-// INBOX — Get messages in a conversation
-// GET /instagram/inbox/:conversationId/messages
-// ─────────────────────────────────────────────
+
 router.get("/inbox/:conversationId/messages", auth, async (req: any, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -277,10 +259,7 @@ router.get("/inbox/:conversationId/messages", auth, async (req: any, res) => {
   }
 });
 
-// ─────────────────────────────────────────────
-// INBOX — Send a reply
-// POST /instagram/inbox/:conversationId/reply
-// ─────────────────────────────────────────────
+
 router.post("/inbox/:conversationId/reply", auth, async (req: any, res) => {
   try {
     const user = await User.findById(req.user.id);

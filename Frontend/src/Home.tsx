@@ -29,8 +29,6 @@ const HomePage: React.FC = () => {
 
   return (
     <div className="Home-container">
-
-      {/* ── HEADER ── */}
       <header className="Home-header">
         <div className="Home-logo">
           <img src="images/HLogo.png" alt="Hessabi Logo" className="Home-logo-img" />
@@ -69,8 +67,6 @@ const HomePage: React.FC = () => {
           </div>
         )}
       </header>
-
-      {/* ── HERO ── */}
       <div className="Home">
         <div className="Home-text">
           <div className="Home-eyebrow">Built for Bahrain's Home Businesses</div>
@@ -130,7 +126,6 @@ const HomePage: React.FC = () => {
                 </div>
               </div>
 
-              {/* Tab bar */}
               <div className="mock-tabs">
                 <span className="mock-tab active">Overview</span>
                 <span className="mock-tab">Ask AI</span>
@@ -140,8 +135,6 @@ const HomePage: React.FC = () => {
                   <span className="mock-time-outline">Date Range</span>
                 </div>
               </div>
-
-              {/* Content */}
               <div className="mock-content">
                 {/* Alert */}
                 <div className="mock-alert">
@@ -193,7 +186,7 @@ const HomePage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── FEATURES ── */}
+      {/* FEATURES */}
       <div className="offers-container">
         <div className="Home-offers">
           <h1>What We Offer</h1>
@@ -215,7 +208,7 @@ const HomePage: React.FC = () => {
           ))}
         </div>
 
-        {/* ── WHY HESSABI ── */}
+        {/* WHY HESSABI  */}
         <div className="Home-benefits-container">
           <div className="about-header">
             <h1>Why choose Hessabi</h1>
@@ -237,7 +230,7 @@ const HomePage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── ABOUT US ── */}
+      {/* ABOUT US */}
       <div id="about-us" className="about-us-cont">
         <div className="about-header">
           <h1>About Us</h1>
@@ -249,7 +242,7 @@ const HomePage: React.FC = () => {
         </div>
       </div>
 
-      {/* ── FOOTER ── */}
+      {/* FOOTER */}
  <footer className="footer">
   <div className="footer-top">
     <div id="Contact-us" className="Contact">
