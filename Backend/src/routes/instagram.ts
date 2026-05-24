@@ -281,5 +281,16 @@ router.post("/inbox/:conversationId/reply", auth, async (req: any, res) => {
     res.status(500).json({ error: "Failed to send reply" });
   }
 });
+/* ── Webhook receiver — Zernio sends incoming messages here ── */
+router.post("/webhook", express.json(), async (req, res) => {
+  try {
+    const event = req.body;
+    console.log("Zernio webhook received:", JSON.stringify(event, null, 2));
+    res.status(200).json({ received: true });
+  } catch (err: any) {
+    console.error("Webhook error:", err.message);
+    res.status(500).json({ error: "Webhook failed" });
+  }
+});
 
 export default router;
