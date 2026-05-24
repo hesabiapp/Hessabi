@@ -478,3 +478,15 @@
   color: #2ecc71;
   font-weight: 600;
 }
+
+.size-field {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.size-field label {
+  font-size: 0.75rem;
+  color: #888;
+  font-weight: 600;
+}
