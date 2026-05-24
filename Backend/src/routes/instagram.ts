@@ -276,7 +276,7 @@ router.post("/inbox/:conversationId/reply", auth, async (req: any, res) => {
 
     const response = await zernio.post(`/inbox/conversations/${conversationId}/messages`, {
       accountId: user.zernioAccountId,
-      text:      text.trim(),
+      message:      text.trim(),
     });
 
     res.json({ success: true, message: response.data.message });
