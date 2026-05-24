@@ -369,6 +369,7 @@ const Products = () => {
                 onChange={e => updateSize(i, "size", e.target.value)}
                 placeholder="Size (e.g. M, 42, 32x30, 10cm)"
               />
+              <label>QTY</label>
               <input
                 type="number"
                 value={s.stock}
@@ -379,7 +380,7 @@ const Products = () => {
 
               <button className="delete-btn" onClick={() => removeSize(i)}>✕</button>
             </div>
-            <small className="field-hint">Any size format works — S/M/L, numbers, dimensions, etc.</small>
+            <small className="field-hint"> * Note: Any size format works — S/M/L, numbers, dimensions, etc.</small>
             {form.errors[`size_${i}`] && <p className="input-error">{form.errors[`size_${i}`]}</p>}
           </div>
         ))}
