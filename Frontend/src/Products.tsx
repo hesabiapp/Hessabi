@@ -208,6 +208,7 @@ const Products = () => {
   };
 
   const handleUpdate = async () => {
+    
     if (!validateForm() || !editingProduct) return;
     try {
       const fd = buildFormData();
@@ -233,6 +234,7 @@ const Products = () => {
   };
 
   const handleDelete = async (productId: string) => {
+    if (!confirm("Are you sure you want to delete this Prodct?")) return;
     try {
       const res = await fetch(`${API}/product/deleteProduct`, {
         method: "DELETE",
