@@ -369,7 +369,7 @@ const Products = () => {
                 onChange={e => updateSize(i, "size", e.target.value)}
                 placeholder="Size (e.g. M, 42, 32x30, 10cm)"
               />
-              <small className="field-hint">Any size format works — S/M/L, numbers, dimensions, etc.</small>
+              
               <input
                 type="number"
                 value={s.stock}
