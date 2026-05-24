@@ -144,24 +144,24 @@ const InstagramTab = () => {
   const [messagesLoading, setMessagesLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const autoRefreshRef = useRef<ReturnType<typeof setInterval> | null>(null);
-
-  useEffect(() => {
-    fetchIGData();
-  }, []);
-
-  useEffect(() => {
-    if (activeTab === "inbox") {
-      fetchConversations();
-      // Auto-refresh every 10 seconds
-      autoRefreshRef.current = setInterval(() => {
-        fetchConversations(true);
-        if (selectedConvId) fetchMessages(selectedConvId, true);
-      }, 10000);
+  
+useEffect(() => { fetchIGData(); }, []);
+ useEffect(() => {
+  if (activeTab === "inbox") {
+    if (Notification.permission === "default") {
+      Notification.requestPermission();
     }
-    return () => {
-      if (autoRefreshRef.current) clearInterval(autoRefreshRef.current);
-    };
-  }, [activeTab, selectedConvId]);
+    fetchConversations();
+    autoRefreshRef.current = setInterval(() => {
+      fetchConversations(true);
+      if (selectedConvId) fetchMessages(selectedConvId, true);
+    }, 10000);
+  }
+  return () => {
+    if (autoRefreshRef.current) clearInterval(autoRefreshRef.current);
+  };
+}, [activeTab, selectedConvId]);
+
 
   useEffect(() => {
     messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
@@ -189,24 +189,43 @@ const InstagramTab = () => {
     }
   };
 
-  const fetchConversations = async (silent = false) => {
-    if (!silent) setInboxLoading(true);
-    try {
-      if (isDemo) {
-        setConversations(DEMO_CONVERSATIONS);
-        return;
-      }
-      const res = await fetch(`${API}/instagram/inbox`, {
-        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-      });
-      const json = await res.json();
-      setConversations(json.conversations ?? []);
-    } catch {
-      if (isDemo) setConversations(DEMO_CONVERSATIONS);
-    } finally {
-      if (!silent) setInboxLoading(false);
+const fetchConversations = async (silent = false) => {
+  if (!silent) setInboxLoading(true);
+  try {
+    if (isDemo) {
+      setConversations(DEMO_CONVERSATIONS);
+      return;
     }
-  };
+    const res = await fetch(`${API}/instagram/inbox`, {
+      headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+    });
+    const json = await res.json();
+    const newConvs: Conversation[] = json.conversations ?? [];
+
+   
+    if (silent && conversations.length > 0) {
+      newConvs.forEach(newConv => {
+        const existing = conversations.find(c => c.id === newConv.id);
+        if (newConv.unreadCount > 0 && (!existing || newConv.unreadCount > existing.unreadCount)) {
+        
+          if (Notification.permission === "granted") {
+            new Notification(`New message from @${newConv.participant.username}`, {
+              body: newConv.lastMessage,
+              icon: "/images/HLogo.png",
+            });
+          }
+        }
+      });
+    }
+
+    setConversations(newConvs);
+  } catch {
+    if (isDemo) setConversations(DEMO_CONVERSATIONS);
+  } finally {
+    if (!silent) setInboxLoading(false);
+  }
+};
+
 
   const fetchMessages = async (convId: string, silent = false) => {
     if (!silent) setMessagesLoading(true);
@@ -557,7 +576,6 @@ const InstagramTab = () => {
                       <span className="ig-conv-time">{formatTime(conv.lastMessageAt)}</span>
                     </div>
                     <div className="ig-conv-bottom">
-                      <span className="ig-conv-preview">{conv.lastMessage || "No messages yet"}</span>
                       {conv.unreadCount > 0 && (
                         <span className="ig-unread-dot">{conv.unreadCount}</span>
                       )}
