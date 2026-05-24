@@ -60,6 +60,13 @@
   background: #e8edf2;
 }
 
+.field-hint{
+ display: block;
+ font-size: 0.75rem;
+ color: #888;
+ margin-top: 4px;
+}
+
 .card-info {
   padding: 12px 14px 4px;
   flex: 1;
