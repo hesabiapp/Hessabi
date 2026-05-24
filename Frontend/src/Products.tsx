@@ -364,7 +364,7 @@ const Products = () => {
          <div key={i}>
          <div className="size-row">
          <div className="size-field">
-         <label>Size</label>
+
          <input
           value={s.size}
           onChange={e => updateSize(i, "size", e.target.value)}
