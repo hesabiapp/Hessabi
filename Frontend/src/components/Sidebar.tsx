@@ -12,7 +12,8 @@ const Sidebar = ({ sidebarOpen, setSidebarOpen }: SidebarProps) => {
   const location = useLocation();
  useEffect(() => {
   if (window.innerWidth <= 768) setSidebarOpen(false);
-}, []);
+}, [location.pathname]);
+
   const links = [
     { to: "/Dashboard", icon: <FaThLarge size={18} />,   label: "Dashboard" },
     { to: "/Products",  icon: <FaBoxOpen size={18} />,   label: "Products"  },
