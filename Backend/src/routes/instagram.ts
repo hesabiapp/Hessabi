@@ -15,7 +15,7 @@ const zernio = axios.create({
   headers: { Authorization: `Bearer ${ZERNIO_API_KEY}` },
 });
 
-
+/* ── STEP 1 — Create Zernio profile + get auth URL ── */
 router.get("/auth", async (req: any, res) => {
   const token = req.query.token as string;
   if (!token) return res.status(401).json({ message: "You need to login." });
@@ -68,7 +68,7 @@ router.get("/auth", async (req: any, res) => {
   }
 });
 
-
+/* ── STEP 2 — Zernio redirects back after OAuth ── */
 router.get("/callback/:userId", async (req, res) => {
   const { userId } = req.params;
   const error = req.query.error;
@@ -95,9 +95,10 @@ router.get("/callback/:userId", async (req, res) => {
     const igAccount = accounts[0];
 
     await User.findByIdAndUpdate(userId, {
-      zernioAccountId: igAccount._id,
-      igConnectedAt:   new Date(),
-      igTokenExpires:  new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
+      zernioAccountId:       igAccount._id,
+      zernioAccountUsername: igAccount.username ?? igAccount.accountUsername,
+      igConnectedAt:         new Date(),
+      igTokenExpires:        new Date(Date.now() + 60 * 24 * 60 * 60 * 1000),
     });
 
     res.redirect(`${FRONTEND_URL}/Dashboard?ig=connected`);
@@ -108,7 +109,7 @@ router.get("/callback/:userId", async (req, res) => {
   }
 });
 
-
+/* ── STEP 3 — Frontend fetches all IG data ── */
 router.get("/data", auth, async (req: any, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -175,7 +176,7 @@ router.get("/data", auth, async (req: any, res) => {
   }
 });
 
-
+/* ── STEP 4 — Disconnect ── */
 router.post("/disconnect", auth, async (req: any, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -186,10 +187,11 @@ router.post("/disconnect", auth, async (req: any, res) => {
 
     await User.findByIdAndUpdate(req.user.id, {
       $unset: {
-        zernioAccountId: "",
-        zernioProfileId: "",
-        igConnectedAt:   "",
-        igTokenExpires:  "",
+        zernioAccountId:       "",
+        zernioProfileId:       "",
+        zernioAccountUsername: "",
+        igConnectedAt:         "",
+        igTokenExpires:        "",
       },
     });
 
@@ -200,30 +202,20 @@ router.post("/disconnect", auth, async (req: any, res) => {
   }
 });
 
-
+/* ── INBOX — List conversations ── */
 router.get("/inbox", auth, async (req: any, res) => {
   try {
     const user = await User.findById(req.user.id);
-     console.log("User zernioAccountId:", user?.zernioAccountId);
-    console.log("User id:", req.user.id);
     if (!user?.zernioAccountId) return res.json({ conversations: [] });
 
     const response = await zernio.get("/inbox/conversations", {
       params: { accountId: user.zernioAccountId },
     });
 
-    console.log("Inbox full response:", JSON.stringify(response.data, null, 2));
-
     const raw = response.data.data ?? response.data.conversations ?? [];
 
-    
-    const accountsRes = await zernio.get("/accounts");
-    const accounts = accountsRes.data.accounts ?? [];
-    const currentAccount = accounts.find((a: any) => a._id === user.zernioAccountId);
-    const currentUsername = currentAccount?.username ?? currentAccount?.accountUsername;
-
     const conversations = raw
-      .filter((c: any) => !currentUsername || c.accountUsername === currentUsername)
+      .filter((c: any) => c.accountId === user.zernioAccountId)
       .map((c: any) => ({
         id:            c.id ?? c._id,
         participant: {
@@ -243,7 +235,7 @@ router.get("/inbox", auth, async (req: any, res) => {
   }
 });
 
-
+/* ── INBOX — Get messages in a conversation ── */
 router.get("/inbox/:conversationId/messages", auth, async (req: any, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -255,18 +247,17 @@ router.get("/inbox/:conversationId/messages", auth, async (req: any, res) => {
       params: { accountId: user.zernioAccountId },
     });
 
+    const messages = (response.data.data ?? response.data.messages ?? []).map((m: any) => ({
+      id:        m.id ?? m._id,
+      text:      m.message ?? m.text ?? m.content ?? "",
+      fromMe:    m.direction === "outgoing" || m.direction === "outbound" || m.fromMe === true,
+      createdAt: m.sentAt ?? m.createdAt ?? m.timestamp,
+      attachments: (m.attachments ?? []).map((a: any) => ({
+        type: a.type,
+        url:  a.url,
+      })),
+    }));
 
-
- const messages = (response.data.data ?? response.data.messages ?? []).map((m: any) => ({
-  id:        m.id ?? m._id,
-  text: m.message ?? m.text ?? m.content ?? "",
-  fromMe:    m.direction === "outgoing" || m.direction === "outbound" || m.fromMe === true,
-  createdAt: m.sentAt ?? m.createdAt ?? m.timestamp,
-  attachments: (m.attachments ?? []).map((a: any) => ({
-    type: a.type,
-    url:  a.url,
-  })),
-}));
     res.json({ messages });
   } catch (err: any) {
     console.error("Messages fetch error:", err.response?.data ?? err.message);
@@ -274,7 +265,7 @@ router.get("/inbox/:conversationId/messages", auth, async (req: any, res) => {
   }
 });
 
-
+/* ── INBOX — Send a reply ── */
 router.post("/inbox/:conversationId/reply", auth, async (req: any, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -287,7 +278,7 @@ router.post("/inbox/:conversationId/reply", auth, async (req: any, res) => {
 
     const response = await zernio.post(`/inbox/conversations/${conversationId}/messages`, {
       accountId: user.zernioAccountId,
-      message:      text.trim(),
+      message:   text.trim(),
     });
 
     res.json({ success: true, message: response.data.message });
@@ -296,6 +287,7 @@ router.post("/inbox/:conversationId/reply", auth, async (req: any, res) => {
     res.status(500).json({ error: "Failed to send reply" });
   }
 });
+
 /* ── Webhook receiver — Zernio sends incoming messages here ── */
 router.post("/webhook", express.json(), async (req, res) => {
   try {
