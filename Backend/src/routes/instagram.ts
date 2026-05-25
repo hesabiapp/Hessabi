@@ -204,6 +204,8 @@ router.post("/disconnect", auth, async (req: any, res) => {
 router.get("/inbox", auth, async (req: any, res) => {
   try {
     const user = await User.findById(req.user.id);
+     console.log("User zernioAccountId:", user?.zernioAccountId);
+    console.log("User id:", req.user.id);
     if (!user?.zernioAccountId) return res.json({ conversations: [] });
 
     const response = await zernio.get("/inbox/conversations", {
