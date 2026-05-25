@@ -211,20 +211,20 @@ router.get("/inbox", auth, async (req: any, res) => {
     });
     console.log("Inbox full response:", JSON.stringify(response.data, null, 2));
 
-    const raw = response.data.data ?? response.data.conversations ?? [];
-
+   const raw = response.data.data ?? response.data.conversations ?? [];
 
 const conversations = raw.map((c: any) => ({
   id:            c.id ?? c._id,
   participant: {
     username:          c.participantUsername ?? c.participantName ?? "Unknown",
-    profilePictureUrl: c.participantProfilePictureUrl ?? null,
+    profilePictureUrl: c.participantPicture ?? null,
     isFollower:        c.instagramProfile?.isFollower ?? false,
   },
-  lastMessage:   c.lastMessage?.message ?? c.lastMessage?.text ?? c.lastMessage?.content ?? "",
-  lastMessageAt: c.lastMessage?.sentAt ?? c.lastMessage?.createdAt ?? c.updatedAt ?? c.createdAt ?? null,
-  unreadCount:   c.unreadCount ?? (c.lastMessage?.direction === "incoming" && !c.lastMessage?.isRead ? 1 : 0),
+  lastMessage:   c.lastMessage ?? "",
+  lastMessageAt: c.updatedTime ?? null,
+  unreadCount:   0,
 }));
+
 
 
     res.json({ conversations });
