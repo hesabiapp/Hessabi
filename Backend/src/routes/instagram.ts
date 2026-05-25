@@ -209,23 +209,30 @@ router.get("/inbox", auth, async (req: any, res) => {
     const response = await zernio.get("/inbox/conversations", {
       params: { accountId: user.zernioAccountId },
     });
+
     console.log("Inbox full response:", JSON.stringify(response.data, null, 2));
 
-   const raw = response.data.data ?? response.data.conversations ?? [];
+    const raw = response.data.data ?? response.data.conversations ?? [];
 
-const conversations = raw.map((c: any) => ({
-  id:            c.id ?? c._id,
-  participant: {
-    username:          c.participantUsername ?? c.participantName ?? "Unknown",
-    profilePictureUrl: c.participantPicture ?? null,
-    isFollower:        c.instagramProfile?.isFollower ?? false,
-  },
-  lastMessage:   c.lastMessage ?? "",
-  lastMessageAt: c.updatedTime ?? null,
-  unreadCount:   0,
-}));
+    
+    const accountsRes = await zernio.get("/accounts");
+    const accounts = accountsRes.data.accounts ?? [];
+    const currentAccount = accounts.find((a: any) => a._id === user.zernioAccountId);
+    const currentUsername = currentAccount?.username ?? currentAccount?.accountUsername;
 
-
+    const conversations = raw
+      .filter((c: any) => !currentUsername || c.accountUsername === currentUsername)
+      .map((c: any) => ({
+        id:            c.id ?? c._id,
+        participant: {
+          username:          c.participantUsername ?? c.participantName ?? "Unknown",
+          profilePictureUrl: c.participantPicture ?? null,
+          isFollower:        c.instagramProfile?.isFollower ?? false,
+        },
+        lastMessage:   c.lastMessage ?? "",
+        lastMessageAt: c.updatedTime ?? null,
+        unreadCount:   0,
+      }));
 
     res.json({ conversations });
   } catch (err: any) {
@@ -233,7 +240,6 @@ const conversations = raw.map((c: any) => ({
     res.status(500).json({ error: "Failed to fetch inbox" });
   }
 });
-
 
 
 router.get("/inbox/:conversationId/messages", auth, async (req: any, res) => {
