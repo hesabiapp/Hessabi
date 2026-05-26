@@ -16,7 +16,7 @@ const MONTHLY_PRICE = 3;
 const FULL_PRICE = 50;
 const fmt = (n: number) => n.toFixed(3);
 
-type Feature = { text: string; ok: boolean };
+type Feature = { text: string; ok: boolean; soon?: boolean };
 
 const FeatureList = ({ features, dark = false }: { features: Feature[]; dark?: boolean }) => (
   <ul className="pricing-feature-list">
@@ -30,6 +30,20 @@ const FeatureList = ({ features, dark = false }: { features: Feature[]; dark?: b
         </span>
         <span className={`pricing-feature-text ${f.ok ? (dark ? "ok-dark" : "ok-light") : (dark ? "no-dark" : "no-light")}`}>
           {f.text}
+          {f.soon && (
+            <span style={{
+              marginLeft: "8px",
+              fontSize: "10px",
+              fontWeight: 700,
+              background: "#EFB036",
+              color: "#1a1a1a",
+              borderRadius: "6px",
+              padding: "2px 6px",
+             }}>
+             SOON
+          </span>
+         )}
+
         </span>
       </li>
     ))}
@@ -214,6 +228,18 @@ useEffect(() => {
                 className={`pricing-toggle-btn ${plan === p ? "active" : "inactive"}`}
               >
                 {p === "subscription" ? "📅 Monthly Subscription" : "👑 Get Your Own Version"}
+                <span style={{
+                  marginLeft: "8px",
+                  fontSize: "10px",
+                  fontWeight: 700,
+                  background: "#EFB036",
+                  color: "#1a1a1a",
+                  borderRadius: "6px",
+                  padding: "2px 6px",
+               }}>
+                     SOON
+              </span>
+    
               </button>
             ))}
           </div>
@@ -495,13 +521,15 @@ useEffect(() => {
                     <h3>Everything included — no limits, no monthly fees</h3>
                   </div>
                   <FeatureList features={[
-                    { text: "Full system access", ok: true },
-                    { text: "Unlimited staff accounts", ok: true },
-                    { text: "Sales & expense tracking", ok: true },
-                    { text: "Reports & analytics", ok: true },
-                    { text: "Customize your logo", ok: true },
-                    { text: "Full branding control", ok: true },
-                    { text: "No monthly fees — ever", ok: true },
+                    { text: "Full system access", ok: true ,soon: true },
+                    { text: "Unlimited staff accounts", ok: true, soon: true },
+                    { text: "Sales & expense tracking", ok: true ,soon: true },
+                    { text: "Reports & analytics", ok: true ,soon: true },
+                    { text: "Customize your logo", ok: true ,soon: true },
+                    { text: "Full branding control", ok: true ,soon: true },
+                    { text: "No monthly fees — ever", ok: true ,soon: true },
+
+                    { text: "Add custom pages", ok: true, soon: true },
                   ]} />
                   <div className="pricing-ownership-note">
                     <FaRocket color="#2F4157" size={16} style={{ marginTop: "2px", flexShrink: 0 }} />
