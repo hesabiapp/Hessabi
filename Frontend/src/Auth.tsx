@@ -174,7 +174,10 @@ const Auth = () => {
               </div>
               <h1>Welcome To <br /> Hessabi</h1>
               <p>Sign in With Email &amp; Password</p>
-              <button type="button" className="hidden" onClick={() => setIsActive(false)}>Login</button>
+              <button type="button" className="hidden" onClick={() => setIsActive(false)} disabled={loginLoading}>
+               {loginLoading ? "Logging in..." : "Login"}
+               </button>
+
             </div>
             <div className="auth-togglePanel auth-toggleRight">
               <div className="auth-logo-section">
@@ -182,7 +185,10 @@ const Auth = () => {
               </div>
               <h1>Join Us!</h1>
               <p>Sign up now and enjoy our Financial System</p>
-              <button type="button" className="hidden" onClick={() => setIsActive(true)}>Sign Up</button>
+             <button type="button" className="hidden" onClick={() => setIsActive(true)} disabled={signupLoading}>
+              {signupLoading ? "Creating Account..." : "Sign Up"}
+             </button>
+
             </div>
           </div>
         </div>
