@@ -84,7 +84,17 @@ const PricingPage = () => {
   // Check if user is logged in 
 useEffect(() => {
   const token = localStorage.getItem("token");
-  if (token) setIsLoggedIn(true);
+  if (!token) return;
+
+  fetch(`${API}/auth/viewUser`, {
+    headers: { Authorization: `Bearer ${token}` }
+  }).then(res => {
+    if (res.ok) setIsLoggedIn(true);
+    else {
+      localStorage.removeItem("token");
+      setIsLoggedIn(false);
+    }
+  }).catch(() => setIsLoggedIn(false));
 }, []);
  
    //  demo activate instead of charge
