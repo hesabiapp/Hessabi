@@ -85,7 +85,7 @@ const emptyItem = (): FormItem => ({
   unitPrice: "",
 });
 
-// FIX: removed count parameter — invoice number is now fetched from the backend
+
 const emptyForm = (): FormState => ({
   invoiceNumber: "...",
   date: new Date().toISOString().split("T")[0],
@@ -135,6 +135,7 @@ const Sales = () => {
       setSales([]);
     } finally {
       setLoading(false);
+      
     }
   };
 
@@ -148,7 +149,7 @@ const Sales = () => {
     }
   };
 
-  // FIX: fetch the next invoice number from the backend counter instead of calculating client-side
+ 
   const fetchNextInvoiceNumber = async (): Promise<string> => {
     try {
       const res = await fetch(`${API}/sales/nextInvoiceNumber`, {
