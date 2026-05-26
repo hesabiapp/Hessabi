@@ -11,6 +11,9 @@ const Auth = () => {
   const [searchParams] = useSearchParams();
   const { refetch } = useSubscription();
   const [loaded, setLoaded] = useState(false);
+  const [signupLoading, setSignupLoading] = useState(false);
+  const [loginLoading, setLoginLoading]   = useState(false);
+
 
   useEffect(() => {
     if (searchParams.get("signup") === "true") {
@@ -35,8 +38,10 @@ const Auth = () => {
 
   const handleSignUp = async () => {
     setSignupError("");
+    setSignupLoading(true);
     if (password !== confirmPassword) {
       setSignupError("Password do not match.");
+      setSignupLoading(false);
       return;
     }
     try {
@@ -80,11 +85,14 @@ const Auth = () => {
 
     } catch (err) {
       setSignupError("Something went wrong. Try again.");
+    } finally{
+      setSignupLoading(false);
     }
   };
 
   const handleLogin = async () => {
     setLoginError("");
+    setLoginLoading(true);
     try {
       const res = await fetch(`${API}/auth/login`, {
         method: "POST",
@@ -114,6 +122,8 @@ const Auth = () => {
 
     } catch (err) {
       setLoginError("Something went wrong. Try again.");
+    } finally{
+      setLoginLoading(false);
     }
   };
 
@@ -164,7 +174,10 @@ const Auth = () => {
               </div>
               <h1>Welcome To <br /> Hessabi</h1>
               <p>Sign in With Email &amp; Password</p>
-              <button type="button" className="hidden" onClick={() => setIsActive(false)}>Login</button>
+             <button type="button" onClick={handleLogin} disabled={loginLoading}>
+               {loginLoading ? "Logging in..." : "Login"}
+              </button>
+
             </div>
             <div className="auth-togglePanel auth-toggleRight">
               <div className="auth-logo-section">
@@ -172,7 +185,10 @@ const Auth = () => {
               </div>
               <h1>Join Us!</h1>
               <p>Sign up now and enjoy our Financial System</p>
-              <button type="button" className="hidden" onClick={() => setIsActive(true)}>Sign Up</button>
+              <button type="button" onClick={handleSignUp} disabled={signupLoading}>
+               {signupLoading ? "Creating Account..." : "Sign Up"}
+              </button>
+
             </div>
           </div>
         </div>
