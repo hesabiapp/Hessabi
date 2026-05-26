@@ -69,7 +69,8 @@ const Auth = () => {
       }));
 
       await refetch();
-      navigate("/Pricing?newUser=true");
+      const redirect = searchParams.get("redirect");  
+      navigate(redirect ?? "/Dashboard"); 
     } catch (err) {
       setSignupError("Something went wrong. Try again.");
     }
