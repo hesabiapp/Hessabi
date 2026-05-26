@@ -146,8 +146,8 @@ const Auth = () => {
             <input type="password" placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
             {signupError && <p className="error-msg">{signupError}</p>}
             <button type="button" onClick={handleSignUp} disabled={signupLoading}>
-  {signupLoading ? "Creating Account..." : "Sign Up"}
-</button>
+              {signupLoading ? "Creating Account..." : "Sign Up"}
+            </button>
 
           </form>
         </div>
@@ -165,8 +165,8 @@ const Auth = () => {
             <a href="#" onClick={(e) => { e.preventDefault(); setIsActive(true); }}>You don't have an Account?</a>
             {loginError && <p className="error-msg">{loginError}</p>}
             <button type="button" onClick={handleLogin} disabled={loginLoading}>
-  {loginLoading ? "Logging in..." : "Login"}
-</button>
+                {loginLoading ? "Logging in..." : "Login"}
+            </button>
 
           </form>
         </div>
