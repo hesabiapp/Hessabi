@@ -360,3 +360,5 @@ router.post("/webhook", express.json(), async (req, res) => {
     res.status(500).json({ error: "Webhook failed" });
   }
 });
+
+export default router;

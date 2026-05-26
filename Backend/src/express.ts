@@ -42,7 +42,8 @@ app.use(session({
 app.use(cors({
   origin: [
     "http://localhost:5173",
-    "https://hessabi.vercel.app"
+    "https://hessabi.vercel.app",
+    "https://www.hessabi.xyz"
   ],
   credentials: true
 }));
