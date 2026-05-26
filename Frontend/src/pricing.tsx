@@ -4,6 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaCheck, FaTimes, FaArrowRight, FaCrown, FaRocket, FaStar, FaInfinity } from "react-icons/fa";
 import "./Style/Pricing.css";
 import "./Style/System.css";
+import { useSubscription } from "./context/SubscriptionContext";
+
+const { refetch } = useSubscription();
 const API = import.meta.env.VITE_API_URL;
 const installmentPrices: Record<number, { total: number; monthly: number; savings: number }> = {
   3:  { total: 50, monthly: 16.667, savings: 25 },
@@ -129,6 +132,7 @@ useEffect(() => {
     const data = await res.json();
 
     if (data.success) {
+      await refetch(); 
       navigate("/Dashboard");
     } else {
       alert("Activation failed. Please try again.");
