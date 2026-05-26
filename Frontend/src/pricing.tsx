@@ -4,6 +4,9 @@ import { motion, AnimatePresence } from "framer-motion";
 import { FaCheck, FaTimes, FaArrowRight, FaCrown, FaRocket, FaStar, FaInfinity } from "react-icons/fa";
 import "./Style/Pricing.css";
 import "./Style/System.css";
+import { useSubscription } from "./context/SubscriptionContext";
+
+
 
 
 
@@ -81,6 +84,8 @@ const PricingPage = () => {
   const [isLoggedIn, setIsLoggedIn]   = useState(false);
   const [loading, setLoading]         = useState(false);
   const navigate = useNavigate();
+  const { refetch } = useSubscription();
+  const [searchParams] = useSearchParams(); 
 
   const currentPlan = installmentPrices[installment];
 
@@ -107,7 +112,7 @@ useEffect(() => {
   isOnetime?: boolean
 ) => {
   if (!isLoggedIn) {
-    navigate(`/Auth?signup=true&redirect=/Dashboard`);
+    navigate(`/Auth?signup=true&redirect=/pricing&plan=${planType}${installmentMonths ? `&months=${installmentMonths}` : ""}`);
     return;
   }
 
@@ -117,33 +122,36 @@ useEffect(() => {
   }
 
   setLoading(true);
-
   try {
-  
-   const res = await fetch(`${API}/subscriptions/demo-activate`, {
-  method: "POST",
-  headers: {
-    "Content-Type": "application/json",
-    Authorization: `Bearer ${localStorage.getItem("token")}`,
-  },
-  body: JSON.stringify({ planType, installmentMonths }),
-});
+    const res = await fetch(`${API}/subscriptions/demo-activate`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({ planType, installmentMonths }),
+    });
 
     const data = await res.json();
-
     if (data.success) {
-     
+      await refetch();
       navigate("/Dashboard");
     } else {
       alert("Activation failed. Please try again.");
     }
-
   } catch (err) {
     alert("Something went wrong. Please try again.");
   } finally {
     setLoading(false);
   }
 };
+useEffect(() => {
+  if (!isLoggedIn) return;
+  const plan = searchParams.get("plan") as "subscription" | "full" | null;
+  if (!plan) return;
+  const months = searchParams.get("months");
+  choosePlan(plan, months ? Number(months) : undefined);
+}, [isLoggedIn]);
 
 
 
