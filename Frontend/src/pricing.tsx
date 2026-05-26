@@ -104,7 +104,7 @@ useEffect(() => {
   isOnetime?: boolean
 ) => {
   if (!isLoggedIn) {
-    navigate(`/Auth?signup=true&redirect=/pricing`);
+    navigate(`/Auth?signup=true&redirect=/Dashboard`);
     return;
   }
 
