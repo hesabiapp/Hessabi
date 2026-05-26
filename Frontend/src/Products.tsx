@@ -367,7 +367,7 @@ const Products = () => {
               <input
                 value={s.size}
                 onChange={e => updateSize(i, "size", e.target.value)}
-                placeholder="Size (e.g. M, 42, 32x30, 10cm)"
+                placeholder="Size (e.g. M, 42, etc)"
               />
              
               <input
