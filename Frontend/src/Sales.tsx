@@ -75,6 +75,7 @@ type ImportRow = {
   quantity: string;
   price: string;
   error?: string;
+  warning?: string;
 };
 
 const emptyItem = (): FormItem => ({
@@ -235,13 +236,13 @@ const Sales = () => {
       try { data = JSON.parse(text); } catch {}
 
       if (res.ok) {
-        if (res.ok) {
+        // FIX: removed duplicate nested if (res.ok) check
         await fetchSales();
         await fetchProducts();
         setShowModal(false);
-        setForm(emptyForm(sales.length + 1));
-}
-
+        // FIX: fetchSales() already refreshed the list with the new sale included,
+        // so sales.length is already up to date — no need to add 1
+        setForm(emptyForm(sales.length));
       } else {
         setSubmitError(data.message ?? `Error ${res.status}`);
       }
@@ -313,20 +314,27 @@ const Sales = () => {
             date = `${d.y}-${String(d.m).padStart(2, "0")}-${String(d.d).padStart(2, "0")}`;
           }
 
-          let error = "";
-          if (!invoice)                                        error = "Missing invoice number";
-          else if (!date)                                      error = "Missing date";
-          else if (!customer)                                  error = "Missing customer name";
-          else if (!productName)                               error = "Missing product name";
-          else if (!quantity || isNaN(Number(quantity)))       error = "Invalid quantity";
-          else if (!price || isNaN(Number(price)))             error = "Invalid price";
-          else if (!["Cash", "BenefitPay"].includes(payment))  error = `Invalid payment: ${payment}`;
+          let error   = "";
+          let warning = "";
+
+          if (!invoice)                                  error = "Missing invoice number";
+          else if (!date)                                error = "Missing date";
+          else if (!customer)                            error = "Missing customer name";
+          else if (!productName)                         error = "Missing product name";
+          else if (!quantity || isNaN(Number(quantity))) error = "Invalid quantity";
+          else if (!price || isNaN(Number(price)))       error = "Invalid price";
           else {
             const found = products.find(p => p.itemName.toLowerCase() === productName.toLowerCase());
             if (!found) error = `Product not found: ${productName}`;
           }
 
-          return { invoice, date, customer, payment, productName, size, quantity, price, error };
+          // FIX: invalid payment is no longer a hard error — the backend defaults it to 'Cash'.
+          // Show a warning instead so the row is still imported.
+          if (!error && !["Cash", "BenefitPay"].includes(payment)) {
+            warning = `Invalid payment "${payment}", will default to Cash`;
+          }
+
+          return { invoice, date, customer, payment, productName, size, quantity, price, error, warning };
         });
 
         setImportRows(parsed);
@@ -734,7 +742,7 @@ const Sales = () => {
           </div>
         )}
 
-        {/* Import Preview Modal */}
+        {/* ── Import Preview Modal ── */}
         {showImportModal && (
           <div className="modal-overlay" onClick={closeImportModal}>
             <div className="modal import-modal" onClick={e => e.stopPropagation()}>
@@ -767,7 +775,9 @@ const Sales = () => {
                             <td>
                               {row.error
                                 ? <span className="import-error-badge">✕ {row.error}</span>
-                                : <span className="import-ok-badge">✓ OK</span>
+                                : row.warning
+                                  ? <span className="import-warning-badge">⚠ {row.warning}</span>
+                                  : <span className="import-ok-badge">✓ OK</span>
                               }
                             </td>
                           </tr>

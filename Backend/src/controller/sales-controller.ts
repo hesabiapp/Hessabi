@@ -3,6 +3,22 @@ import Sales from '../collections/sales-collection.js'
 import Product from '../collections/product-collection.js'
 import { validateSales } from '../function/zodValidators.js'
 import { salesCalculation } from '../function/salesCalculation.js'
+import Counter from '../models/Counter.js'
+
+
+const generateInvoiceNumber = async () => {
+    const counter = await Counter.findOneAndUpdate(
+        { name: 'invoice' },
+        { $inc: { seq: 1 } },
+        {
+            new: true,
+            upsert: true,
+            setDefaultsOnInsert: true
+        }
+    )
+
+    return `INV-${String(counter.seq).padStart(3, '0')}`
+}
 
 
 export const addSales = async (req: Request, res: Response) => {
@@ -10,25 +26,27 @@ export const addSales = async (req: Request, res: Response) => {
         return res.status(404).json({ message: 'input is required.' })
     }
 
-    const { invoiceNumber, date, customerName, items, source, paymentMethod } = req.body
+    const { date, customerName, items, source, paymentMethod } = req.body
     const user: any = req.user
     const createdBy = `${user.username} (${user.role})`
-    let product: any[];
+    const invoiceNumber = await generateInvoiceNumber()
 
+    // FIX: renamed inner variable to 'foundProduct' to avoid shadowing the outer 'products' array
+    let products: any[]
     try {
-        product = await Promise.all(
+        products = await Promise.all(
             items.map(async (item: any) => {
-                const product = await Product.findById(item.productId);
-                if (!product) throw new Error("Product not found.");
-                return product;
+                const foundProduct = await Product.findById(item.productId)
+                if (!foundProduct) throw new Error('Product not found.')
+                return foundProduct
             })
-        );
+        )
     } catch (error: any) {
-        return res.status(400).json({ message: error.message });
+        return res.status(400).json({ message: error.message })
     }
 
-    //  Sales calculation
-    const { sales: itemSales, totalSales, totalNetSales, totalVat, totalCost, grossProfit } = salesCalculation(items, product)
+    // Sales calculation
+    const { sales: itemSales, totalSales, totalNetSales, totalVat, totalCost, grossProfit } = salesCalculation(items, products)
 
     const salesVal = validateSales.safeParse({
         invoiceNumber, date, customerName,
@@ -41,52 +59,47 @@ export const addSales = async (req: Request, res: Response) => {
         return res.status(400).send({ input: error.path, message: error.message })
     }
 
-    const salesR = await Sales.findOne({ invoiceNumber, businessID: user.businessId })
-    if (salesR) {
-        return res.status(400).json({ message: 'Invoice (Sale) number already exists.' })
-    }
-
-    
+    // Stock validation (check first before any deduction)
     for (let index = 0; index < itemSales.length; index++) {
-        const p = product[index];
-        const hasSizes = p.sizes && p.sizes.length > 0;
+        const p = products[index]
+        const hasSizes = p.sizes && p.sizes.length > 0
 
         if (hasSizes) {
-            const sizeEntry = p.sizes.find((s: any) => s.size === itemSales[index].size);
+            const sizeEntry = p.sizes.find((s: any) => s.size === itemSales[index].size)
             if (!sizeEntry) {
                 return res.status(400).json({
                     message: `Size ${itemSales[index].size} is not available for product ${itemSales[index].itemName}.`
-                });
+                })
             }
             if (itemSales[index].quantity > sizeEntry.stock) {
                 return res.status(400).json({
                     message: `Not enough stock for product ${itemSales[index].itemName} size ${itemSales[index].size}.`
-                });
+                })
             }
         } else {
             if (itemSales[index].quantity > p.stock) {
                 return res.status(400).json({
                     message: `Not enough stock for product ${itemSales[index].itemName}.`
-                });
+                })
             }
         }
     }
 
-     
+    // Stock deduction
     for (let index = 0; index < itemSales.length; index++) {
-        const p = product[index];
-        const hasSizes = p.sizes && p.sizes.length > 0;
+        const p = products[index]
+        const hasSizes = p.sizes && p.sizes.length > 0
 
         if (hasSizes) {
-            const sizeEntry = p.sizes.find((s: any) => s.size === itemSales[index].size);
+            const sizeEntry = p.sizes.find((s: any) => s.size === itemSales[index].size)
             if (sizeEntry) {
-                sizeEntry.stock -= itemSales[index].quantity;
-                p.stock = p.sizes.reduce((sum: number, s: any) => sum + s.stock, 0);
-                await p.save();
+                sizeEntry.stock -= itemSales[index].quantity
+                p.stock = p.sizes.reduce((sum: number, s: any) => sum + s.stock, 0)
+                await p.save()
             }
         } else {
-            p.stock -= itemSales[index].quantity;
-            await p.save();
+            p.stock -= itemSales[index].quantity
+            await p.save()
         }
     }
 
@@ -94,16 +107,16 @@ export const addSales = async (req: Request, res: Response) => {
         businessID: user.businessId,
         invoiceNumber, date, customerName,
         items: itemSales,
-        totalSales,       
-        totalNetSales,    
-        totalVat,         
+        totalSales,
+        totalNetSales,
+        totalVat,
         totalCost,
-        grossProfit,     
+        grossProfit,
         source, paymentMethod, createdBy
     })
 
     return res.status(200).json({
-        message: 'Sales successfully added.',
+        message:        'Sales successfully added.',
         invoiceNumber:  sales.invoiceNumber,
         date:           sales.date,
         customerName:   sales.customerName,
@@ -120,13 +133,15 @@ export const addSales = async (req: Request, res: Response) => {
 }
 
 export const viewSales = async (req: Request, res: Response) => {
-    const user: any = req.user;
-    const viewSales = await Sales.find({ businessID: user.businessId })
-    if (viewSales.length == 0) {
+    const user: any = req.user
+
+    // FIX: renamed variable from 'viewSales' to 'salesRecords' to avoid sharing name with the function
+    const salesRecords = await Sales.find({ businessID: user.businessId })
+    if (salesRecords.length === 0) {
         return res.status(400).send({ message: 'Sales records are empty.' })
     }
 
-    const sales = viewSales.map((sale: any) => ({
+    const sales = salesRecords.map((sale: any) => ({
         invoiceNumber:  sale.invoiceNumber,
         date:           sale.date,
         customerName:   sale.customerName,
@@ -149,62 +164,67 @@ export const viewSale = async (req: Request, res: Response) => {
         return res.status(400).send({ message: 'input is required.' })
     }
 
-    const { invoiceNumber } = req.body;
-    const viewSale = await Sales.findOne({ invoiceNumber })
-    if (!viewSale) {
+    const { invoiceNumber } = req.body
+    const user: any = req.user
+
+    // FIX: added businessID filter so a business can only view its own sales
+    const sale = await Sales.findOne({ invoiceNumber, businessID: user.businessId })
+    if (!sale) {
         return res.status(400).send({ message: 'Sale is not found' })
     }
 
     return res.status(200).send({
         message:        'Sale record is found',
-        invoiceNumber:  viewSale.invoiceNumber,
-        date:           viewSale.date,
-        customerName:   viewSale.customerName,
-        items:          viewSale.items,
-        totalSales:     viewSale.totalSales,
-        totalNetSales:  viewSale.totalNetSales,
-        totalVat:       viewSale.totalVat,
-        totalCost:      viewSale.totalCost,
-        grossProfit:    viewSale.grossProfit,
-        source:         viewSale.source,
-        createdBy:      viewSale.createdBy
+        invoiceNumber:  sale.invoiceNumber,
+        date:           sale.date,
+        customerName:   sale.customerName,
+        items:          sale.items,
+        totalSales:     sale.totalSales,
+        totalNetSales:  sale.totalNetSales,
+        totalVat:       sale.totalVat,
+        totalCost:      sale.totalCost,
+        grossProfit:    sale.grossProfit,
+        source:         sale.source,
+        createdBy:      sale.createdBy
     })
 }
 
 export const deleteSale = async (req: Request, res: Response) => {
     try {
-        const { invoiceNumber } = req.body;
-        if (!invoiceNumber) return res.status(400).json({ message: 'Invoice number is required.' });
+        const { invoiceNumber } = req.body
+        const user: any = req.user
 
-        const sale = await Sales.findOne({ invoiceNumber });
-        if (!sale) return res.status(404).json({ message: 'Sale not found.' });
+        if (!invoiceNumber) return res.status(400).json({ message: 'Invoice number is required.' })
 
-        
+        // FIX: added businessID filter so a business can only delete its own sales
+        const sale = await Sales.findOne({ invoiceNumber, businessID: user.businessId })
+        if (!sale) return res.status(404).json({ message: 'Sale not found.' })
+
+        // Restore stock
         for (const item of sale.items) {
-            const product = await Product.findById(item.productId);
-            if (!product) continue;
+            const product = await Product.findById(item.productId)
+            if (!product) continue
 
-            const hasSizes = product.sizes && product.sizes.length > 0;
+            const hasSizes = product.sizes && product.sizes.length > 0
 
             if (hasSizes && item.size) {
-                const sizeEntry = product.sizes.find((s: any) => s.size === item.size);
+                const sizeEntry = product.sizes.find((s: any) => s.size === item.size)
                 if (sizeEntry) {
-                    sizeEntry.stock += item.quantity;
-                    product.stock = product.sizes.reduce((sum: number, s: any) => sum + s.stock, 0);
-                    await product.save();
+                    sizeEntry.stock += item.quantity
+                    product.stock = product.sizes.reduce((sum: number, s: any) => sum + s.stock, 0)
+                    await product.save()
                 }
             } else {
-                product.stock += item.quantity;
-                await product.save();
+                product.stock += item.quantity
+                await product.save()
             }
         }
 
-        await Sales.deleteOne({ invoiceNumber });
-        return res.status(200).json({ message: 'Sale deleted and stock restored.' });
+        await Sales.deleteOne({ invoiceNumber, businessID: user.businessId })
+        return res.status(200).json({ message: 'Sale deleted and stock restored.' })
 
     } catch (err) {
-        
-        return res.status(500).json({ message: 'Server error', error: err });
+        return res.status(500).json({ message: 'Server error', error: err })
     }
 }
 
@@ -255,15 +275,15 @@ export const importSales = async (req: Request, res: Response) => {
                 color:     products[i].color,
                 size:      row.size ?? '',
                 quantity:  Number(row.quantity),
-                unitPrice: Number(row.price), 
+                unitPrice: Number(row.price),
             }))
 
             const { sales: itemSales, totalSales, totalNetSales, totalVat, totalCost, grossProfit } = salesCalculation(items, products)
 
-            // Stock validation 
+            // Stock validation
             for (let i = 0; i < itemSales.length; i++) {
-                const p = products[i];
-                const hasSizes = p.sizes && p.sizes.length > 0;
+                const p = products[i]
+                const hasSizes = p.sizes && p.sizes.length > 0
                 if (hasSizes) {
                     const sizeStock = p.sizes.find((s: any) => s.size === itemSales[i].size)
                     if (!sizeStock) throw new Error(`Size ${itemSales[i].size} not available for ${itemSales[i].itemName}`)
@@ -273,10 +293,10 @@ export const importSales = async (req: Request, res: Response) => {
                 }
             }
 
-            // Stock deduction 
+            // Stock deduction
             for (let i = 0; i < itemSales.length; i++) {
-                const p = products[i];
-                const hasSizes = p.sizes && p.sizes.length > 0;
+                const p = products[i]
+                const hasSizes = p.sizes && p.sizes.length > 0
                 if (hasSizes) {
                     const sizeStock = p.sizes.find((s: any) => s.size === itemSales[i].size)
                     if (sizeStock) {
@@ -290,8 +310,13 @@ export const importSales = async (req: Request, res: Response) => {
                 }
             }
 
+            // FIX: paymentMethod now notes in results if it was corrected from an invalid value
             let paymentMethod = firstRow.payment
-            if (!['Cash', 'BenefitPay'].includes(paymentMethod)) paymentMethod = 'Cash'
+            let paymentCorrected = false
+            if (!['Cash', 'BenefitPay'].includes(paymentMethod)) {
+                paymentMethod = 'Cash'
+                paymentCorrected = true
+            }
 
             await Sales.create({
                 businessID: user.businessId,
@@ -309,7 +334,22 @@ export const importSales = async (req: Request, res: Response) => {
                 createdBy,
             })
 
-            results.push({ invoice: invoiceNumber, status: 'success' })
+            // FIX: counter sync is now inside try/catch so errors don't go silently unhandled
+            const invoiceMatch = invoiceNumber.match(/\d+/)
+            if (invoiceMatch) {
+                const invoiceSeq = parseInt(invoiceMatch[0])
+                await Counter.findOneAndUpdate(
+                    { name: 'invoice' },
+                    { $max: { seq: invoiceSeq } },
+                    { upsert: true }
+                )
+            }
+
+            results.push({
+                invoice: invoiceNumber,
+                status: 'success',
+                ...(paymentCorrected && { message: `Payment method was invalid, defaulted to 'Cash'.` })
+            })
 
         } catch (err: any) {
             results.push({ invoice: invoiceNumber, status: 'error', message: err.message })
