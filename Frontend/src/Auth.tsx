@@ -145,7 +145,10 @@ const Auth = () => {
             <input type="password" placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} />
             <input type="password" placeholder="Confirm Password" value={confirmPassword} onChange={(e) => setConfirmPassword(e.target.value)} />
             {signupError && <p className="error-msg">{signupError}</p>}
-            <button type="button" onClick={handleSignUp}>Sign Up</button>
+            <button type="button" onClick={handleSignUp} disabled={signupLoading}>
+              {signupLoading ? "Creating Account..." : "Sign Up"}
+            </button>
+
           </form>
         </div>
 
@@ -161,7 +164,10 @@ const Auth = () => {
             <input type="password" placeholder="Enter Password" value={loginPassword} onChange={(e) => setLoginPassword(e.target.value)} />
             <a href="#" onClick={(e) => { e.preventDefault(); setIsActive(true); }}>You don't have an Account?</a>
             {loginError && <p className="error-msg">{loginError}</p>}
-            <button type="button" onClick={handleLogin}>Login</button>
+            <button type="button" onClick={handleLogin} disabled={loginLoading}>
+              {loginLoading ? "Logging in..." : "Login"}
+            </button>
+
           </form>
         </div>
 
@@ -174,10 +180,7 @@ const Auth = () => {
               </div>
               <h1>Welcome To <br /> Hessabi</h1>
               <p>Sign in With Email &amp; Password</p>
-             <button type="button" onClick={handleLogin} disabled={loginLoading}>
-               {loginLoading ? "Logging in..." : "Login"}
-              </button>
-
+              <button type="button" className="hidden" onClick={() => setIsActive(false)}>Login</button>
             </div>
             <div className="auth-togglePanel auth-toggleRight">
               <div className="auth-logo-section">
@@ -185,10 +188,7 @@ const Auth = () => {
               </div>
               <h1>Join Us!</h1>
               <p>Sign up now and enjoy our Financial System</p>
-              <button type="button" onClick={handleSignUp} disabled={signupLoading}>
-               {signupLoading ? "Creating Account..." : "Sign Up"}
-              </button>
-
+              <button type="button" className="hidden" onClick={() => setIsActive(true)}>Sign Up</button>
             </div>
           </div>
         </div>
