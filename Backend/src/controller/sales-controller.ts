@@ -5,25 +5,20 @@ import { validateSales } from '../function/zodValidators.js'
 import { salesCalculation } from '../function/salesCalculation.js'
 import Counter from '../models/Counter.js'
 
-
-const generateInvoiceNumber = async () => {
+const generateInvoiceNumber = async (businessId: string) => {
     const counter = await Counter.findOneAndUpdate(
-        { name: 'invoice' },
+        { name: 'invoice', businessID: businessId },
         { $inc: { seq: 1 } },
-        {
-            new: true,
-            upsert: true,
-            setDefaultsOnInsert: true
-        }
+        { new: true, upsert: true, setDefaultsOnInsert: true }
     )
-
     return `INV-${String(counter.seq).padStart(3, '0')}`
 }
 
 
 // FIX: new endpoint — peeks at the next invoice number without incrementing the counter
 export const getNextInvoiceNumber = async (req: Request, res: Response) => {
-    const counter = await Counter.findOne({ name: 'invoice' })
+    const user: any = req.user
+    const counter = await Counter.findOne({ name: 'invoice', businessID: user.businessId })
     const next = (counter?.seq ?? 0) + 1
     return res.status(200).json({ invoiceNumber: `INV-${String(next).padStart(3, '0')}` })
 }
@@ -37,7 +32,8 @@ export const addSales = async (req: Request, res: Response) => {
     const { date, customerName, items, source, paymentMethod } = req.body
     const user: any = req.user
     const createdBy = `${user.username} (${user.role})`
-    const invoiceNumber = await generateInvoiceNumber()
+    const invoiceNumber = await generateInvoiceNumber(user.businessId)
+    
 
     let products: any[]
     try {
@@ -341,11 +337,11 @@ export const importSales = async (req: Request, res: Response) => {
             const invoiceMatch = invoiceNumber.match(/\d+/)
             if (invoiceMatch) {
                 const invoiceSeq = parseInt(invoiceMatch[0])
-                await Counter.findOneAndUpdate(
-                    { name: 'invoice' },
-                    { $max: { seq: invoiceSeq } },
-                    { upsert: true }
-                )
+               await Counter.findOneAndUpdate(
+    { name: 'invoice', businessID: user.businessId },
+    { $max: { seq: invoiceSeq } },
+    { upsert: true }
+)
             }
 
             results.push({
