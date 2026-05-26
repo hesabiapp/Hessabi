@@ -3,7 +3,6 @@ import "./Style/Profile.css";
 import "./Style/System.css";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
-import { useNavigate } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -28,7 +27,6 @@ const Profile = () => {
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
     const [photoFile, setPhotoFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
-    const navigate = useNavigate();
 
     const [form, setForm] = useState({
         username: "",
@@ -46,18 +44,12 @@ const Profile = () => {
 
     const fetchProfile = async () => {
         setLoading(true);
-    try {
-        const res = await fetch(`${API}/auth/viewUser`, {
-            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
-        });
-
-        if (res.status === 401) {
-            localStorage.removeItem("token");
-            navigate("/login");
-            return;
+        try {
+            const res = await fetch(`${API}/auth/viewUser`, 
+            { headers: { Authorization: `Bearer ${localStorage.getItem("token")}` 
+            
         }
-
-        if (!res.ok) throw new Error("Failed to fetch profile");
+     });
             const data = await res.json();
             if (res.ok) {
                 setProfile(data);
