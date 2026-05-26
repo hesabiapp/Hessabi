@@ -144,6 +144,7 @@ const InstagramTab = () => {
   const [messagesLoading, setMessagesLoading] = useState(false);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const autoRefreshRef = useRef<ReturnType<typeof setInterval> | null>(null);
+  const lastNotifiedRef = useRef<Record<string, string>>({});
 
   
 useEffect(() => { fetchIGData(); }, []);
@@ -203,25 +204,26 @@ const fetchConversations = async (silent = false) => {
     const json = await res.json();
     const newConvs: Conversation[] = json.conversations ?? [];
 
-   
-    if (silent && conversations.length > 0) {
+ if (silent && conversations.length > 0) {
   newConvs.forEach(newConv => {
-    const existing = conversations.find(c => c.id === newConv.id);
-    const isNewMessage = !existing || 
-      (newConv.lastMessageAt && existing.lastMessageAt && 
-       new Date(newConv.lastMessageAt) > new Date(existing.lastMessageAt));
-    
-    if (isNewMessage && newConv.lastMessage) {
+    const lastNotified = lastNotifiedRef.current[newConv.id];
+    const isNewer = newConv.lastMessageAt &&
+      (!lastNotified || new Date(newConv.lastMessageAt) > new Date(lastNotified));
+
+    const isIncoming = newConv.lastMessage !== "" &&
+      selectedConvId !== newConv.id;
+
+    if (isNewer && isIncoming) {
       if (Notification.permission === "granted") {
         new Notification(`New message from @${newConv.participant.username}`, {
           body: newConv.lastMessage,
           icon: "/images/HLogo.png",
         });
       }
+      lastNotifiedRef.current[newConv.id] = newConv.lastMessageAt;
     }
   });
 }
-
 
     setConversations(newConvs);
   } catch {
