@@ -3,6 +3,7 @@ import axios from "axios";
 import jwt from "jsonwebtoken";
 import { auth } from "../middleware/auth.js";
 import User from "../collections/user-collection.js";
+import IgMessage from "../collections/igMessage-collection.js";
 
 const router = express.Router();
 
@@ -202,40 +203,54 @@ router.post("/disconnect", auth, async (req: any, res) => {
   }
 });
 
-/* ── INBOX — List conversations ── */
+/* ── INBOX — List conversations from MongoDB ── */
 router.get("/inbox", auth, async (req: any, res) => {
   try {
     const user = await User.findById(req.user.id);
     if (!user?.zernioAccountId) return res.json({ conversations: [] });
 
-    const response = await zernio.get("/inbox/conversations", {
-      params: { accountId: user.zernioAccountId },
-    });
-
-    const raw = response.data.data ?? response.data.conversations ?? [];
-
-    const conversations = raw
-      .filter((c: any) => c.accountId === user.zernioAccountId)
-      .map((c: any) => ({
-        id:            c.id ?? c._id,
-        participant: {
-          username:          c.participantUsername ?? c.participantName ?? "Unknown",
-          profilePictureUrl: c.participantPicture ?? null,
-          isFollower:        c.instagramProfile?.isFollower ?? false,
+    /* Get the latest message per conversation for this account */
+    const latest = await IgMessage.aggregate([
+      { $match: { accountId: user.zernioAccountId } },
+      { $sort: { sentAt: -1 } },
+      {
+        $group: {
+          _id:                 "$conversationId",
+          lastMessage:         { $first: "$message" },
+          lastMessageAt:       { $first: "$sentAt" },
+          participantName:     { $first: "$participantName" },
+          participantUsername: { $first: "$participantUsername" },
+          participantPicture:  { $first: "$participantPicture" },
+          unreadCount: {
+            $sum: {
+              $cond: [{ $and: [{ $eq: ["$direction", "incoming"] }, { $eq: ["$isRead", false] }] }, 1, 0],
+            },
+          },
         },
-        lastMessage:   c.lastMessage ?? "",
-        lastMessageAt: c.updatedTime ?? null,
-        unreadCount:   0,
-      }));
+      },
+      { $sort: { lastMessageAt: -1 } },
+    ]);
+
+    const conversations = latest.map((c: any) => ({
+      id:            c._id,
+      participant: {
+        username:          c.participantUsername ?? c.participantName ?? "Unknown",
+        profilePictureUrl: c.participantPicture ?? null,
+        isFollower:        false,
+      },
+      lastMessage:   c.lastMessage ?? "",
+      lastMessageAt: c.lastMessageAt ?? null,
+      unreadCount:   c.unreadCount ?? 0,
+    }));
 
     res.json({ conversations });
   } catch (err: any) {
-    console.error("Inbox list error:", err.response?.data ?? err.message);
+    console.error("Inbox list error:", err.message);
     res.status(500).json({ error: "Failed to fetch inbox" });
   }
 });
 
-/* ── INBOX — Get messages in a conversation ── */
+/* ── INBOX — Get messages in a conversation from MongoDB ── */
 router.get("/inbox/:conversationId/messages", auth, async (req: any, res) => {
   try {
     const user = await User.findById(req.user.id);
@@ -243,24 +258,28 @@ router.get("/inbox/:conversationId/messages", auth, async (req: any, res) => {
 
     const { conversationId } = req.params;
 
-    const response = await zernio.get(`/inbox/conversations/${conversationId}/messages`, {
-      params: { accountId: user.zernioAccountId },
-    });
+    /* Mark messages as read */
+    await IgMessage.updateMany(
+      { accountId: user.zernioAccountId, conversationId, direction: "incoming", isRead: false },
+      { $set: { isRead: true } }
+    );
 
-    const messages = (response.data.data ?? response.data.messages ?? []).map((m: any) => ({
-      id:        m.id ?? m._id,
-      text:      m.message ?? m.text ?? m.content ?? "",
-      fromMe:    m.direction === "outgoing" || m.direction === "outbound" || m.fromMe === true,
-      createdAt: m.sentAt ?? m.createdAt ?? m.timestamp,
-      attachments: (m.attachments ?? []).map((a: any) => ({
-        type: a.type,
-        url:  a.url,
-      })),
+    const raw = await IgMessage.find({
+      accountId:      user.zernioAccountId,
+      conversationId,
+    }).sort({ sentAt: 1 });
+
+    const messages = raw.map((m: any) => ({
+      id:          m._id.toString(),
+      text:        m.message ?? "",
+      fromMe:      m.direction === "outgoing",
+      createdAt:   m.sentAt,
+      attachments: m.attachments ?? [],
     }));
 
     res.json({ messages });
   } catch (err: any) {
-    console.error("Messages fetch error:", err.response?.data ?? err.message);
+    console.error("Messages fetch error:", err.message);
     res.status(500).json({ error: "Failed to fetch messages" });
   }
 });
@@ -276,23 +295,62 @@ router.post("/inbox/:conversationId/reply", auth, async (req: any, res) => {
 
     if (!text?.trim()) return res.status(400).json({ error: "Message cannot be empty" });
 
-    const response = await zernio.post(`/inbox/conversations/${conversationId}/messages`, {
+    /* Send via Zernio */
+    await zernio.post(`/inbox/conversations/${conversationId}/messages`, {
       accountId: user.zernioAccountId,
       message:   text.trim(),
     });
 
-    res.json({ success: true, message: response.data.message });
+    /* Save outgoing message to MongoDB */
+    const conv = await IgMessage.findOne({ accountId: user.zernioAccountId, conversationId }).sort({ sentAt: -1 });
+
+    await IgMessage.create({
+      accountId:           user.zernioAccountId,
+      conversationId,
+      participantName:     conv?.participantName ?? "",
+      participantUsername: conv?.participantUsername ?? "",
+      participantPicture:  conv?.participantPicture ?? null,
+      message:             text.trim(),
+      direction:           "outgoing",
+      sentAt:              new Date(),
+      isRead:              true,
+    });
+
+    res.json({ success: true });
   } catch (err: any) {
     console.error("Reply error:", err.response?.data ?? err.message);
     res.status(500).json({ error: "Failed to send reply" });
   }
 });
 
-/* ── Webhook receiver — Zernio sends incoming messages here ── */
+/* ── Webhook receiver — saves messages to MongoDB ── */
 router.post("/webhook", express.json(), async (req, res) => {
   try {
     const event = req.body;
-    console.log("Zernio webhook received:", JSON.stringify(event, null, 2));
+
+    if (event.event === "message.received" && event.message && event.account) {
+      const { message, conversation, account } = event;
+
+      /* Avoid duplicate saves */
+      const exists = await IgMessage.findOne({ platformMessageId: message.platformMessageId });
+      if (!exists) {
+        await IgMessage.create({
+          accountId:           account.id,
+          accountUsername:     account.username,
+          conversationId:      conversation.id,
+          participantId:       conversation.participantId,
+          participantName:     conversation.participantName,
+          participantUsername: conversation.participantUsername ?? conversation.participantName,
+          message:             message.text ?? "",
+          direction:           "incoming",
+          sentAt:              new Date(message.sentAt),
+          isRead:              false,
+          platformMessageId:   message.platformMessageId,
+          attachments:         message.attachments ?? [],
+        });
+      }
+    }
+
     res.status(200).json({ received: true });
   } catch (err: any) {
     console.error("Webhook error:", err.message);
