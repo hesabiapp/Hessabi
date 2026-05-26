@@ -3,6 +3,7 @@ import "./Style/Profile.css";
 import "./Style/System.css";
 import Header from "./components/Header";
 import Sidebar from "./components/Sidebar";
+import { useNavigate } from "react-router-dom";
 
 const API = import.meta.env.VITE_API_URL;
 
@@ -27,6 +28,7 @@ const Profile = () => {
     const [photoPreview, setPhotoPreview] = useState<string | null>(null);
     const [photoFile, setPhotoFile] = useState<File | null>(null);
     const fileInputRef = useRef<HTMLInputElement>(null);
+    const navigate = useNavigate();
 
     const [form, setForm] = useState({
         username: "",
@@ -49,10 +51,9 @@ const Profile = () => {
             headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
         });
 
-        // If token is invalid/expired, clear it and redirect
         if (res.status === 401) {
             localStorage.removeItem("token");
-            window.location.href = "/Auth"; // or use your router's navigate()
+            navigate("/login");
             return;
         }
 
