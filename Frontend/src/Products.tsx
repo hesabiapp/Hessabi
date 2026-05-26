@@ -372,9 +372,9 @@ const Products = () => {
              
               <input
                 type="number"
-                value={s.stock}
+                value={s.stock === 0 ? "" : s.stock}
                 onChange={e => updateSize(i, "stock", e.target.value)}
-                placeholder="Stock per item"
+                placeholder="Stock"
               />
 
               <button className="delete-btn" onClick={() => removeSize(i)}>✕</button>
