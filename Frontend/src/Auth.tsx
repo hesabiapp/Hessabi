@@ -69,8 +69,15 @@ const Auth = () => {
       }));
 
       await refetch();
-      const redirect = searchParams.get("redirect");  
-      navigate(redirect ?? "/Dashboard"); 
+      
+     const redirect = searchParams.get("redirect");
+     const plan = searchParams.get("plan");
+     const months = searchParams.get("months");
+     const redirectUrl = redirect
+     ? `${redirect}${plan ? `?plan=${plan}${months ? `&months=${months}` : ""}` : ""}`
+     : "/Dashboard";
+    navigate(redirectUrl);
+
     } catch (err) {
       setSignupError("Something went wrong. Try again.");
     }
