@@ -221,12 +221,23 @@ export const deleteSale = async (req: Request, res: Response) => {
         }
 
         await Sales.deleteOne({ invoiceNumber, businessID: user.businessId })
+
+        // Reset counter if no sales remain for this business
+        const remainingSales = await Sales.countDocuments({ businessID: user.businessId })
+        if (remainingSales === 0) {
+            await Counter.findOneAndUpdate(
+                { name: 'invoice', businessID: user.businessId },
+                { $set: { seq: 0 } }
+            )
+        }
+
         return res.status(200).json({ message: 'Sale deleted and stock restored.' })
 
     } catch (err) {
         return res.status(500).json({ message: 'Server error', error: err })
     }
 }
+
 
 export const importSales = async (req: Request, res: Response) => {
     if (!req.body) {
