@@ -41,10 +41,20 @@ export const userProfile = () => {
 
     const fetchProfile = async () => {
         setLoading(true);
-        try {
-            const res = await fetch(`${API}/auth/viewUser`, {
-                headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
-            });
+    try {
+        const res = await fetch(`${API}/auth/viewUser`, {
+            headers: { Authorization: `Bearer ${localStorage.getItem("token")}` }
+        });
+
+        // If token is invalid/expired, clear it and redirect
+        if (res.status === 401) {
+            localStorage.removeItem("token");
+            window.location.href = "/Auth"; // or use your router's navigate()
+            return;
+        }
+
+        if (!res.ok) throw new Error("Failed to fetch profile");
+            
             const data = await res.json();
             if (res.ok) {
                 setProfile(data);
