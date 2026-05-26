@@ -227,7 +227,9 @@ useEffect(() => {
                 onClick={() => setPlan(p)}
                 className={`pricing-toggle-btn ${plan === p ? "active" : "inactive"}`}
               >
-                {p === "subscription" ? "📅 Monthly Subscription" : "👑 Get Your Own Version"}
+                {p === "subscription" ? "📅 Monthly Subscription" :(
+                  <>
+                  "👑 Get Your Own Version"
                 <span style={{
                   marginLeft: "8px",
                   fontSize: "10px",
@@ -239,7 +241,8 @@ useEffect(() => {
                }}>
                      SOON
               </span>
-    
+    </>
+     )}
               </button>
             ))}
           </div>
