@@ -11,6 +11,8 @@ const ZERNIO_API_KEY = process.env.ZERNIO_API_KEY!;
 const FRONTEND_URL   = process.env.FRONTEND_URL ?? "http://localhost:5173";
 const BACKEND_URL    = process.env.BACKEND_URL  ?? "https://hessabi.onrender.com";
 
+
+
 const zernio = axios.create({
   baseURL: "https://zernio.com/api/v1",
   headers: { Authorization: `Bearer ${ZERNIO_API_KEY}` },
@@ -328,10 +330,11 @@ router.post("/webhook", express.json(), async (req, res) => {
   try {
     const event = req.body;
 
-    if (event.event === "message.received" && event.message && event.account) {
+    if (event.message && event.account && 
+       (event.event === "message.received" || event.event === "message.sent" || event.event === "message.delivered")) {
+      
       const { message, conversation, account } = event;
 
-      /* Avoid duplicate saves */
       const exists = await IgMessage.findOne({ platformMessageId: message.platformMessageId });
       if (!exists) {
         await IgMessage.create({
@@ -342,9 +345,9 @@ router.post("/webhook", express.json(), async (req, res) => {
           participantName:     conversation.participantName,
           participantUsername: conversation.participantUsername ?? conversation.participantName,
           message:             message.text ?? "",
-          direction:           "incoming",
+          direction:           message.direction === "outgoing" ? "outgoing" : "incoming",
           sentAt:              new Date(message.sentAt),
-          isRead:              false,
+          isRead:              message.direction === "outgoing" ? true : false,
           platformMessageId:   message.platformMessageId,
           attachments:         message.attachments ?? [],
         });
@@ -357,5 +360,3 @@ router.post("/webhook", express.json(), async (req, res) => {
     res.status(500).json({ error: "Webhook failed" });
   }
 });
-
-export default router;
