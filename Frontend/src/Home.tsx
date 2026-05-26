@@ -62,8 +62,6 @@ const HomePage: React.FC = () => {
             <span onClick={() => { document.getElementById("Contact-us")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); }}>Contact Us</span>
             <span onClick={() => { document.getElementById("about-us")?.scrollIntoView({ behavior: "smooth" }); setMenuOpen(false); }}>About Us</span>
             <Link to="/Ourstory" onClick={() => setMenuOpen(false)}><span>Our Story</span></Link>
-            <Link to="/Auth" onClick={() => setMenuOpen(false)}><span>Login</span></Link>
-            <Link to="/Auth?signup=true" onClick={() => setMenuOpen(false)}><span>Sign Up</span></Link>
           </div>
         )}
       </header>
