@@ -85,13 +85,9 @@ const emptyItem = (): FormItem => ({
   unitPrice: "",
 });
 
-const generateInvoiceNumber = (salesCount: number) => {
-  const num = String(salesCount + 1).padStart(3, "0");
-  return `INV-${num}`;
-};
-
-const emptyForm = (count: number = 0): FormState => ({
-  invoiceNumber: generateInvoiceNumber(count),
+// FIX: removed count parameter — invoice number is now fetched from the backend
+const emptyForm = (): FormState => ({
+  invoiceNumber: "...",
   date: new Date().toISOString().split("T")[0],
   customerName: "",
   paymentMethod: "Cash",
@@ -149,6 +145,19 @@ const Sales = () => {
       if (res.ok) setProducts(data.products ?? []);
     } catch (err) {
       console.error("Failed to fetch products:", err);
+    }
+  };
+
+  // FIX: fetch the next invoice number from the backend counter instead of calculating client-side
+  const fetchNextInvoiceNumber = async (): Promise<string> => {
+    try {
+      const res = await fetch(`${API}/sales/nextInvoiceNumber`, {
+        headers: { Authorization: `Bearer ${localStorage.getItem("token")}` },
+      });
+      const data = await res.json();
+      return data.invoiceNumber ?? "INV-???";
+    } catch {
+      return "INV-???";
     }
   };
 
@@ -236,13 +245,10 @@ const Sales = () => {
       try { data = JSON.parse(text); } catch {}
 
       if (res.ok) {
-        // FIX: removed duplicate nested if (res.ok) check
         await fetchSales();
         await fetchProducts();
         setShowModal(false);
-        // FIX: fetchSales() already refreshed the list with the new sale included,
-        // so sales.length is already up to date — no need to add 1
-        setForm(emptyForm(sales.length));
+        setForm(emptyForm());
       } else {
         setSubmitError(data.message ?? `Error ${res.status}`);
       }
@@ -328,8 +334,6 @@ const Sales = () => {
             if (!found) error = `Product not found: ${productName}`;
           }
 
-          // FIX: invalid payment is no longer a hard error — the backend defaults it to 'Cash'.
-          // Show a warning instead so the row is still imported.
           if (!error && !["Cash", "BenefitPay"].includes(payment)) {
             warning = `Invalid payment "${payment}", will default to Cash`;
           }
@@ -382,7 +386,7 @@ const Sales = () => {
       });
       if (res.ok) {
         setSales(prev => prev.filter(s => s.invoiceNumber !== invoiceNumber));
-        await fetchProducts(); 
+        await fetchProducts();
         setSelectedSale(null);
       } else {
         const data = await res.json();
@@ -433,19 +437,24 @@ const Sales = () => {
                   style={{ display: "none" }}
                   onChange={handleFileUpload}
                 />
-                
 
                 <button
-                className="import-btn"
-                onClick={() => fileInputRef.current?.click()}
-                disabled={mappingHeaders}
-                 >
-                {mappingHeaders ? "Analyzing..." : <><FiArrowDown size={15} /> Import</>}
+                  className="import-btn"
+                  onClick={() => fileInputRef.current?.click()}
+                  disabled={mappingHeaders}
+                >
+                  {mappingHeaders ? "Analyzing..." : <><FiArrowDown size={15} /> Import</>}
                 </button>
-                 
+
+                {/* FIX: fetch next invoice number from backend before opening the modal */}
                 <button
                   className="add-btn"
-                  onClick={() => { setForm(emptyForm(sales.length)); setSubmitError(""); setShowModal(true); }}
+                  onClick={async () => {
+                    const invoiceNumber = await fetchNextInvoiceNumber();
+                    setForm({ ...emptyForm(), invoiceNumber });
+                    setSubmitError("");
+                    setShowModal(true);
+                  }}
                 >
                   + Add Sale
                 </button>
@@ -504,7 +513,7 @@ const Sales = () => {
           </div>
         </div>
 
-        {/*View Sale Modal */}
+        {/* View Sale Modal */}
         {selectedSale && (
           <div className="modal-overlay" onClick={() => setSelectedSale(null)}>
             <div className="modal view-modal" onClick={e => e.stopPropagation()}>
@@ -595,15 +604,15 @@ const Sales = () => {
                 <div className="view-modal-actions">
                   <button className="cancel-btn" onClick={() => setSelectedSale(null)}>Close</button>
                   {isAdmin && (
-                  <button className="delete-btn-modal" onClick={() => handleDeleteSale(selectedSale.invoiceNumber)}>Delete Sale</button>
+                    <button className="delete-btn-modal" onClick={() => handleDeleteSale(selectedSale.invoiceNumber)}>Delete Sale</button>
                   )}
-                  </div>
+                </div>
               </div>
             </div>
           </div>
         )}
 
-        {/*Add Sale Modal*/}
+        {/* Add Sale Modal */}
         {showModal && (
           <div className="modal-overlay" onClick={() => { setShowModal(false); setForm(emptyForm()); }}>
             <div className="modal sales-modal" onClick={e => e.stopPropagation()}>
@@ -714,7 +723,6 @@ const Sales = () => {
 
               <button type="button" className="add-size-btn" onClick={addItem}>+ Add Item</button>
 
-              
               <div className="sale-total-preview">
                 <div style={{ width: "100%" }}>
                   <div style={{ display: "flex", justifyContent: "space-between", gap: "40px" }}>
@@ -742,7 +750,7 @@ const Sales = () => {
           </div>
         )}
 
-        {/* ── Import Preview Modal ── */}
+        {/* Import Preview Modal */}
         {showImportModal && (
           <div className="modal-overlay" onClick={closeImportModal}>
             <div className="modal import-modal" onClick={e => e.stopPropagation()}>

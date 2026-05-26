@@ -21,6 +21,14 @@ const generateInvoiceNumber = async () => {
 }
 
 
+// FIX: new endpoint — peeks at the next invoice number without incrementing the counter
+export const getNextInvoiceNumber = async (req: Request, res: Response) => {
+    const counter = await Counter.findOne({ name: 'invoice' })
+    const next = (counter?.seq ?? 0) + 1
+    return res.status(200).json({ invoiceNumber: `INV-${String(next).padStart(3, '0')}` })
+}
+
+
 export const addSales = async (req: Request, res: Response) => {
     if (!req.body) {
         return res.status(404).json({ message: 'input is required.' })
@@ -31,7 +39,6 @@ export const addSales = async (req: Request, res: Response) => {
     const createdBy = `${user.username} (${user.role})`
     const invoiceNumber = await generateInvoiceNumber()
 
-    // FIX: renamed inner variable to 'foundProduct' to avoid shadowing the outer 'products' array
     let products: any[]
     try {
         products = await Promise.all(
@@ -135,7 +142,6 @@ export const addSales = async (req: Request, res: Response) => {
 export const viewSales = async (req: Request, res: Response) => {
     const user: any = req.user
 
-    // FIX: renamed variable from 'viewSales' to 'salesRecords' to avoid sharing name with the function
     const salesRecords = await Sales.find({ businessID: user.businessId })
     if (salesRecords.length === 0) {
         return res.status(400).send({ message: 'Sales records are empty.' })
@@ -167,7 +173,6 @@ export const viewSale = async (req: Request, res: Response) => {
     const { invoiceNumber } = req.body
     const user: any = req.user
 
-    // FIX: added businessID filter so a business can only view its own sales
     const sale = await Sales.findOne({ invoiceNumber, businessID: user.businessId })
     if (!sale) {
         return res.status(400).send({ message: 'Sale is not found' })
@@ -196,7 +201,6 @@ export const deleteSale = async (req: Request, res: Response) => {
 
         if (!invoiceNumber) return res.status(400).json({ message: 'Invoice number is required.' })
 
-        // FIX: added businessID filter so a business can only delete its own sales
         const sale = await Sales.findOne({ invoiceNumber, businessID: user.businessId })
         if (!sale) return res.status(404).json({ message: 'Sale not found.' })
 
@@ -310,7 +314,6 @@ export const importSales = async (req: Request, res: Response) => {
                 }
             }
 
-            // FIX: paymentMethod now notes in results if it was corrected from an invalid value
             let paymentMethod = firstRow.payment
             let paymentCorrected = false
             if (!['Cash', 'BenefitPay'].includes(paymentMethod)) {
@@ -334,7 +337,7 @@ export const importSales = async (req: Request, res: Response) => {
                 createdBy,
             })
 
-            // FIX: counter sync is now inside try/catch so errors don't go silently unhandled
+            // Sync counter so manual adds always continue from the highest imported number
             const invoiceMatch = invoiceNumber.match(/\d+/)
             if (invoiceMatch) {
                 const invoiceSeq = parseInt(invoiceMatch[0])
