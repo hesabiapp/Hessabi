@@ -51,7 +51,7 @@ function App() {
           <Route path="/Reports" element={<ProtectedRoute><Reports /></ProtectedRoute>} />
           <Route path="/profile" element={<ProtectedRoute><Profile /></ProtectedRoute>} />
           <Route path="/payment-success" element={<ProtectedRoute><PaymentSuccess /></ProtectedRoute>} />
-          <Route path="/admin-dashboard" element={<ProtectedRoute><AdminDashboard /></ProtectedRoute>} />
+          <Route path="/admin-dashboard" element={<AdminDashboard /> }/>
         </Routes>
       </Router>
     </SubscriptionProvider>
