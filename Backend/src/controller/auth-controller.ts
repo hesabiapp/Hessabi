@@ -93,6 +93,12 @@ export const login = async (req: Request, res: Response) => {
             sub.planStatus = sub.planType === "subscription" ? "overdue" : "expired";
             await sub.save();
         }
+        if (sub.planType === "trial" && sub.planStatus === "expired") {
+    return res.status(403).json({
+        message: "Your free trial has expired. Please upgrade to continue.",
+        trialExpired: true,
+    });
+}
 
         let daysLeft: number | null = null;
         if (sub.endDate) {

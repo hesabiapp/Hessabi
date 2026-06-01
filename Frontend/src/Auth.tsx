@@ -101,6 +101,10 @@ const Auth = () => {
       });
 
       const data = await res.json();
+      if(res.status === 403 && data.trialExpired){
+        navigate("/Pricing");
+        return;
+      }
       if (!res.ok) { setLoginError(data.message); return; }
 
       localStorage.setItem("token", data.token);
