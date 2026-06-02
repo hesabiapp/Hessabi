@@ -3,7 +3,7 @@ import { getAllSubscriptions,getBusinessProfile } from "../controller/admin-cont
 import {upsertSubscription, extendSubscription, recordPayment,} from "../controller/subscription-controller.js";
 
 import { adminLogin, adminLogout, createAdmin, getAllBusinesses, getSystemStats, getAllUsers, toggleUserStatus} from "../controller/admin-controller.js";
-import { adminAuth } from "../middleware/adminAuth.js";
+import { adminAuth, adminJwtAuth } from "../middleware/adminAuth.js";
 import { auth } from "../middleware/auth.js";
 import { changeAdminPassword } from "../controller/admin-controller.js";
 
@@ -14,13 +14,13 @@ router.post('/login', adminLogin);
 router.post('/create', createAdmin); 
 
 
-router.post('/logout',              auth, adminAuth, adminLogout);
-router.get('/businesses',           auth, adminAuth, getAllBusinesses);
-router.get('/stats',                auth, adminAuth, getSystemStats);
-router.get('/users',                auth, adminAuth, getAllUsers);
-router.put('/toggleUser',           auth, adminAuth, toggleUserStatus);
-router.get('/subscriptions',        auth, adminAuth, getAllSubscriptions);
-router.post('/subscription',        auth, adminAuth, upsertSubscription);
-router.get('/business/:businessId', auth, adminAuth, getBusinessProfile);
-router.put('/change-password',      auth, adminAuth, changeAdminPassword);
+router.post('/logout',              adminJwtAuth, adminAuth, adminLogout);
+router.get('/businesses',           adminJwtAuth, adminAuth, getAllBusinesses);
+router.get('/stats',                adminJwtAuth, adminAuth, getSystemStats);
+router.get('/users',                adminJwtAuth, adminAuth, getAllUsers);
+router.put('/toggleUser',           adminJwtAuth, adminAuth, toggleUserStatus);
+router.get('/subscriptions',        adminJwtAuth, adminAuth, getAllSubscriptions);
+router.post('/subscription',        adminJwtAuth, adminAuth, upsertSubscription);
+router.get('/business/:businessId', adminJwtAuth, adminAuth, getBusinessProfile);
+router.put('/change-password',      adminJwtAuth, adminAuth, changeAdminPassword);
 export default router;
