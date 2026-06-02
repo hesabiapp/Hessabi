@@ -40,7 +40,7 @@ export const getAllSubscriptions = async (req: Request, res: Response) => {
       .sort({ createdAt: -1 });
      
     const data = subs
-    .filter((s: any) => s.businessId !== null)
+    .filter((s: any) => s.businessId && typeof s.businessId === "object" && s.businessId._id)
     .map((s: any) => ({
       businessId:        s.businessId._id,
       ownerName:         `${s.businessId.Fname} ${s.businessId.Lname}`,
