@@ -40,29 +40,20 @@ export const getAllSubscriptions = async (req: Request, res: Response) => {
       .sort({ createdAt: -1 });
      
     const data = subs
-  .filter((s: any) => s.businessId && typeof s.businessId === "object" && s.businessId._id)
-  .map((s: any) => {
-    // Compute real-time status
-    let planStatus = s.planStatus;
-    if (s.endDate && new Date() > new Date(s.endDate) && planStatus === "active") {
-      planStatus = s.planType === "subscription" ? "overdue" : "expired";
-    }
-
-    return {
+    .filter((s: any) => s.businessId && typeof s.businessId === "object" && s.businessId._id)
+    .map((s: any) => ({
       businessId:        s.businessId._id,
       ownerName:         `${s.businessId.Fname} ${s.businessId.Lname}`,
       email:             s.businessId.email,
       planType:          s.planType,
-      planStatus,        // ← computed value
+      planStatus:        s.planStatus,
       startDate:         s.startDate,
       endDate:           s.endDate,
       totalAmount:       s.totalAmount,
       paidAmount:        s.paidAmount,
       installmentMonths: s.installmentMonths,
       lastLogin:         s.lastLogin,
-    };
-  });
-
+    }));
 
     return res.status(200).json({ subscriptions: data });
   } catch (err) {
