@@ -34,12 +34,14 @@ export const createTrialSubscription = async (businessId: string) => {
 
 export const getAllSubscriptions = async (req: Request, res: Response) => {
   try {
-    await expireOverdueSubscriptions(); // ← add this line
+    await expireOverdueSubscriptions(); 
     const subs = await Subscription.find({})
       .populate("businessId", "Fname Lname email username")
       .sort({ createdAt: -1 });
-
-    const data = subs.map((s: any) => ({
+     
+    const data = subs
+    .filter((s: any) => s.businessId !== null)
+    .map((s: any) => ({
       businessId:        s.businessId._id,
       ownerName:         `${s.businessId.Fname} ${s.businessId.Lname}`,
       email:             s.businessId.email,
