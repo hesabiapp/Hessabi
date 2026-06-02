@@ -26,7 +26,7 @@ export const mapHeaders = async (req: Request, res: Response) => {
             "anthropic-version": "2023-06-01"
         },
         body: JSON.stringify({
-            model: "claude-sonnet-4-5",
+            model: "claude-sonnet-4-6",
             max_tokens: 1000,
             messages: [{
                 role: "user",
