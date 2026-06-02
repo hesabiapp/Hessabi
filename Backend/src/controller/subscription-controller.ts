@@ -31,8 +31,10 @@ export const createTrialSubscription = async (businessId: string) => {
   });
 };
 
+
 export const getAllSubscriptions = async (req: Request, res: Response) => {
   try {
+    await expireOverdueSubscriptions(); // ← add this line
     const subs = await Subscription.find({})
       .populate("businessId", "Fname Lname email username")
       .sort({ createdAt: -1 });
