@@ -154,18 +154,18 @@ router.get("/data", auth, async (req: any, res) => {
       comments_count: p.analytics?.comments ?? 0,
     }));
 
-    // Log what we got back for debugging
+   
     console.log("igAccount fields:", JSON.stringify(igAccount));
 
     res.json({
-      connected: true,
-      profile: {
-        username:          igAccount.username ?? igAccount.accountUsername ?? "",
-        followersCount:    igAccount.followerCount ?? igAccount.followersCount ?? igAccount.followers_count ?? 0,
-        // Try all possible field names, fall back to actual posts length
-        mediaCount:        igAccount.mediaCount ?? igAccount.media_count ?? igAccount.postsCount ?? igAccount.posts_count ?? igAccount.postCount ?? topPosts.length,
-        profilePictureUrl: igAccount.profilePictureUrl ?? igAccount.avatar,
-      },
+  connected: true,
+  profile: {
+    username:          igAccount.username ?? igAccount.accountUsername ?? "",
+    followersCount:    igAccount.followersCount ?? igAccount.followerCount ?? 0,
+    mediaCount:        igAccount.metadata?.profileData?.extraData?.mediaCount ?? igAccount.externalPostCount ?? topPosts.length,
+    profilePictureUrl: igAccount.profilePicture ?? igAccount.profilePictureUrl ?? igAccount.metadata?.profileData?.profilePicture,
+  },
+
       insights: {
         reach:        insights.reach        ?? insights.data?.reach        ?? 0,
         impressions:  insights.impressions  ?? insights.data?.impressions  ?? 0,
