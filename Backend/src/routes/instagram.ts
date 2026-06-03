@@ -11,8 +11,6 @@ const ZERNIO_API_KEY = process.env.ZERNIO_API_KEY!;
 const FRONTEND_URL   = process.env.FRONTEND_URL ?? "http://localhost:5173";
 const BACKEND_URL    = process.env.BACKEND_URL  ?? "https://hessabi.onrender.com";
 
-
-
 const zernio = axios.create({
   baseURL: "https://zernio.com/api/v1",
   headers: { Authorization: `Bearer ${ZERNIO_API_KEY}` },
@@ -115,6 +113,10 @@ router.get("/callback/:userId", async (req, res) => {
 /* ── STEP 3 — Frontend fetches all IG data ── */
 router.get("/data", auth, async (req: any, res) => {
   try {
+    // Disable caching
+    res.set('Cache-Control', 'no-store, no-cache, must-revalidate');
+    res.set('Pragma', 'no-cache');
+
     const user = await User.findById(req.user.id);
 
     if (!user?.zernioAccountId) {
@@ -124,15 +126,15 @@ router.get("/data", auth, async (req: any, res) => {
     const accountId = user.zernioAccountId;
 
     const [accountsRes, insightsRes, analyticsRes, storiesRes] = await Promise.all([
-      zernio.get("/accounts").catch(() => ({ data: { accounts: [] } })),
+      zernio.get("/accounts").catch((e) => { console.error("accounts error:", e.response?.data ?? e.message); return { data: { accounts: [] } }; }),
       zernio.get("/analytics/instagram/account-insights", {
         params: { accountId },
-      }).catch(() => ({ data: {} })),
+      }).catch((e) => { console.error("insights error:", e.response?.data ?? e.message); return { data: {} }; }),
       zernio.get("/analytics", {
         params: { platform: "instagram", accountId, sortBy: "engagement", limit: 12 },
-      }).catch(() => ({ data: { posts: [] } })),
+      }).catch((e) => { console.error("analytics error:", e.response?.data ?? e.message); return { data: { posts: [] } }; }),
       zernio.get(`/accounts/${accountId}/instagram/stories`)
-        .catch(() => ({ data: { stories: [] } })),
+        .catch((e) => { console.error("stories error:", e.response?.data ?? e.message); return { data: { stories: [] } }; }),
     ]);
 
     const accounts  = accountsRes.data.accounts ?? [];
@@ -152,12 +154,16 @@ router.get("/data", auth, async (req: any, res) => {
       comments_count: p.analytics?.comments ?? 0,
     }));
 
+    // Log what we got back for debugging
+    console.log("igAccount fields:", JSON.stringify(igAccount));
+
     res.json({
       connected: true,
       profile: {
         username:          igAccount.username ?? igAccount.accountUsername ?? "",
-        followersCount:    igAccount.followerCount ?? igAccount.followersCount ?? 0,
-        mediaCount:        igAccount.mediaCount ?? 0,
+        followersCount:    igAccount.followerCount ?? igAccount.followersCount ?? igAccount.followers_count ?? 0,
+        // Try all possible field names, fall back to actual posts length
+        mediaCount:        igAccount.mediaCount ?? igAccount.media_count ?? igAccount.postsCount ?? igAccount.posts_count ?? igAccount.postCount ?? topPosts.length,
         profilePictureUrl: igAccount.profilePictureUrl ?? igAccount.avatar,
       },
       insights: {
@@ -211,7 +217,6 @@ router.get("/inbox", auth, async (req: any, res) => {
     const user = await User.findById(req.user.id);
     if (!user?.zernioAccountId) return res.json({ conversations: [] });
 
-    /* Get the latest message per conversation for this account */
     const latest = await IgMessage.aggregate([
       { $match: { accountId: user.zernioAccountId } },
       { $sort: { sentAt: -1 } },
@@ -260,7 +265,6 @@ router.get("/inbox/:conversationId/messages", auth, async (req: any, res) => {
 
     const { conversationId } = req.params;
 
-    /* Mark messages as read */
     await IgMessage.updateMany(
       { accountId: user.zernioAccountId, conversationId, direction: "incoming", isRead: false },
       { $set: { isRead: true } }
@@ -297,13 +301,11 @@ router.post("/inbox/:conversationId/reply", auth, async (req: any, res) => {
 
     if (!text?.trim()) return res.status(400).json({ error: "Message cannot be empty" });
 
-    /* Send via Zernio */
     await zernio.post(`/inbox/conversations/${conversationId}/messages`, {
       accountId: user.zernioAccountId,
       message:   text.trim(),
     });
 
-    /* Save outgoing message to MongoDB */
     const conv = await IgMessage.findOne({ accountId: user.zernioAccountId, conversationId }).sort({ sentAt: -1 });
 
     await IgMessage.create({
@@ -330,9 +332,9 @@ router.post("/webhook", express.json(), async (req, res) => {
   try {
     const event = req.body;
 
-    if (event.message && event.account && 
+    if (event.message && event.account &&
        (event.event === "message.received" || event.event === "message.sent" || event.event === "message.delivered")) {
-      
+
       const { message, conversation, account } = event;
 
       const exists = await IgMessage.findOne({ platformMessageId: message.platformMessageId });

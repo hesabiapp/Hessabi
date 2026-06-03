@@ -547,7 +547,7 @@ const AdminDashboard = () => {
                 </div>
                 <div className="sales-table-wrapper">
                   <table className="sales-table">
-                    <thead><tr><th>Business</th><th>Plan</th><th>Status</th><th>Start Date</th><th>End Date</th><th>Total</th><th>Paid</th><th>Remaining</th><th>Days Left</th><th>Action</th></tr></thead>
+                    <thead><tr><th>Business</th><th>Plan</th><th>Payment</th><th>Start Date</th><th>End Date</th><th>Total</th><th>Paid</th><th>Remaining</th><th>Days Left</th><th>Action</th></tr></thead>
                     <tbody>
                       {filteredSubs.map(s => {
                         const sc        = statusColor[s.planStatus];
