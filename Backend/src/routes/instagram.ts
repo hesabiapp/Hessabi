@@ -136,6 +136,8 @@ router.get("/data", auth, async (req: any, res) => {
       zernio.get(`/accounts/${accountId}/instagram/stories`)
         .catch((e) => { console.error("stories error:", e.response?.data ?? e.message); return { data: { stories: [] } }; }),
     ]);
+    console.log("insights response:", JSON.stringify(insightsRes.data));
+    console.log("analytics response:", JSON.stringify(analyticsRes.data));
 
     const accounts  = accountsRes.data.accounts ?? [];
     const igAccount = accounts.find((a: any) => a._id === accountId) ?? accounts[0] ?? {};
