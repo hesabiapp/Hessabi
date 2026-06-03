@@ -168,11 +168,12 @@ router.get("/data", auth, async (req: any, res) => {
     profilePictureUrl: igAccount.profilePicture ?? igAccount.profilePictureUrl ?? igAccount.metadata?.profileData?.profilePicture,
   },
 
-      insights: {
-        reach:        insights.reach        ?? insights.data?.reach        ?? 0,
-        impressions:  insights.impressions  ?? insights.data?.impressions  ?? 0,
-        profileViews: insights.profileViews ?? insights.data?.profileViews ?? 0,
-      },
+     insights: {
+         reach:        insights.metrics?.reach?.total        ?? 0,
+         impressions:  insights.metrics?.views?.total        ?? 0,
+         profileViews: insights.metrics?.accounts_engaged?.total ?? 0,
+       },
+
       topPosts,
       stories: stories.map((s: any) => ({
         id:        s._id ?? s.storyId,
